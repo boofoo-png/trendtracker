@@ -49,8 +49,9 @@ A marketer:
 | Campaign direction              | ✅ Built           | Gemini, with a "What are you promoting?" form                 |
 | Audience fit                    | ⏸ Turned off      | `FIT_ENABLED = false`; see [§8](#8-scoring-and-advice)       |
 | Sidebar, top bar, page header   | ⬜ Placeholder     | Each renders only its own name                                |
-| Trend radar                     | ⬜ Placeholder     | Spec in [§17](#17-design-spec-for-remaining-sections)         |
-| Watchlist panel, How to read    | ⬜ Placeholder     | Watchlist *state* already works (stars in the table)          |
+| Trend radar                     | ✅ Built           | Momentum × weekly growth while fit is off; × fit when on      |
+| Watchlist panel                 | ✅ Built           | Starred trends, select / remove                               |
+| How to read this                | ✅ Built           | Explains the current axes and advice rules                    |
 
 ---
 
@@ -170,9 +171,9 @@ components/
     ├── CampaignFocusForm.js          # "What are you promoting?" form
     ├── ContentAngleCard.js           # dark navy angle card (with loading skeleton)
     ├── PageHeader.js                 # placeholder
-    ├── TrendRadar.js                 # placeholder
-    ├── Watchlist.js                  # placeholder
-    └── HowToRead.js                  # placeholder
+    ├── TrendRadar.js                 # 2×2 scatter: momentum × growth (or × fit)
+    ├── Watchlist.js                  # starred trends panel
+    └── HowToRead.js                  # explains momentum, growth/fit and advice
 
 lib/
 ├── features.js                       # FIT_ENABLED switch
@@ -373,7 +374,7 @@ The table is sorted by advice rank, then by momentum (highest first).
 | `live` | `{ trends, updatedAt, audiences, hashtags, errors }`: latest search result (sample data used if empty) |
 | `depth`, `source` | filters (`"All"` / `"Broad"` / `"Niche"`; `"All platforms"` / platform) |
 | `selectedTrendId` | trend the user clicked (`null` = none; the top trend is used as the default for campaign direction) |
-| `watchlist` | `Set` of starred trend ids |
+| `watchlist` | `Set` of starred trend ids (`watchedTrends` = those trends with advice, ignoring filters) |
 | `searchPlan` | `{ audiences, hashtags, error }` while confirming a search |
 | `isPlanning`, `isRunning` | `useTransition` pending flags |
 | from `useAudiences()` | `savedAudiences`, `audiences` (selected), `addAudience`, `removeAudience`, `toggleAudience` |
@@ -417,6 +418,23 @@ All `localStorage` reads happen after mount, and every read or write is wrapped 
 - **Each post** shows a placeholder with the caption, views and likes. **Play preview** swaps in the official player, and **Open ↗** links to the original post.
 - The star toggles the watchlist and doesn't open or close the row.
 - **Empty state:** "No trends match these filters."
+
+### Trend radar (`TrendRadar.js`)
+- **Chart:** a 2×2 scatter of the filtered trends, built from HTML (absolutely positioned `<button>` dots), so it needs no chart library. **x = momentum** (0–100).
+- **y-axis:**
+  - **While fit is off:** **weekly growth** (`change`, plotted from −50% to +150%; values outside are clamped). The horizontal line is at 0%. Quadrants: **Act now** (high momentum, growing), **Emerging** (low momentum, growing), **Peaking** (high momentum, slowing), **Skip**.
+  - **When `FIT_ENABLED = true`:** **fit** (0–100), with the design's quadrants **Act now**, **Watch & prepare**, **Popular, poor fit** and **Skip**.
+- **Dots:** grey, or an enlarged coral dot with a navy tooltip for the selected trend. Hovering or focusing a dot shows its name. Clicking a dot selects the trend everywhere: it's highlighted in the table, its previews open, and campaign direction uses it.
+- **Accessibility:** each dot has an `aria-label` (name, platform, momentum, growth or fit). The trend table is the accessible equivalent of the chart.
+
+### Watchlist (`Watchlist.js`)
+- Starred trends with platform, momentum and an advice badge, plus a lime count badge.
+- Clicking a trend selects it. × removes it from the watchlist.
+- Starred trends hidden by the current depth/source filters are marked "hidden by filters" and can't be selected until the filters change.
+- Empty state: "Star a trend in the list to keep an eye on it here."
+
+### How to read this (`HowToRead.js`)
+Explains **Momentum**, then **Weekly growth** (or **Fit** when enabled), and the current **Advice** thresholds. It switches automatically with `FIT_ENABLED`.
 
 ### Campaign direction (`CampaignDirection.js`, `CampaignFocusForm.js`, `ContentAngleCard.js`)
 - **Header:** advice badge, **{trend} × {audiences}**, and a meta line (platform · format · momentum (change) · *promoting X*).
@@ -491,6 +509,7 @@ Defined in `app/globals.css` (Tailwind v4 `@theme`), so they're available as uti
 
 **Limitations**
 - **Fit is turned off.** The keyword fallback isn't discriminating, and Gemini fit judges only a trend's name and 3 captions. Revisit the method before setting `FIT_ENABLED = true`.
+- **The radar's axes overlap.** While fit is off, the y-axis (weekly growth) is also 30% of momentum, so dots tend to run along a diagonal. It becomes a true 2-D view once fit is back.
 - **Momentum is relative.** It ranks trends against each other within one search, so the same hashtag can score differently in another search. With only 30 posts per hashtag, `change` and `history` are noisy, and very popular hashtags may have all their posts from the last day or two.
 - **There's only one shared saved result.** Every search overwrites `trendtracker/latest`, and there's no per-user history.
 - **Audiences, watchlist and focus live in `localStorage`.** They don't follow you to another browser or device, since there's no sign-in.
@@ -502,17 +521,16 @@ Defined in `app/globals.css` (Tailwind v4 `@theme`), so they're available as uti
 
 **Next steps (suggested order)**
 1. Sidebar, TopBar and PageHeader (static, from the spec below).
-2. Watchlist panel (state already exists) and How to read.
-3. Fit redesign, then the trend radar (which needs a real y-axis).
-4. Search history (one record per search) and storing campaign directions.
-5. Mobile layout pass: a card list for the trend table and a drawer for the sidebar.
-6. Remove unused starter files (`Button.js`, `SearchInput.js`, `public/*.svg`) or start using them.
+2. Fit redesign. The radar, How to read and advice switch over automatically when `FIT_ENABLED` is set to `true`.
+3. Search history (one record per search) and storing campaign directions.
+4. Mobile layout pass: a card list for the trend table and a drawer for the sidebar.
+5. Remove unused starter files (`Button.js`, `SearchInput.js`, `public/*.svg`) or start using them.
 
 ---
 
 ## 17. Design spec for remaining sections
 
-Reference for the sections that are still placeholders, based on the original design.
+Reference for the sections that are still placeholders (sidebar, top bar, page header), based on the original design.
 
 ### Layout
 
@@ -524,8 +542,8 @@ Reference for the sections that are still placeholders, based on the original de
 │  ▣ Audience  │   LiveStatusBanner                                ✅          │
 │    Trends    │   AudienceSelector                                ✅          │
 │  ▢ Competit. │   ┌───────────────────────────────┬──────────────────┐       │
-│  ▢ Content   │   │ TrendRadar (2/3)              │ Watchlist        │       │
-│  ▢ AI Mgmt   │   │                               │ HowToRead        │       │
+│  ▢ Content   │   │ TrendRadar (2/3)          ✅  │ Watchlist     ✅ │       │
+│  ▢ AI Mgmt   │   │                               │ HowToRead     ✅ │       │
 │  ▢ Reports   │   └───────────────────────────────┴──────────────────┘       │
 │              │   TrendTable                                      ✅          │
 │  ⚙  ⓘ        │   CampaignDirection                               ✅          │
@@ -546,15 +564,3 @@ SixthSense logo, then nav items **Overview**, **Audience Trends** (active pill),
 
 ### Page header (`PageHeader.js`)
 Eyebrow `AUDIENCE RESEARCH`, the H1 **Follow the trends your audiences care about** (40/44 semibold), and the lead text *Filter live signals by audience, depth, and source, then turn the strongest opportunities into campaign direction.* A **✦ Ask Sense AI about this page** button sits on the right.
-
-### Trend radar (`TrendRadar.js`)
-- **Header:** eyebrow `TREND RADAR`, title **Momentum versus audience fit**, hint *Select a dot or row to investigate*.
-- **Chart:** an SVG 2×2 scatter with **x = momentum** and **y = fit**. Quadrants: *Act now* (top-right), *Watch & prepare* (top-left), *Popular, poor fit* (bottom-right), *Skip* (bottom-left). In the mock the axis labels don't match the dot positions; this x/y choice fixes that.
-- **Dots** are `<button>`s with an `aria-label` such as "#hotelier, momentum 72, fit 80". The selected dot is an enlarged coral dot with a dark tooltip, and clicking a dot calls `setSelectedTrendId`.
-- **Depends on fit.** While `FIT_ENABLED = false` the y-axis has no meaningful data. Either build it once fit is fixed, or temporarily plot momentum against weekly change.
-
-### Watchlist (`Watchlist.js`)
-Eyebrow `WATCHLIST`, title **Saved signals**, a lime count badge, and a list of starred trends. Clicking a trend selects it. The `watchlist` Set and `toggleWatch` already exist in `useTrendFilters`.
-
-### How to read this (`HowToRead.js`)
-**Momentum** shows how quickly interest is growing. **Fit** shows how naturally the trend belongs to the selected audience and your business. Hide the fit line while fit is turned off.
