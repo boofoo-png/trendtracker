@@ -301,7 +301,7 @@ function CompanyPill() {
 export default function TopBar() {
   const pathname = usePathname();
   return (
-    <header className="relative z-30 flex items-center gap-2 px-4 pt-4 pb-2 print:hidden sm:gap-3 sm:pt-6 lg:px-[clamp(24px,3vw,44px)]">
+    <header className="relative z-30 flex items-center gap-2 pt-4 pb-2 print:hidden sm:gap-3 sm:pt-6">
       <MobileNav />
       {/* Remount on navigation so open dropdowns close. */}
       <Search key={`s-${pathname}`} />

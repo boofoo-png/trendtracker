@@ -6,6 +6,7 @@
 import { useState } from "react";
 import Icon from "@/components/ui/Icon";
 import { PageTitle, Panel, SampleNote, Toggle } from "@/components/ui/Dashboard";
+import RevenueChart from "./RevenueChart";
 
 const PERIODS = ["7 days", "30 days"];
 const METRICS = ["Revenue", "Conversions"];
@@ -22,7 +23,14 @@ const REPORT_DATA = {
       ["Conversions", "7,485", "+122"],
       ["Clicks", "112,576", "-1,235"],
     ],
-    peak: { value: "$8,673", change: "+4.5%", note: "Compared to $5,000 last week" },
+    // Daily revenue by ad platform (USD). Thursday's Meta peak matches the insight below.
+    revenue: {
+      compare: "day",
+      labels: ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"],
+      names: ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"],
+      google: [3120, 4510, 3870, 4812, 5240, 4090, 5630],
+      meta: [2280, 3150, 5420, 8673, 6210, 5080, 6840],
+    },
     insight:
       "Meta delivered the strongest ROAS this week (+18%), while Google's CPA increased by 12%. Thursday recorded your best overall performance, driven by Meta conversions.",
     countries: [
@@ -45,7 +53,14 @@ const REPORT_DATA = {
       ["Conversions", "28,940", "+864"],
       ["Clicks", "438,220", "+6.7%"],
     ],
-    peak: { value: "$31,240", change: "+9.2%", note: "Compared to $28,600 last month" },
+    // Revenue per 5-day block by ad platform (USD).
+    revenue: {
+      compare: "5 days",
+      labels: ["1–5", "6–10", "11–15", "16–20", "21–25", "26–30"],
+      names: ["Days 1–5", "Days 6–10", "Days 11–15", "Days 16–20", "Days 21–25", "Days 26–30"],
+      google: [17800, 21900, 20400, 26700, 24100, 28900],
+      meta: [15400, 21000, 26300, 31240, 28100, 29500],
+    },
     insight:
       "Meta delivered the strongest ROAS this month (+18%), while Google's CPA increased by 12%. Thursdays were consistently your best days, driven by Meta conversions.",
     countries: [
@@ -81,56 +96,6 @@ function Kpi({ label, value, change, compareTo, icon }) {
   );
 }
 
-function RevenueChart({ peak }) {
-  return (
-    <div className="relative min-h-[220px] pt-3.5 pr-0 pb-7 pl-[34px]">
-      <div className="absolute inset-[15px_0_32px_34px] bg-[repeating-linear-gradient(to_bottom,rgba(3,82,94,0.1),rgba(3,82,94,0.1)_1px,transparent_1px,transparent_20%)]" />
-      <div className="absolute top-1 left-[44%] z-10 grid gap-px rounded-[7px] border border-sense-blue/15 bg-paper/95 px-2.5 py-[7px] text-[10px] shadow-[0_5px_12px_rgba(0,31,62,0.08)]">
-        <span className="text-sense-blue">Peak Revenue</span>
-        <strong className="text-sense-blue">
-          {peak.value}&nbsp; {peak.change}
-        </strong>
-        <small className="text-[9px] text-[#647477]">{peak.note}</small>
-      </div>
-      <div className="absolute top-[15px] bottom-8 left-0 flex flex-col justify-between text-[9px] text-sense-blue">
-        {["$25k", "$20k", "$15k", "$10k", "$5k", "$0k"].map((l) => (
-          <span key={l}>{l}</span>
-        ))}
-      </div>
-      <svg
-        role="img"
-        aria-label="Google and Meta revenue trend"
-        preserveAspectRatio="none"
-        viewBox="0 0 300 160"
-        className="absolute inset-[15px_0_32px_34px] h-[calc(100%-47px)] w-[calc(100%-34px)] overflow-visible"
-      >
-        <defs>
-          <linearGradient id="reportArea" x1="0" x2="0" y1="0" y2="1">
-            <stop offset="0" stopColor="#ddfe56" stopOpacity="0.8" />
-            <stop offset="1" stopColor="#ddfe56" stopOpacity="0.18" />
-          </linearGradient>
-        </defs>
-        <path d="M0 135 C30 95 48 130 72 122 S105 35 126 100 S165 62 190 83 S240 70 300 45 L300 160 L0 160 Z" fill="url(#reportArea)" />
-        <path d="M0 126 C34 88 48 116 75 126 S111 52 132 92 S160 57 194 78 S252 70 300 43" fill="none" stroke="#03525e" strokeWidth="3" vectorEffect="non-scaling-stroke" />
-        <path d="M0 145 C35 128 55 86 83 125 S117 82 133 38 S154 125 189 91 S235 88 300 57" fill="none" stroke="#83ae72" strokeWidth="3" vectorEffect="non-scaling-stroke" />
-      </svg>
-      <div className="absolute right-0 bottom-[15px] left-[34px] flex justify-between text-[9px] text-sense-blue">
-        {["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"].map((d) => (
-          <span key={d}>{d}</span>
-        ))}
-      </div>
-      <div className="absolute right-0 bottom-0 left-[34px] flex justify-center gap-[18px] text-[10px] text-[#647477]">
-        <span className="flex items-center gap-1">
-          <i className="size-1.5 rounded-full bg-sense-blue" /> Google
-        </span>
-        <span className="flex items-center gap-1">
-          <i className="size-1.5 rounded-full bg-[#83ae72]" /> Meta
-        </span>
-      </div>
-    </div>
-  );
-}
-
 function InsightsPanel({ data, period }) {
   const [full, setFull] = useState(false);
   return (
@@ -142,7 +107,7 @@ function InsightsPanel({ data, period }) {
         <h3 className="text-[15px] font-bold text-sense-blue">AI Insights Summary</h3>
       </div>
       <div className="mt-2.5 grid gap-[17px] md:grid-cols-[minmax(250px,1.15fr)_minmax(190px,0.85fr)]">
-        <RevenueChart peak={data.peak} />
+        <RevenueChart key={period} revenue={data.revenue} />
         <div className="flex flex-col">
           <h4 className="text-xs font-bold text-sense-blue">Insights</h4>
           <p className="mt-[7px] text-[11px] leading-[1.6] text-[#536669]">{data.insight}</p>
