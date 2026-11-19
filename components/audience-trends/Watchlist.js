@@ -2,8 +2,9 @@
 
 import Card from "@/components/ui/Card";
 import AdviceBadge from "@/components/ui/AdviceBadge";
+import Skeleton from "@/components/ui/Skeleton";
 
-export default function Watchlist({ watchedTrends, selectedTrend, setSelectedTrendId, toggleWatch }) {
+export default function Watchlist({ watchedTrends, watchlistLoaded, selectedTrend, setSelectedTrendId, toggleWatch }) {
   const count = watchedTrends.length;
 
   return (
@@ -15,11 +16,16 @@ export default function Watchlist({ watchedTrends, selectedTrend, setSelectedTre
           aria-label={`${count} saved`}
           className="flex size-6 items-center justify-center rounded-full bg-sense-lime text-[11px] font-bold"
         >
-          {count}
+          {watchlistLoaded ? count : "·"}
         </span>
       }
     >
-      {count === 0 ? (
+      {!watchlistLoaded ? (
+        <div role="status" aria-label="Loading watchlist" className="grid gap-2">
+          <Skeleton className="h-11 w-full rounded-xl" />
+          <Skeleton className="h-11 w-full rounded-xl" />
+        </div>
+      ) : count === 0 ? (
         <p className="text-[11px] text-ink-500">
           Star a trend in the list to keep an eye on it here.
         </p>

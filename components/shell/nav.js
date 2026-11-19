@@ -8,7 +8,7 @@ export const NAV = [
   { label: "Reports", icon: "/sidebar/reports.svg", href: "/reports" },
 ];
 
+// Bottom-of-sidebar links. The "?" Sense AI button sits next to these (SenseButton).
 export const UTILITY = [
   { href: "/settings", label: "Settings", icon: "/sidebar/settings.svg", width: 28, height: 27 },
-  { href: "/settings#notifications", label: "Alert settings", icon: "/sidebar/alert.svg", width: 24, height: 23 },
 ];

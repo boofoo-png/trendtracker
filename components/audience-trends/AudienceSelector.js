@@ -6,6 +6,7 @@ import SegmentedControl from "@/components/ui/SegmentedControl";
 import { suggestAudiences } from "@/app/(dashboard)/audience-trends/actions";
 import { EST_COST_PER_POST, RESULTS_PER_HASHTAG } from "@/lib/apify/config";
 import TrendSearchPanel from "./TrendSearchPanel";
+import Skeleton from "@/components/ui/Skeleton";
 import { useBusiness } from "@/lib/settings";
 import { presetAudiences } from "@/lib/presetAudiences";
 
@@ -39,6 +40,7 @@ function useAiSuggestions(query) {
 
 export default function AudienceSelector({
   savedAudiences,
+  audiencesLoaded,
   audiences: selectedAudiences,
   addAudience,
   removeAudience,
@@ -189,7 +191,13 @@ export default function AudienceSelector({
           </span>
         </p>
 
-        {savedAudiences.length === 0 ? (
+        {!audiencesLoaded ? (
+          <div role="status" aria-label="Loading saved audiences" className="flex flex-wrap gap-2">
+            {["w-28", "w-36", "w-24"].map((w) => (
+              <Skeleton key={w} className={`h-8 rounded-full ${w}`} />
+            ))}
+          </div>
+        ) : savedAudiences.length === 0 ? (
           <p className="rounded-xl border border-dashed border-sense-blue/25 px-4 py-4 text-center text-[11px] text-ink-500">
             Search above or add your first custom audience. Until then, the tracker shows all live
             trends.

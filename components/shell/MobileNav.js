@@ -3,11 +3,13 @@
 // Phone and tablet menu (below the lg breakpoint, where the sidebar is hidden):
 // a menu button in the top bar that opens the same navigation as a drawer.
 
+import { lockScroll } from "@/lib/scrollLock";
 import Image from "next/image";
 import { usePathname } from "next/navigation";
 import { useCallback, useEffect, useRef, useState } from "react";
 import NavItem from "./NavItem";
 import UtilityLink from "./UtilityLink";
+import SenseButton from "./SenseButton";
 import { NAV, UTILITY } from "./nav";
 
 const glass =
@@ -20,11 +22,10 @@ function Drawer({ onClose }) {
     closeRef.current?.focus();
     const onKey = (e) => e.key === "Escape" && onClose();
     document.addEventListener("keydown", onKey);
-    const { overflow } = document.body.style;
-    document.body.style.overflow = "hidden"; // stop the page scrolling behind the menu
+    const unlock = lockScroll();
     return () => {
       document.removeEventListener("keydown", onKey);
-      document.body.style.overflow = overflow;
+      unlock();
     };
   }, [onClose]);
 
@@ -61,7 +62,7 @@ function Drawer({ onClose }) {
         </div>
 
         {/* Close on any link tap, including the page you're already on. */}
-        <div className="contents" onClick={(e) => e.target.closest("a") && onClose()}>
+        <div className="contents" onClick={(e) => e.target.closest("a, [data-closes-menu]") && onClose()}>
         <p className="mt-8 text-[11px] font-medium tracking-[0.15px] opacity-75">WORKSPACE</p>
         <nav aria-label="Main" className="mt-3 flex flex-col gap-1.5">
           {NAV.map((item) => (
@@ -73,6 +74,7 @@ function Drawer({ onClose }) {
           {UTILITY.map((item) => (
             <UtilityLink key={item.href} {...item} />
           ))}
+          <SenseButton />
         </div>
         </div>
       </aside>

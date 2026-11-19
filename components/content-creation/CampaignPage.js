@@ -22,6 +22,8 @@ import { presetAudiences } from "@/lib/presetAudiences";
 import { saveItem } from "@/lib/savedContent";
 import { useBusiness } from "@/lib/settings";
 import useStored from "@/lib/useStored";
+import useHydrated from "@/lib/useHydrated";
+import { SkeletonPanel } from "@/components/ui/Skeleton";
 import {
   CopyButton,
   Field,
@@ -553,18 +555,21 @@ export default function CampaignPage() {
   };
 
   const showPlan = plan && !editing;
+  const hydrated = useHydrated();
 
   return (
     <div className="w-full">
       <PageHeading
-        title={showPlan ? "Your campaign draft" : "Create Campaign"}
+        title={!hydrated ? "Campaign" : showPlan ? "Your campaign draft" : "Create Campaign"}
         description={
           showPlan
             ? "Review the plan, open any starter idea in a creator, or edit the brief and regenerate."
             : "Set your goal, offer, audience, channels and timing. Sense AI drafts an editable campaign plan for your business."
         }
       />
-      {pending && !showPlan ? (
+      {!hydrated ? (
+        <SkeletonPanel lines={7} />
+      ) : pending && !showPlan ? (
         <Panel>
           <LoadingState />
         </Panel>

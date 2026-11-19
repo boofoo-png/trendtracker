@@ -1,6 +1,7 @@
 import Image from "next/image";
 import NavItem from "./NavItem";
 import UtilityLink from "./UtilityLink";
+import SenseButton from "./SenseButton";
 import { NAV, UTILITY } from "./nav";
 
 
@@ -26,6 +27,7 @@ export default function Sidebar() {
         {UTILITY.map((item) => (
           <UtilityLink key={item.href} {...item} />
         ))}
+        <SenseButton />
       </div>
     </aside>
   );

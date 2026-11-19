@@ -6,6 +6,7 @@ import Link from "next/link";
 import { useEffect, useState } from "react";
 import Icon from "@/components/ui/Icon";
 import { listSaved, onSavedChange, removeItem } from "@/lib/savedContent";
+import Skeleton from "@/components/ui/Skeleton";
 import { CopyButton, PageHeading } from "./ui";
 
 const CARD_STYLE = {
@@ -56,7 +57,7 @@ function SavedCard({ item, open, onToggle }) {
 }
 
 export default function MyContentPage() {
-  const [items, setItems] = useState([]);
+  const [loaded, setLoaded] = useState(null); // null until read from this browser
   const [query, setQuery] = useState("");
   const [type, setType] = useState("All");
   const [openId, setOpenId] = useState(null);
@@ -64,10 +65,11 @@ export default function MyContentPage() {
   useEffect(() => {
     // localStorage is only available after mount.
     // eslint-disable-next-line react-hooks/set-state-in-effect
-    setItems(listSaved());
-    return onSavedChange(setItems);
+    setLoaded(listSaved());
+    return onSavedChange(setLoaded);
   }, []);
 
+  const items = loaded ?? [];
   const types = ["All", ...new Set(items.map((i) => i.type))];
   const q = query.trim().toLowerCase();
   const shown = items.filter(
@@ -119,11 +121,22 @@ export default function MyContentPage() {
           ))}
         </div>
         <span className="text-[11px] whitespace-nowrap text-paper/85">
-          {shown.length} {shown.length === 1 ? "item" : "items"}
+          {loaded ? `${shown.length} ${shown.length === 1 ? "item" : "items"}` : "Loading…"}
         </span>
       </div>
 
-      {shown.length ? (
+      {!loaded ? (
+        <div role="status" aria-label="Loading your saved content" className="grid grid-cols-1 gap-3.5 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+          {[0, 1, 2, 3].map((i) => (
+            <div key={i} className="grid gap-2.5 rounded-[18px] bg-paper/95 p-[17px]">
+              <Skeleton className="h-2.5 w-16" />
+              <Skeleton className="h-4 w-4/5" />
+              <Skeleton className="h-3 w-full" />
+              <Skeleton className="h-3 w-2/3" />
+            </div>
+          ))}
+        </div>
+      ) : shown.length ? (
         <div className="grid grid-cols-1 items-start gap-3.5 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
           {shown.map((item) => (
             <SavedCard

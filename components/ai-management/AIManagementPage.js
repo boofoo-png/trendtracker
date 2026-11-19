@@ -13,6 +13,7 @@ import { createPostingPlan } from "@/app/(dashboard)/ai-management/actions";
 import { CHANNEL_CODES, addDays, byDateTime, fromISODate, toISODate, upcoming, useCalendar, useToday } from "@/lib/calendar";
 import { saveContentTrend } from "@/lib/contentTrend";
 import useStored from "@/lib/useStored";
+import Skeleton, { SkeletonPanel } from "@/components/ui/Skeleton";
 import { useBusiness } from "@/lib/settings";
 
 const CHANNELS = Object.keys(CHANNEL_CODES);
@@ -387,7 +388,24 @@ function Dashboard({ onCreate, added, onDismiss }) {
   const [monthOffset, setMonthOffset] = useState(0);
   const [selectedId, setSelectedId] = useState(null);
 
-  if (!today) return null; // the calendar depends on today's date, known only in the browser
+  // The calendar depends on today's date and on posts saved in this browser.
+  if (!today) {
+    return (
+      <div className="w-full">
+        <PageTitle eyebrow="AI content planner" title="Your content calendar" description="Create a complete posting plan in two simple steps." />
+        <div role="status" aria-label="Loading your calendar" className="mb-[18px] grid gap-[18px] md:grid-cols-3">
+          {[0, 1, 2].map((i) => (
+            <div key={i} className="grid gap-2 rounded-[22px] bg-paper/95 p-5">
+              <Skeleton className="h-3 w-24" />
+              <Skeleton className="h-5 w-32" />
+              <Skeleton className="h-3 w-40" />
+            </div>
+          ))}
+        </div>
+        <SkeletonPanel lines={6} />
+      </div>
+    );
+  }
   const month = new Date(today.getFullYear(), today.getMonth() + monthOffset, 1);
   const weekEnd = toISODate(addDays(today, 6 - today.getDay()));
   const next = upcoming(posts, today);

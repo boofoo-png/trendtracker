@@ -13,6 +13,9 @@ import { fromISODate, upcoming, useCalendar, useToday } from "@/lib/calendar";
 import { initials, openSettingsSection, useSettings } from "@/lib/settings";
 import useStored from "@/lib/useStored";
 import MobileNav from "./MobileNav";
+import Skeleton from "@/components/ui/Skeleton";
+import useHydrated from "@/lib/useHydrated";
+import { openSense } from "@/lib/assistant/shared";
 
 const glass =
   "border border-[rgba(246,248,237,0.34)] bg-[rgba(246,248,237,0.18)] text-[#f6f8ed] shadow-[inset_0_1px_0_rgba(246,248,237,0.28),0_10px_25px_rgba(0,31,62,0.1)] backdrop-blur-[18px]";
@@ -67,11 +70,16 @@ function Search() {
   useDismiss(ref, open, () => setOpen(false));
 
   const words = query.toLowerCase().split(/\s+/).filter(Boolean);
-  const results = (words.length ? DESTINATIONS.filter((d) => words.every((w) => d.keywords.includes(w))) : DESTINATIONS.slice(0, 6)).slice(0, 7);
+  const pages = (words.length ? DESTINATIONS.filter((d) => words.every((w) => d.keywords.includes(w))) : DESTINATIONS.slice(0, 6)).slice(0, 6);
+  // Anything typed can also go to Sense AI as a question.
+  const results = query.trim()
+    ? [...pages, { label: `Ask Sense AI: “${query.trim()}”`, href: "#sense", icon: "sparkles", ask: query.trim() }]
+    : [...pages, { label: "Ask Sense AI a question", href: "#sense", icon: "sparkles", ask: "" }];
 
   const go = (d) => {
     setOpen(false);
     setQuery("");
+    if (d.href === "#sense") return openSense(d.ask);
     if (d.href.startsWith("/settings#")) openSettingsSection(d.href.split("#")[1]);
     router.push(d.href);
   };
@@ -101,7 +109,7 @@ function Search() {
           aria-expanded={open}
           aria-controls={listId}
           aria-activedescendant={open && results[active] ? `${listId}-${active}` : undefined}
-          placeholder="Search pages"
+          placeholder="Search or ask…"
           value={query}
           onChange={(e) => {
             setQuery(e.target.value);
@@ -200,7 +208,9 @@ function Alerts() {
   const [open, setOpen] = useState(false);
   const [read, setRead] = useStored("trendtracker:alerts-read", NO_READ);
   const alerts = useAlerts();
-  const unread = alerts.filter((a) => !read.includes(a.id));
+  const hydrated = useHydrated();
+  // Until the browser has read which alerts you've seen, don't claim any are unread.
+  const unread = hydrated ? alerts.filter((a) => !read.includes(a.id)) : [];
   useDismiss(ref, open, () => setOpen(false));
 
   const markRead = (ids) => setRead((cur) => [...new Set([...(Array.isArray(cur) ? cur : []), ...ids])].slice(-100));
@@ -280,6 +290,15 @@ function Alerts() {
 
 function CompanyPill() {
   const [settings] = useSettings();
+  const hydrated = useHydrated();
+  if (!hydrated) {
+    return (
+      <span aria-hidden="true" className={`flex h-12 shrink-0 items-center gap-2.5 rounded-full p-1.5 sm:pr-5 ${glass}`}>
+        <Skeleton tone="dark" className="size-9 rounded-full" />
+        <Skeleton tone="dark" className="hidden h-3 w-28 sm:block" />
+      </span>
+    );
+  }
   const name = settings.company || "Set up your company";
   return (
     <Link

@@ -39,7 +39,7 @@ function cleanTrend(trend) {
     platform: str(trend.platform, 20),
     format: str(trend.format, 60),
     hook: str(trend.hook, 400),
-    source: ["trend", "calendar", "campaign", "competitor"].includes(trend.source) ? trend.source : "trend",
+    source: ["trend", "calendar", "campaign", "competitor", "assistant"].includes(trend.source) ? trend.source : "trend",
   };
 }
 

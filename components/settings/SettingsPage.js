@@ -7,6 +7,8 @@
 import { useEffect, useState } from "react";
 import Icon from "@/components/ui/Icon";
 import { Eyebrow, PageTitle, Panel } from "@/components/ui/Dashboard";
+import Skeleton, { SkeletonPanel } from "@/components/ui/Skeleton";
+import useHydrated from "@/lib/useHydrated";
 import { Select, TextArea, TextInput } from "@/components/content-creation/ui";
 import { ALERT_TYPES, CUSTOMER_TYPES, INDUSTRIES, SECTION_EVENT, TIMEZONES, initials, useSettings } from "@/lib/settings";
 
@@ -58,6 +60,7 @@ export default function SettingsPage() {
   const [draft, setDraft] = useState(null); // unsaved edits; null = none
   const [section, setSection] = useState("profile");
   const [justSaved, setJustSaved] = useState(false);
+  const hydrated = useHydrated();
 
   // Follow the URL hash (#workspace, #notifications) and links from the top bar.
   useEffect(() => {
@@ -119,6 +122,19 @@ export default function SettingsPage() {
         </div>
       </PageTitle>
 
+      {!hydrated ? (
+        <div className="grid gap-[18px] lg:grid-cols-[260px_minmax(0,1fr)]">
+          <div className="grid justify-items-center gap-2 self-start rounded-[22px] bg-paper/95 p-6">
+            <Skeleton className="size-16 rounded-full" />
+            <Skeleton className="h-4 w-28" />
+            <Skeleton className="h-3 w-20" />
+            <Skeleton className="mt-3 h-11 w-full rounded-xl" />
+            <Skeleton className="h-11 w-full rounded-xl" />
+            <Skeleton className="h-11 w-full rounded-xl" />
+          </div>
+          <SkeletonPanel lines={5} />
+        </div>
+      ) : (
       <div className="grid gap-[18px] lg:grid-cols-[260px_minmax(0,1fr)]">
         <Panel as="aside" className="self-start">
           <div className="grid justify-items-center gap-1 border-b border-sense-blue/15 pb-5 text-center">
@@ -245,6 +261,7 @@ export default function SettingsPage() {
           )}
         </Panel>
       </div>
+      )}
     </div>
   );
 }
