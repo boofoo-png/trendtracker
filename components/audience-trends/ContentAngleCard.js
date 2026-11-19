@@ -1,7 +1,7 @@
 export default function ContentAngleCard({ angle, loading = false }) {
   return (
     <article
-      className="relative flex min-h-64 flex-col justify-between overflow-hidden rounded-xl bg-navy-900 p-5 text-white"
+      className="relative flex min-h-64 flex-col justify-between overflow-hidden rounded-[18px] bg-[linear-gradient(135deg,#001f3e,#03525e)] p-5 text-paper shadow-[0_6px_0_rgba(0,31,62,0.2)]"
       aria-busy={loading}
     >
       {/* soft glow */}
@@ -22,7 +22,7 @@ export default function ContentAngleCard({ angle, loading = false }) {
         ) : (
           <>
             <h3 className="text-xl font-semibold leading-snug">{angle?.headline}</h3>
-            <p className="mt-3 text-xs text-white/70">{angle?.summary}</p>
+            <p className="mt-3 text-xs text-paper/75">{angle?.summary}</p>
           </>
         )}
       </div>

@@ -1,15 +1,15 @@
 import { ADVICE } from "@/lib/advice";
 
 const styles = {
-  [ADVICE.ACT_NOW]: "bg-teal-900 text-white",
-  [ADVICE.USE_WITH_CARE]: "bg-amber-300 text-teal-900",
-  [ADVICE.WATCH]: "bg-gray-500 text-white",
-  [ADVICE.SKIP]: "bg-gray-200 text-ink-500",
+  [ADVICE.ACT_NOW]: "bg-sense-lime text-sense-navy",
+  [ADVICE.USE_WITH_CARE]: "bg-amber-300 text-sense-navy",
+  [ADVICE.WATCH]: "bg-sense-blue/15 text-sense-blue",
+  [ADVICE.SKIP]: "bg-[#e2e6dd] text-ink-500",
 };
 
 export default function AdviceBadge({ advice }) {
   return (
-    <span className={`rounded px-2 py-1 text-[10px] font-semibold uppercase ${styles[advice]}`}>
+    <span className={`inline-block rounded-full px-2.5 py-1 text-center text-[10px] leading-tight font-bold uppercase sm:whitespace-nowrap ${styles[advice]}`}>
       {advice}
     </span>
   );

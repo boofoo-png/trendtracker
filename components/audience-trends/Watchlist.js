@@ -13,7 +13,7 @@ export default function Watchlist({ watchedTrends, selectedTrend, setSelectedTre
       aside={
         <span
           aria-label={`${count} saved`}
-          className="flex size-6 items-center justify-center rounded-full bg-lime-400 text-[11px] font-semibold"
+          className="flex size-6 items-center justify-center rounded-full bg-sense-lime text-[11px] font-bold"
         >
           {count}
         </span>
@@ -30,7 +30,7 @@ export default function Watchlist({ watchedTrends, selectedTrend, setSelectedTre
             return (
               <li
                 key={trend.id}
-                className={`flex items-center gap-2 rounded-md px-3 py-2 ${selected ? "bg-lime-400/30" : "bg-white/80"}`}
+                className={`flex items-center gap-2 rounded-xl px-3 py-2 ${selected ? "bg-sense-lime/40" : "border border-sense-blue/10 bg-white/70"}`}
               >
                 <span aria-hidden="true" className="text-ink-500">↗</span>
                 <button

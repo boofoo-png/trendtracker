@@ -13,6 +13,7 @@ import { createPostingPlan } from "@/app/(dashboard)/ai-management/actions";
 import { CHANNEL_CODES, addDays, byDateTime, fromISODate, toISODate, upcoming, useCalendar, useToday } from "@/lib/calendar";
 import { saveContentTrend } from "@/lib/contentTrend";
 import useStored from "@/lib/useStored";
+import { useBusiness } from "@/lib/settings";
 
 const CHANNELS = Object.keys(CHANNEL_CODES);
 const FREQUENCIES = [2, 3, 4, 5];
@@ -99,7 +100,7 @@ function PlanForm({ form, setForm, onSubmit, pending, error, onBack }) {
               rows={3}
               maxLength={500}
               onChange={(e) => setForm((f) => ({ ...f, goal: e.target.value }))}
-              placeholder="e.g. Share practical sustainable travel ideas and highlight memorable local experiences."
+              placeholder="e.g. Build awareness of our new product line and drive visits to our website."
               className="w-full resize-y rounded-xl border border-sense-blue/15 bg-white/80 p-3 text-sm outline-none focus:ring-2 focus:ring-sense-blue/30"
             />
           </Question>
@@ -349,7 +350,10 @@ function PostDetail({ post, onClose, onRemove }) {
         <Link
           href={`/content-creation/${creator}`}
           onClick={() =>
-            saveContentTrend({ name: post.title, audience: "", platform: post.channel, format: post.format, hook: post.caption })
+            saveContentTrend(
+              { name: post.title, audience: "", platform: post.channel, format: post.format, hook: post.caption },
+              { source: "calendar", path: `/content-creation/${creator}` },
+            )
           }
           className={primary}
         >
@@ -482,6 +486,7 @@ function Dashboard({ onCreate, added, onDismiss }) {
 export default function AIManagementPage() {
   const { addPosts } = useCalendar();
   const [, setNote] = useStored(NOTE_KEY, NO_NOTE);
+  const business = useBusiness();
   const [view, setView] = useState("dashboard");
   const [form, setForm] = useState({ goal: "", channels: ["Instagram", "TikTok"], perWeek: 3 });
   const [plan, setPlan] = useState(null);
@@ -496,7 +501,7 @@ export default function AIManagementPage() {
     if (!form.channels.length) return setError("Choose at least one channel.");
     const start = addDays(new Date(), 1); // plans start tomorrow
     startTransition(async () => {
-      const res = await createPostingPlan({ ...form, startWeekday: WEEKDAYS[start.getDay()] });
+      const res = await createPostingPlan({ ...form, startWeekday: WEEKDAYS[start.getDay()], business });
       if (res.error) return setError(res.error);
       const posts = res.plan.posts.map(({ dayOffset, ...p }) => ({ ...p, date: toISODate(addDays(start, dayOffset)) }));
       setPlan({ recommendation: res.plan.recommendation, posts });

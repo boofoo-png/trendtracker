@@ -7,8 +7,8 @@
 import { useEffect, useState } from "react";
 import Icon from "@/components/ui/Icon";
 import { Eyebrow, PageTitle, Panel } from "@/components/ui/Dashboard";
-import { Select, TextInput } from "@/components/content-creation/ui";
-import { ALERT_TYPES, INDUSTRIES, SECTION_EVENT, TIMEZONES, initials, useSettings } from "@/lib/settings";
+import { Select, TextArea, TextInput } from "@/components/content-creation/ui";
+import { ALERT_TYPES, CUSTOMER_TYPES, INDUSTRIES, SECTION_EVENT, TIMEZONES, initials, useSettings } from "@/lib/settings";
 
 const SECTIONS = [
   { id: "profile", label: "Profile", icon: "audience" },
@@ -175,8 +175,30 @@ export default function SettingsPage() {
               <div className="grid gap-x-5 sm:grid-cols-2">
                 <TextInput label="Company name" placeholder="Shown in the top bar" autoComplete="organization" {...field("company")} />
                 <TextInput label="Website" placeholder="yourcompany.com" autoComplete="url" {...field("website")} />
-                <Select label="Default industry" options={INDUSTRIES} {...field("industry")} />
-                <Select label="Default timezone" options={TIMEZONES} {...field("timezone")} />
+                <Select label="Industry" options={INDUSTRIES} {...field("industry")} />
+                <Select label="Who are your customers?" options={CUSTOMER_TYPES} {...field("customers")} />
+                <TextArea
+                  className="sm:col-span-2"
+                  rows={3}
+                  label="What does your business do?"
+                  placeholder="e.g. We roast small-batch coffee and sell beans online and to local cafés."
+                  {...field("description")}
+                />
+                <TextInput
+                  label="Keywords that describe your business (comma-separated)"
+                  placeholder="e.g. coffee, espresso, sustainable, local"
+                  {...field("keywords")}
+                />
+                <Select label="Timezone" options={TIMEZONES} {...field("timezone")} />
+              </div>
+              <div className="mb-3 flex items-start gap-2.5 rounded-xl bg-sense-lime/40 p-3.5 text-sense-navy">
+                <Icon name="sparkles" size={18} className="mt-0.5 shrink-0" />
+                <p className="text-[11px] leading-[1.5]">
+                  <strong className="block text-xs">Sense AI uses these details</strong>
+                  Audience suggestions, hashtags, trend fit, campaign directions, content and posting
+                  plans are all written for the business you describe here. Keywords also shape the
+                  fit score on scraped trends.
+                </p>
               </div>
               <div className="mt-2 flex items-start gap-2.5 rounded-xl bg-[#e3eadd] p-3.5 text-sense-blue">
                 <Icon name="trend" size={18} className="mt-0.5 shrink-0" />

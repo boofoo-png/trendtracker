@@ -1,15 +1,8 @@
 import Image from "next/image";
 import NavItem from "./NavItem";
 import UtilityLink from "./UtilityLink";
+import { NAV, UTILITY } from "./nav";
 
-const NAV = [
-  { label: "Overview", icon: "/sidebar/overview.svg", href: "/overview" },
-  { label: "Audience", icon: "/sidebar/audience.svg", href: "/audience-trends" },
-  { label: "Competitors", icon: "/sidebar/competitors.svg", iconSize: 15, href: "/competitors" },
-  { label: "Content Creation", icon: "/sidebar/content.svg", href: "/content-creation" },
-  { label: "AI Management", icon: "/sidebar/ai.svg", href: "/ai-management" },
-  { label: "Reports", icon: "/sidebar/reports.svg", href: "/reports" },
-];
 
 // Sizes follow the Figma Make app (16px nav text, 18px brand); the layout and
 // icons follow the SIXTH SENSE design file. Fits the viewport without scrolling.
@@ -30,8 +23,9 @@ export default function Sidebar() {
       </nav>
 
       <div className="mt-auto flex items-center gap-1.5 pt-4 pl-1.5">
-        <UtilityLink href="/settings" label="Settings" icon="/sidebar/settings.svg" width={28} height={27} />
-        <UtilityLink href="/settings#notifications" label="Alert settings" icon="/sidebar/alert.svg" width={24} height={23} />
+        {UTILITY.map((item) => (
+          <UtilityLink key={item.href} {...item} />
+        ))}
       </div>
     </aside>
   );

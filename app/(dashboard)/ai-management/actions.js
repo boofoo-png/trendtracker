@@ -4,10 +4,11 @@
 
 import { isGeminiConfigured } from "@/lib/gemini/client";
 import { PLAN_CHANNELS, PLAN_FREQUENCIES, generatePostingPlan } from "@/lib/gemini/plan";
+import { businessContext } from "@/lib/business";
 
 const WEEKDAYS = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
 
-export async function createPostingPlan({ goal, channels, perWeek, startWeekday } = {}) {
+export async function createPostingPlan({ goal, channels, perWeek, startWeekday, business } = {}) {
   if (!isGeminiConfigured()) return { error: "AI features are off: add GEMINI_API_KEY to .env.local." };
 
   const cleanGoal = String(goal ?? "").trim().slice(0, 500);
@@ -21,6 +22,7 @@ export async function createPostingPlan({ goal, channels, perWeek, startWeekday 
       channels: picked,
       perWeek: PLAN_FREQUENCIES.includes(perWeek) ? perWeek : 3,
       startWeekday: WEEKDAYS.includes(startWeekday) ? startWeekday : "Monday",
+      context: businessContext(business),
     });
     if (!plan.posts.length) return { error: "Sense AI didn't return any posts. Try again." };
     return { plan };

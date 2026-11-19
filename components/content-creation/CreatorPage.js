@@ -7,7 +7,8 @@
 import { useEffect, useState, useTransition } from "react";
 import { generateContent } from "@/app/(dashboard)/content-creation/actions";
 import { CONTENT_KINDS, FIELD_OPTIONS as O } from "@/lib/contentKinds";
-import { loadContentTrend } from "@/lib/contentTrend";
+import { clearContentTrend, loadContentTrend } from "@/lib/contentTrend";
+import { useBusiness } from "@/lib/settings";
 import { listSaved, saveItem } from "@/lib/savedContent";
 import {
   Alternatives,
@@ -44,7 +45,9 @@ const DEFAULTS = {
 };
 
 const ideaFromTrend = (t) =>
-  t.hook || `Content that uses the ${t.name} trend${t.audience ? ` to reach ${t.audience}` : ""}.`;
+  t.source === "trend" || !t.source
+    ? t.hook || `Content that uses the ${t.name} trend${t.audience ? ` to reach ${t.audience}` : ""}.`
+    : [t.name, t.hook].filter(Boolean).join(": ");
 
 // ---------- Forms ----------
 
@@ -92,7 +95,7 @@ function Form({ kind, f, set }) {
             label="Product or Service"
             value={f.product}
             onChange={set("product")}
-            placeholder="e.g. Refillable hotel amenity collection"
+            placeholder="e.g. Our new spring collection"
           />
           <Select label="Campaign Goal" value={f.adGoal} options={O.adGoal} onChange={set("adGoal")} />
           <Select label="Ad Format" value={f.adFormat} options={O.adFormat} onChange={set("adFormat")} />
@@ -435,6 +438,7 @@ function toSaved(kind, r) {
 
 export default function CreatorPage({ kind }) {
   const meta = CONTENT_KINDS[kind];
+  const business = useBusiness();
   const [fields, setFields] = useState(DEFAULTS[kind]);
   const [trend, setTrend] = useState(null);
   const [result, setResult] = useState(null);
@@ -443,7 +447,7 @@ export default function CreatorPage({ kind }) {
   const [pending, startTransition] = useTransition();
 
   useEffect(() => {
-    const t = loadContentTrend();
+    const t = loadContentTrend(`/content-creation/${kind}`);
     if (!t) return;
     // Read after mount so server and client markup match on hydration.
     // eslint-disable-next-line react-hooks/set-state-in-effect
@@ -460,7 +464,7 @@ export default function CreatorPage({ kind }) {
   const run = () => {
     setError(null);
     startTransition(async () => {
-      const res = await generateContent(kind, fields, trend).catch((err) => ({ error: err.message }));
+      const res = await generateContent(kind, fields, trend, business).catch((err) => ({ error: err.message }));
       if (res.error) return setError(res.error);
       setResult(res.result);
       setSavedId(null);
@@ -486,7 +490,19 @@ export default function CreatorPage({ kind }) {
 
       <div className="grid gap-3.5 lg:grid-cols-[minmax(270px,0.72fr)_minmax(0,1.45fr)]">
         <Panel>
-          <PanelLabel aside={trend && <SelectedTrendBadge trend={trend} />}>{meta.inputLabel}</PanelLabel>
+          <PanelLabel
+            aside={
+              trend && (
+                <SelectedTrendBadge
+                  trend={trend}
+                  onClear={() => {
+                    clearContentTrend();
+                    setTrend(null);
+                  }}
+                />
+              )
+            }
+          >{meta.inputLabel}</PanelLabel>
           <Form kind={kind} f={fields} set={set} />
           <GenerateButton label={meta.generateLabel} pending={pending} onClick={run} />
         </Panel>

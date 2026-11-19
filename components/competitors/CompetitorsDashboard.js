@@ -185,7 +185,7 @@ function NextMove({ campaign }) {
       platform: campaign.platform,
       format: campaign.format,
       hook: `Close the engagement gap with ${brand} (${fmt(theirs.engagement)}).`,
-    });
+    }, { source: "competitor", path: "/content-creation" });
 
   return (
     <Panel className="flex flex-col lg:col-span-7">

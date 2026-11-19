@@ -5,10 +5,10 @@ import { useId } from "react";
 import { FOCUS_TYPES } from "@/lib/campaignFocus";
 
 const PLACEHOLDERS = {
-  Product: { name: "e.g. Refillable amenity dispensers", details: "Key benefit, price point, launch date…" },
-  Service: { name: "e.g. Linen management service", details: "Who it's for, what it saves…" },
-  Event: { name: "e.g. Hospitality Expo stand B12", details: "Date, location, what's happening…" },
-  "Sale or offer": { name: "e.g. 15% off first bulk order", details: "Dates, conditions, code…" },
+  Product: { name: "e.g. Our new spring range", details: "Key benefit, price point, launch date…" },
+  Service: { name: "e.g. Same-day delivery", details: "Who it's for, what it saves…" },
+  Event: { name: "e.g. Pop-up at the Saturday market", details: "Date, location, what's happening…" },
+  "Sale or offer": { name: "e.g. 15% off your first order", details: "Dates, conditions, code…" },
 };
 
 /** What the campaign should promote. `focus` is { type, name, details }. */
@@ -18,10 +18,10 @@ export default function CampaignFocusForm({ focus, onChange, disabled }) {
   const ph = PLACEHOLDERS[focus.type] ?? PLACEHOLDERS.Product;
   const set = (patch) => onChange({ ...focus, ...patch });
   const field =
-    "w-full rounded-md bg-white px-3 py-2 text-xs outline-none ring-teal-900/30 focus:ring-2 disabled:opacity-60";
+    "w-full rounded-[9px] border border-sense-blue/20 bg-white/65 text-sense-navy outline-none placeholder:text-[#8a9799] focus:border-sense-blue focus:shadow-[0_0_0_3px_rgba(29,73,144,0.1)] px-3 py-2 text-xs disabled:opacity-60";
 
   return (
-    <fieldset disabled={disabled} className="rounded-lg bg-white/60 p-4">
+    <fieldset disabled={disabled} className="rounded-xl border border-sense-blue/10 bg-white/60 p-4">
       <legend className="sr-only">What are you promoting?</legend>
       <p className="mb-3 text-[10px] font-semibold uppercase tracking-wider text-ink-500">
         What are you promoting?
@@ -35,7 +35,7 @@ export default function CampaignFocusForm({ focus, onChange, disabled }) {
             role="radio"
             aria-checked={focus.type === type}
             onClick={() => set({ type })}
-            className={`rounded-full px-3 py-1 text-xs ${focus.type === type ? "bg-teal-900 text-white" : "bg-white"}`}
+            className={`cursor-pointer rounded-full px-3 py-1 text-xs font-semibold transition-colors ${focus.type === type ? "bg-sense-blue text-paper" : "border border-sense-blue/20 bg-white/70 text-sense-blue hover:bg-sense-blue/10"}`}
           >
             {type}
           </button>
@@ -49,7 +49,7 @@ export default function CampaignFocusForm({ focus, onChange, disabled }) {
       ) : (
         <div className="grid gap-2 sm:grid-cols-[minmax(0,1fr)_minmax(0,1.4fr)]">
           <div>
-            <label htmlFor={`${id}-name`} className="mb-1 block text-[11px] font-medium">
+            <label htmlFor={`${id}-name`} className="mb-1 block text-[11px] font-semibold text-[#53676a]">
               {focus.type} name
             </label>
             <input
@@ -63,7 +63,7 @@ export default function CampaignFocusForm({ focus, onChange, disabled }) {
             />
           </div>
           <div>
-            <label htmlFor={`${id}-details`} className="mb-1 block text-[11px] font-medium">
+            <label htmlFor={`${id}-details`} className="mb-1 block text-[11px] font-semibold text-[#53676a]">
               Details <span className="font-normal text-ink-500">(optional)</span>
             </label>
             <input

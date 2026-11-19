@@ -35,6 +35,8 @@ export default function TrendTable({
       {matchCount === 0 ? (
         <p className="py-8 text-center text-sm text-ink-500">No trends match these filters.</p>
       ) : (
+        // Fallback: scrolls sideways if the columns can't fit (the table is sized to fit a phone).
+        <div className="-mx-2 overflow-x-auto px-2">
         <table className="w-full border-collapse">
           <thead>
             <tr>
@@ -42,7 +44,7 @@ export default function TrendTable({
                 <th
                   key={i}
                   scope="col"
-                  className={`px-3 pb-2 text-left text-[10px] font-semibold uppercase tracking-wider text-ink-500 ${c.className ?? ""}`}
+                  className={`px-2 pb-2 text-left sm:px-3 text-[10px] font-semibold uppercase tracking-wider text-ink-500 ${c.className ?? ""}`}
                 >
                   {c.label}
                 </th>
@@ -75,6 +77,7 @@ export default function TrendTable({
             })}
           </tbody>
         </table>
+        </div>
       )}
     </Card>
   );

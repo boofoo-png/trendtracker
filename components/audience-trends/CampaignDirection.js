@@ -8,6 +8,7 @@ import AdviceBadge from "@/components/ui/AdviceBadge";
 import ContentAngleCard from "./ContentAngleCard";
 import CampaignFocusForm from "./CampaignFocusForm";
 import { generateCampaignDirection } from "@/app/(dashboard)/audience-trends/actions";
+import { useBusiness } from "@/lib/settings";
 
 // Gemini runs only when a Generate / Regenerate button is pressed.
 // Results are kept per trend × audience × focus for this session.
@@ -22,6 +23,7 @@ function activeFocus(focus) {
 }
 
 export default function CampaignDirection({ selectedTrend, audiences, liveAudiences }) {
+  const business = useBusiness();
   const [results, setResults] = useState({}); // key → { angle, error, attempt }
   const [pendingKey, setPendingKey] = useState(null);
   const [, startTransition] = useTransition();
@@ -62,7 +64,7 @@ export default function CampaignDirection({ selectedTrend, audiences, liveAudien
     const attempt = entry ? (entry.attempt ?? 0) + 1 : 0;
     setPendingKey(key);
     startTransition(async () => {
-      const res = await generateCampaignDirection(trend, forAudiences, focusToSend, attempt).catch((err) => ({
+      const res = await generateCampaignDirection(trend, forAudiences, focusToSend, attempt, business).catch((err) => ({
         error: err.message,
       }));
       setResults((prev) => ({
@@ -103,7 +105,7 @@ export default function CampaignDirection({ selectedTrend, audiences, liveAudien
             <button
               type="button"
               onClick={copyBrief}
-              className="rounded-md bg-white px-3 py-2 text-xs font-medium"
+              className="cursor-pointer rounded-[18px] border border-sense-blue/20 bg-white/70 text-xs font-bold text-sense-blue transition-colors hover:bg-sense-blue/10 disabled:cursor-not-allowed disabled:opacity-50 px-3 py-2"
             >
               {copied ? "Copied ✓" : "Copy brief"}
             </button>
@@ -117,9 +119,9 @@ export default function CampaignDirection({ selectedTrend, audiences, liveAudien
                 platform: selectedTrend.platform,
                 format: selectedTrend.format,
                 hook: angle?.headline ?? "",
-              })
+              }, { source: "trend", path: "/content-creation" })
             }
-            className="cursor-pointer rounded-md bg-teal-900 px-4 py-2 text-xs font-semibold text-white transition hover:bg-teal-900/80 hover:shadow-md"
+            className="cursor-pointer rounded-[18px] bg-sense-blue text-xs font-bold text-paper transition-colors hover:bg-sense-blue/85 disabled:cursor-not-allowed disabled:opacity-50 px-4 py-2"
           >
             Use in Content
           </Link>
@@ -128,7 +130,7 @@ export default function CampaignDirection({ selectedTrend, audiences, liveAudien
     >
       <div className="-mt-2 mb-5">
         {selectedTrend.advice && <AdviceBadge advice={selectedTrend.advice} />}
-        <h2 className="mt-2 text-xl font-medium">
+        <h2 className="mt-2 text-xl font-bold text-sense-blue">
           {selectedTrend.name} × {audienceLabel}
         </h2>
         <p className="mt-1 text-[11px] text-ink-500">
@@ -148,7 +150,7 @@ export default function CampaignDirection({ selectedTrend, audiences, liveAudien
       </div>
 
       {!angle && !isPending ? (
-        <div className="flex flex-col items-center gap-3 rounded-lg border border-dashed border-black/15 px-4 py-10 text-center">
+        <div className="flex flex-col items-center gap-3 rounded-xl border border-dashed border-sense-blue/25 px-4 py-10 text-center">
           <p className="max-w-md text-sm text-ink-500">
             {sentFocus
               ? `Get a content angle that promotes ${sentFocus.name} through this trend.`
@@ -157,7 +159,7 @@ export default function CampaignDirection({ selectedTrend, audiences, liveAudien
           <button
             type="button"
             onClick={generate}
-            className="rounded-md bg-teal-900 px-4 py-2 text-xs font-semibold text-white"
+            className="cursor-pointer rounded-[18px] bg-sense-blue text-xs font-bold text-paper transition-colors hover:bg-sense-blue/85 disabled:cursor-not-allowed disabled:opacity-50 px-4 py-2"
           >
             ✦ Generate campaign direction
           </button>
@@ -175,15 +177,15 @@ export default function CampaignDirection({ selectedTrend, audiences, liveAudien
             <p className="text-[10px] font-semibold uppercase tracking-wider text-ink-500">
               Recommended approach
             </p>
-            <h3 className="mt-1 text-lg font-medium">{angle?.headline ?? "…"}</h3>
+            <h3 className="mt-1 text-lg font-bold">{angle?.headline ?? "…"}</h3>
             <p className="mt-1 text-xs text-ink-500">{angle?.summary}</p>
 
             <div className="mt-4 grid gap-3 sm:grid-cols-2">
-              <div className="rounded-md border-l-4 border-lime-400 bg-white/80 p-3">
+              <div className="rounded-xl border-l-4 border-sense-lime bg-white/70 p-3">
                 <p className="text-[10px] font-semibold uppercase">Do</p>
                 <p className="mt-1 text-xs text-ink-500">{angle?.do}</p>
               </div>
-              <div className="rounded-md border-l-4 border-coral-400 bg-white/80 p-3">
+              <div className="rounded-xl border-l-4 border-coral-400 bg-white/70 p-3">
                 <p className="text-[10px] font-semibold uppercase">Avoid</p>
                 <p className="mt-1 text-xs text-ink-500">{angle?.avoid}</p>
               </div>
@@ -199,7 +201,7 @@ export default function CampaignDirection({ selectedTrend, audiences, liveAudien
                 type="button"
                 onClick={generate}
                 disabled={isPending}
-                className="rounded-md bg-white px-3 py-2 text-xs font-medium disabled:opacity-50"
+                className="cursor-pointer rounded-[18px] border border-sense-blue/20 bg-white/70 text-xs font-bold text-sense-blue transition-colors hover:bg-sense-blue/10 disabled:cursor-not-allowed disabled:opacity-50 px-3 py-2"
               >
                 {isPending ? "✦ Writing…" : entry?.angle ? "✦ Regenerate" : "✦ Generate with AI"}
               </button>

@@ -6,22 +6,8 @@ import SegmentedControl from "@/components/ui/SegmentedControl";
 import { suggestAudiences } from "@/app/(dashboard)/audience-trends/actions";
 import { EST_COST_PER_POST, RESULTS_PER_HASHTAG } from "@/lib/apify/config";
 import TrendSearchPanel from "./TrendSearchPanel";
-
-// Instant, offline suggestions. Gemini adds more only when "Suggest with AI" is pressed.
-const PRESET_AUDIENCES = [
-  "Hospitality buyers",
-  "Procurement teams",
-  "Boutique hotel owners",
-  "Hotel general managers",
-  "Sustainability officers",
-  "Business travellers",
-  "Luxury travellers",
-  "Budget travellers",
-  "Event planners",
-  "Travel agents",
-  "Gen Z travellers",
-  "Digital nomads",
-];
+import { useBusiness } from "@/lib/settings";
+import { presetAudiences } from "@/lib/presetAudiences";
 
 const SOURCES = ["All platforms", "Instagram", "TikTok"];
 
@@ -29,13 +15,14 @@ const norm = (s) => s.trim().toLowerCase();
 
 /** Gemini suggestions, fetched only when ask() is called. */
 function useAiSuggestions(query) {
+  const business = useBusiness();
   const [result, setResult] = useState(null); // { query, audiences, error }
   const [loading, startLoading] = useTransition();
 
   const ask = () => {
     const q = query.trim();
     startLoading(async () => {
-      const res = await suggestAudiences(q);
+      const res = await suggestAudiences(q, business);
       setResult({ query: q, ...res });
     });
   };
@@ -65,10 +52,11 @@ export default function AudienceSelector({
   const [open, setOpen] = useState(false);
   const [active, setActive] = useState(-1);
   const ai = useAiSuggestions(query);
+  const { industry } = useBusiness();
 
   const savedSet = new Set(savedAudiences.map(norm));
   const q = norm(query);
-  const presetMatches = PRESET_AUDIENCES.filter(
+  const presetMatches = presetAudiences(industry).filter(
     (a) => !savedSet.has(norm(a)) && (!q || norm(a).includes(q)),
   ).slice(0, 5);
   const presetSet = new Set(presetMatches.map(norm));
@@ -134,14 +122,14 @@ export default function AudienceSelector({
             onFocus={() => setOpen(true)}
             onBlur={() => setTimeout(() => setOpen(false), 150)}
             onKeyDown={onKeyDown}
-            className="w-full rounded-md bg-[#f8f9ef] py-2.5 pl-9 pr-3 text-sm outline-none ring-teal-900/30 focus:ring-2"
+            className="w-full rounded-[9px] border border-sense-blue/20 bg-white/65 text-sense-navy outline-none placeholder:text-[#8a9799] focus:border-sense-blue focus:shadow-[0_0_0_3px_rgba(29,73,144,0.1)] py-2.5 pl-9 pr-3 text-sm"
           />
 
           {showList && (
             <ul
               id={listboxId}
               role="listbox"
-              className="absolute z-20 mt-1 max-h-72 w-full overflow-auto rounded-md bg-white py-1 text-sm shadow-lg"
+              className="absolute z-20 mt-1 max-h-72 w-full overflow-auto rounded-2xl border border-paper/60 bg-paper py-1.5 text-sm text-sense-navy shadow-[0_18px_40px_rgba(0,31,62,0.25)]"
             >
               {options.map((opt, i) => (
                 <li
@@ -154,7 +142,7 @@ export default function AudienceSelector({
                     add(opt.label);
                   }}
                   onMouseEnter={() => setActive(i)}
-                  className={`flex cursor-pointer items-center justify-between px-3 py-2 ${i === active ? "bg-lime-400/30" : ""}`}
+                  className={`flex cursor-pointer items-center justify-between px-3 py-2 ${i === active ? "bg-sense-lime/50" : ""}`}
                 >
                   <span>{opt.label}</span>
                   {opt.ai && <span className="text-[10px] text-ink-500">✦ Sense AI</span>}
@@ -177,7 +165,7 @@ export default function AudienceSelector({
           }}
           disabled={query.trim().length < 3 || ai.loading}
           title="Ask Sense AI for related audiences (uses Gemini)"
-          className="rounded-md bg-white px-4 py-2.5 text-xs font-medium disabled:opacity-50"
+          className="cursor-pointer rounded-[18px] border border-sense-blue/20 bg-white/70 text-xs font-bold text-sense-blue transition-colors hover:bg-sense-blue/10 disabled:cursor-not-allowed disabled:opacity-50 px-4 py-2.5"
         >
           {ai.loading ? "✦ Thinking…" : "✦ Suggest with AI"}
         </button>
@@ -185,7 +173,7 @@ export default function AudienceSelector({
           type="button"
           onClick={() => query.trim() && add(query)}
           disabled={!query.trim()}
-          className="rounded-md bg-white px-4 py-2.5 text-xs font-medium disabled:opacity-50"
+          className="cursor-pointer rounded-[18px] border border-sense-blue/20 bg-white/70 text-xs font-bold text-sense-blue transition-colors hover:bg-sense-blue/10 disabled:cursor-not-allowed disabled:opacity-50 px-4 py-2.5"
         >
           + Add custom audience
         </button>
@@ -202,7 +190,7 @@ export default function AudienceSelector({
         </p>
 
         {savedAudiences.length === 0 ? (
-          <p className="rounded-md border border-dashed border-black/15 px-4 py-4 text-center text-[11px] text-ink-500">
+          <p className="rounded-xl border border-dashed border-sense-blue/25 px-4 py-4 text-center text-[11px] text-ink-500">
             Search above or add your first custom audience. Until then, the tracker shows all live
             trends.
           </p>
@@ -213,7 +201,7 @@ export default function AudienceSelector({
               return (
                 <li
                   key={name}
-                  className={`flex items-center rounded-full text-xs ${isSelected ? "bg-teal-900 text-white" : "bg-white text-teal-900"}`}
+                  className={`flex items-center rounded-full text-xs font-semibold transition-colors ${isSelected ? "bg-sense-blue text-paper" : "border border-sense-blue/20 bg-white/70 text-sense-blue"}`}
                 >
                   <button
                     type="button"
@@ -248,7 +236,7 @@ export default function AudienceSelector({
       />
 
       {/* Filters */}
-      <div className="mt-4 flex flex-wrap items-center gap-x-6 gap-y-3 border-t border-black/10 pt-4">
+      <div className="mt-4 flex flex-wrap items-center gap-x-6 gap-y-3 border-t border-sense-blue/10 pt-4">
         <div className="flex items-center gap-3">
           <span className="text-[10px] font-semibold uppercase tracking-wider text-ink-500">
             Source

@@ -6,6 +6,7 @@
 import Link from "next/link";
 import { useState } from "react";
 import Icon from "@/components/ui/Icon";
+import { sourceOf } from "@/lib/contentTrend";
 
 export function MyContentLink() {
   return (
@@ -62,16 +63,28 @@ export function PanelLabel({ children, aside }) {
   );
 }
 
-export function SelectedTrendBadge({ trend }) {
+/** What this screen is building on (trend, calendar post…). `onClear` stops using it. */
+export function SelectedTrendBadge({ trend, onClear }) {
   return (
-    <div className="flex items-center gap-2 rounded-xl border border-sense-blue/20 bg-[linear-gradient(135deg,rgba(221,254,86,0.3),rgba(3,82,94,0.06))] px-2.5 py-[7px] sm:max-w-[210px]">
+    <div className="flex items-center gap-2 rounded-xl border border-sense-blue/20 bg-[linear-gradient(135deg,rgba(221,254,86,0.3),rgba(3,82,94,0.06))] py-[7px] pr-1.5 pl-2.5 sm:max-w-[250px]">
       <span className="grid size-[26px] shrink-0 place-items-center rounded-lg bg-sense-blue text-paper">
         <Icon name="trend" size={14} />
       </span>
-      <p className="grid min-w-0 gap-px">
-        <small className="text-[9px] font-bold uppercase tracking-[0.06em] text-[#647477]">Selected trend</small>
-        <strong className="truncate text-[11px]">{trend.name}</strong>
+      <p className="grid min-w-0 flex-1 gap-px">
+        <small className="text-[9px] font-bold uppercase tracking-[0.06em] text-[#647477]">{sourceOf(trend).label}</small>
+        <strong className="truncate text-[11px]" title={trend.name}>{trend.name}</strong>
       </p>
+      {onClear && (
+        <button
+          type="button"
+          onClick={onClear}
+          title={`Stop using this ${sourceOf(trend).noun}`}
+          aria-label={`Stop using this ${sourceOf(trend).noun}`}
+          className="grid size-6 shrink-0 cursor-pointer place-items-center rounded-full text-sm leading-none text-sense-blue transition hover:bg-sense-blue/15"
+        >
+          ×
+        </button>
+      )}
     </div>
   );
 }

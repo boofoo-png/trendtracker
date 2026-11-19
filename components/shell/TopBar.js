@@ -12,6 +12,7 @@ import { trends } from "@/lib/trends";
 import { fromISODate, upcoming, useCalendar, useToday } from "@/lib/calendar";
 import { initials, openSettingsSection, useSettings } from "@/lib/settings";
 import useStored from "@/lib/useStored";
+import MobileNav from "./MobileNav";
 
 const glass =
   "border border-[rgba(246,248,237,0.34)] bg-[rgba(246,248,237,0.18)] text-[#f6f8ed] shadow-[inset_0_1px_0_rgba(246,248,237,0.28),0_10px_25px_rgba(0,31,62,0.1)] backdrop-blur-[18px]";
@@ -100,7 +101,7 @@ function Search() {
           aria-expanded={open}
           aria-controls={listId}
           aria-activedescendant={open && results[active] ? `${listId}-${active}` : undefined}
-          placeholder="Search pages and tools"
+          placeholder="Search pages"
           value={query}
           onChange={(e) => {
             setQuery(e.target.value);
@@ -284,13 +285,15 @@ function CompanyPill() {
     <Link
       href="/settings#workspace"
       onClick={() => openSettingsSection("workspace")}
-      title="Workspace settings"
-      className={`hidden h-12 max-w-[260px] shrink-0 items-center gap-2.5 rounded-full py-1 pr-5 pl-1.5 text-xs font-semibold transition hover:bg-[rgba(246,248,237,0.28)] sm:flex ${glass}`}
+      title={`${name} · Workspace settings`}
+      aria-label={`${name}: workspace settings`}
+      // Phones: just the round avatar. Wider screens: avatar and company name.
+      className={`flex h-12 max-w-[260px] shrink-0 items-center gap-2.5 rounded-full p-1.5 text-xs font-semibold transition hover:bg-[rgba(246,248,237,0.28)] sm:py-1 sm:pr-5 ${glass}`}
     >
       <span className="grid size-9 shrink-0 place-items-center rounded-full bg-[#f6f8ed] text-[11px] font-bold text-[#03525e]">
         {settings.company ? initials(settings.company) : <Icon name="audience" size={18} />}
       </span>
-      <span className="truncate">{name}</span>
+      <span className="hidden truncate sm:inline">{name}</span>
     </Link>
   );
 }
@@ -298,7 +301,8 @@ function CompanyPill() {
 export default function TopBar() {
   const pathname = usePathname();
   return (
-    <header className="relative z-30 flex items-center gap-3 px-4 pt-6 pb-2 print:hidden lg:px-[clamp(24px,3vw,44px)]">
+    <header className="relative z-30 flex items-center gap-2 px-4 pt-4 pb-2 print:hidden sm:gap-3 sm:pt-6 lg:px-[clamp(24px,3vw,44px)]">
+      <MobileNav />
       {/* Remount on navigation so open dropdowns close. */}
       <Search key={`s-${pathname}`} />
       <Alerts key={`a-${pathname}`} />
