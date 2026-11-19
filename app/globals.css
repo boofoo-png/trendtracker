@@ -10,6 +10,12 @@
   --color-ink-500: #5b6b73;
   --color-surface: rgb(255 255 255 / 0.7);
 
+  /* Palette from the Marketing Intelligence Hub Figma Make app. */
+  --color-paper: #f6f8ed;
+  --color-sense-navy: #001f3e;
+  --color-sense-blue: #03525e;
+  --color-sense-lime: #ddfe56;
+
   --font-sans: var(--font-montserrat);
   --radius-card: 14px;
 }

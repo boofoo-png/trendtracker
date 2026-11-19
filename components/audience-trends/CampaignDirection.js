@@ -1,6 +1,8 @@
 "use client";
 
 import { useEffect, useState, useTransition } from "react";
+import Link from "next/link";
+import { saveContentTrend } from "@/lib/contentTrend";
 import Card from "@/components/ui/Card";
 import AdviceBadge from "@/components/ui/AdviceBadge";
 import ContentAngleCard from "./ContentAngleCard";
@@ -106,14 +108,21 @@ export default function CampaignDirection({ selectedTrend, audiences, liveAudien
               {copied ? "Copied ✓" : "Copy brief"}
             </button>
           )}
-          <button
-            type="button"
-            disabled
-            title="The Campaigns page isn't built yet"
-            className="rounded-md bg-teal-900 px-4 py-2 text-xs font-semibold text-white disabled:opacity-50"
+          <Link
+            href="/content-creation"
+            onClick={() =>
+              saveContentTrend({
+                name: selectedTrend.name,
+                audience: forAudiences.join(" + "),
+                platform: selectedTrend.platform,
+                format: selectedTrend.format,
+                hook: angle?.headline ?? "",
+              })
+            }
+            className="cursor-pointer rounded-md bg-teal-900 px-4 py-2 text-xs font-semibold text-white transition hover:bg-teal-900/80 hover:shadow-md"
           >
-            Use in Campaigns
-          </button>
+            Use in Content
+          </Link>
         </div>
       }
     >

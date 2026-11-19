@@ -23,8 +23,7 @@ const PRESET_AUDIENCES = [
   "Digital nomads",
 ];
 
-const DEPTHS = ["All", "Broad", "Niche"];
-const SOURCES = ["All platforms", "LinkedIn", "Instagram", "TikTok"];
+const SOURCES = ["All platforms", "Instagram", "TikTok"];
 
 const norm = (s) => s.trim().toLowerCase();
 
@@ -57,8 +56,6 @@ export default function AudienceSelector({
   addAudience,
   removeAudience,
   toggleAudience,
-  depth,
-  setDepth,
   source,
   setSource,
   ...search
@@ -252,12 +249,6 @@ export default function AudienceSelector({
 
       {/* Filters */}
       <div className="mt-4 flex flex-wrap items-center gap-x-6 gap-y-3 border-t border-black/10 pt-4">
-        <div className="flex items-center gap-3">
-          <span className="text-[10px] font-semibold uppercase tracking-wider text-ink-500">
-            Audience depth
-          </span>
-          <SegmentedControl label="Audience depth" options={DEPTHS} value={depth} onChange={setDepth} />
-        </div>
         <div className="flex items-center gap-3">
           <span className="text-[10px] font-semibold uppercase tracking-wider text-ink-500">
             Source

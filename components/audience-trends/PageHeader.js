@@ -1,3 +1,4 @@
+// Placeholder: renders nothing until the page header is designed.
 export default function PageHeader() {
-  return <section data-component="PageHeader">PageHeader</section>;
+  return null;
 }

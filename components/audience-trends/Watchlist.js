@@ -37,7 +37,7 @@ export default function Watchlist({ watchedTrends, selectedTrend, setSelectedTre
                   type="button"
                   onClick={() => setSelectedTrendId(trend.id)}
                   disabled={trend.hiddenByFilters}
-                  title={trend.hiddenByFilters ? "Hidden by the current depth/source filters" : undefined}
+                  title={trend.hiddenByFilters ? "Hidden by the current source filter" : undefined}
                   className="min-w-0 flex-1 text-left disabled:cursor-not-allowed"
                 >
                   <span className="block truncate text-xs font-medium">{trend.name}</span>
