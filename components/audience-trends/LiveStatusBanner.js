@@ -17,7 +17,7 @@ export default function LiveStatusBanner({ isSample, updatedAt, liveAudiences, e
       : `Live · updated ${timeAgo(updatedAt)}`;
 
   return (
-    <section className="flex flex-wrap items-center justify-between gap-3 rounded-xl border border-white/40 bg-white/85 px-4 py-3">
+    <section className="flex flex-wrap items-center justify-between gap-3 rounded-[18px] border border-paper/60 bg-paper/95 px-4 py-3 text-sense-navy shadow-[0_5px_0_rgba(0,31,62,0.14)]">
       <div>
         <p className="text-sm font-semibold">Live audience trend tracker</p>
         <p className="text-xs text-ink-500">
@@ -31,7 +31,7 @@ export default function LiveStatusBanner({ isSample, updatedAt, liveAudiences, e
           </p>
         )}
       </div>
-      <span aria-live="polite" className="rounded-full bg-lime-400/40 px-3 py-1 text-[11px] font-medium">
+      <span aria-live="polite" className="rounded-full bg-sense-lime px-3 py-1 text-[11px] font-bold">
         {isRunning && <span aria-hidden="true" className="mr-1 inline-block animate-pulse">●</span>}
         {status}
       </span>

@@ -2,8 +2,9 @@
 
 import Card from "@/components/ui/Card";
 import AdviceBadge from "@/components/ui/AdviceBadge";
+import Skeleton from "@/components/ui/Skeleton";
 
-export default function Watchlist({ watchedTrends, selectedTrend, setSelectedTrendId, toggleWatch }) {
+export default function Watchlist({ watchedTrends, watchlistLoaded, selectedTrend, setSelectedTrendId, toggleWatch }) {
   const count = watchedTrends.length;
 
   return (
@@ -13,13 +14,18 @@ export default function Watchlist({ watchedTrends, selectedTrend, setSelectedTre
       aside={
         <span
           aria-label={`${count} saved`}
-          className="flex size-6 items-center justify-center rounded-full bg-lime-400 text-[11px] font-semibold"
+          className="flex size-6 items-center justify-center rounded-full bg-sense-lime text-[11px] font-bold"
         >
-          {count}
+          {watchlistLoaded ? count : "·"}
         </span>
       }
     >
-      {count === 0 ? (
+      {!watchlistLoaded ? (
+        <div role="status" aria-label="Loading watchlist" className="grid gap-2">
+          <Skeleton className="h-11 w-full rounded-xl" />
+          <Skeleton className="h-11 w-full rounded-xl" />
+        </div>
+      ) : count === 0 ? (
         <p className="text-[11px] text-ink-500">
           Star a trend in the list to keep an eye on it here.
         </p>
@@ -30,14 +36,14 @@ export default function Watchlist({ watchedTrends, selectedTrend, setSelectedTre
             return (
               <li
                 key={trend.id}
-                className={`flex items-center gap-2 rounded-md px-3 py-2 ${selected ? "bg-lime-400/30" : "bg-white/80"}`}
+                className={`flex items-center gap-2 rounded-xl px-3 py-2 ${selected ? "bg-sense-lime/40" : "border border-sense-blue/10 bg-white/70"}`}
               >
                 <span aria-hidden="true" className="text-ink-500">↗</span>
                 <button
                   type="button"
                   onClick={() => setSelectedTrendId(trend.id)}
                   disabled={trend.hiddenByFilters}
-                  title={trend.hiddenByFilters ? "Hidden by the current depth/source filters" : undefined}
+                  title={trend.hiddenByFilters ? "Hidden by the current source filter" : undefined}
                   className="min-w-0 flex-1 text-left disabled:cursor-not-allowed"
                 >
                   <span className="block truncate text-xs font-medium">{trend.name}</span>

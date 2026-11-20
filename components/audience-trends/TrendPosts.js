@@ -12,7 +12,7 @@ function PostPreview({ post }) {
   ].filter(Boolean);
 
   return (
-    <li className="flex flex-col gap-2 rounded-lg bg-white/70 p-3">
+    <li className="flex flex-col gap-2 rounded-xl border border-sense-blue/10 bg-white/70 p-3">
       {playing && post.embedUrl ? (
         <iframe
           src={post.embedUrl}
@@ -27,11 +27,11 @@ function PostPreview({ post }) {
           type="button"
           disabled={!post.embedUrl}
           onClick={() => setPlaying(true)}
-          className="flex aspect-[9/16] w-full flex-col items-center justify-center gap-2 rounded-md bg-navy-900 px-4 text-center text-white disabled:opacity-60"
+          className="flex aspect-[9/16] w-full flex-col items-center justify-center gap-2 rounded-md bg-sense-navy px-4 text-center text-paper disabled:opacity-60"
         >
           <span aria-hidden="true" className="text-3xl">▶</span>
           <span className="text-xs font-semibold">Play preview</span>
-          <span className="line-clamp-4 text-[11px] text-white/70">{post.text}</span>
+          <span className="line-clamp-4 text-[11px] text-paper/75">{post.text}</span>
         </button>
       )}
       <div className="flex items-center justify-between gap-2 text-[11px] text-ink-500">

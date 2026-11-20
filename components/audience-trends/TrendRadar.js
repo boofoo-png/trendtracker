@@ -63,15 +63,15 @@ export default function TrendRadar({ filteredTrends, selectedTrend, setSelectedT
 
         <div className="flex-1">
           <div
-            className="relative h-72 overflow-hidden rounded-md bg-white/40 sm:h-80"
+            className="relative h-72 overflow-hidden rounded-xl border border-sense-blue/10 bg-white/50 sm:h-80"
             role="group"
             aria-label={`${AXES.title}. ${filteredTrends.length} trends plotted. Use the trend list for the same data as a table.`}
           >
             {/* quadrant lines */}
-            <div aria-hidden="true" className="absolute inset-y-0 left-1/2 w-px bg-black/10" />
+            <div aria-hidden="true" className="absolute inset-y-0 left-1/2 w-px bg-sense-blue/15" />
             <div
               aria-hidden="true"
-              className="absolute inset-x-0 h-px bg-black/10"
+              className="absolute inset-x-0 h-px bg-sense-blue/15"
               style={{ top: `${100 - midY}%` }}
             />
 
@@ -105,13 +105,13 @@ export default function TrendRadar({ filteredTrends, selectedTrend, setSelectedT
                 >
                   <span
                     aria-hidden="true"
-                    className={`block rounded-full border-2 border-white shadow transition-transform group-hover:scale-125 group-focus-visible:ring-2 group-focus-visible:ring-teal-900 ${
-                      selected ? "size-4 bg-coral-400" : "size-3 bg-gray-500"
+                    className={`block rounded-full border-2 border-white shadow transition-transform group-hover:scale-125 group-focus-visible:ring-2 group-focus-visible:ring-sense-blue ${
+                      selected ? "size-4 bg-coral-400" : "size-3 bg-sense-blue/70"
                     }`}
                   />
                   <span
                     aria-hidden="true"
-                    className={`pointer-events-none absolute left-1/2 -translate-x-1/2 whitespace-nowrap rounded bg-navy-900 px-2 py-1 text-[10px] font-medium text-white ${
+                    className={`pointer-events-none absolute left-1/2 -translate-x-1/2 whitespace-nowrap rounded-md bg-sense-navy px-2 py-1 text-[10px] font-semibold text-paper ${
                       tooltipBelow ? "top-full mt-1.5" : "bottom-full mb-1.5"
                     } ${selected ? "block" : "hidden group-hover:block group-focus-visible:block"}`}
                   >

@@ -15,6 +15,7 @@ import { isGeminiConfigured } from "@/lib/gemini/client";
 import { getCampaignDirection } from "@/lib/gemini/campaign";
 import { FOCUS_TYPES } from "@/lib/campaignFocus";
 import { FIT_ENABLED } from "@/lib/features";
+import { businessContext, businessKeywords } from "@/lib/business";
 
 const NO_KEY = "AI features are off: add GEMINI_API_KEY to .env.local.";
 
@@ -31,24 +32,26 @@ const cleanTags = (list) =>
   ].slice(0, MAX_HASHTAGS_PER_SEARCH);
 
 /** "✦ Suggest with AI" button: related audience names. */
-export async function suggestAudiences(query) {
+// Each action takes `business`, the profile from Settings → Workspace (lib/business.js).
+
+export async function suggestAudiences(query, business) {
   const q = cleanAudience(query);
   if (q.length < 3) return { audiences: [], error: "Type at least 3 characters first." };
   if (!isGeminiConfigured()) return { audiences: [], error: NO_KEY };
   try {
-    return { audiences: await getAudienceSuggestions(q.toLowerCase()) };
+    return { audiences: await getAudienceSuggestions(q.toLowerCase(), businessContext(business)) };
   } catch (err) {
     return { audiences: [], error: err.message };
   }
 }
 
 /** "Find trends" button: Gemini proposes hashtags; nothing is scraped yet. */
-export async function planTrendSearch(audiences) {
+export async function planTrendSearch(audiences, business) {
   const names = cleanAudiences(audiences);
   if (names.length === 0) return { hashtags: [], error: "Select at least one audience." };
   if (!isGeminiConfigured()) return { hashtags: [], error: NO_KEY };
   try {
-    const hashtags = await getSearchHashtags(names, MAX_HASHTAGS_PER_SEARCH);
+    const hashtags = await getSearchHashtags(names, MAX_HASHTAGS_PER_SEARCH, businessContext(business));
     if (hashtags.length === 0) return { hashtags, error: "Sense AI couldn't suggest hashtags." };
     return { hashtags };
   } catch (err) {
@@ -57,7 +60,7 @@ export async function planTrendSearch(audiences) {
 }
 
 /** "Run trend search" button: scrape (Apify credits), then score fit per audience (Gemini) if FIT_ENABLED. */
-export async function runTrendSearch(audiences, hashtags) {
+export async function runTrendSearch(audiences, hashtags, business) {
   const names = cleanAudiences(audiences);
   const tags = cleanTags(hashtags);
   if (names.length === 0 || tags.length === 0) {
@@ -65,7 +68,7 @@ export async function runTrendSearch(audiences, hashtags) {
   }
 
   try {
-    const { trends, updatedAt, errors } = await scrapeTrends(tags);
+    const { trends, updatedAt, errors } = await scrapeTrends(tags, businessKeywords(business));
 
     // Score fit for every audience in this search, so switching between them later is free.
     const audienceFit = {};
@@ -79,7 +82,7 @@ export async function runTrendSearch(audiences, hashtags) {
       }));
       for (const name of names) {
         try {
-          audienceFit[name] = await getAudienceFit(name, summary);
+          audienceFit[name] = await getAudienceFit(name, summary, businessContext(business));
         } catch (err) {
           errors.push(`Fit for ${name}: ${err.message}`);
         }
@@ -114,7 +117,7 @@ export async function runTrendSearch(audiences, hashtags) {
 }
 
 /** "✦ Generate campaign direction" button: Gemini writes a direction for one trend. */
-export async function generateCampaignDirection(trend, audiences, focus, attempt = 0) {
+export async function generateCampaignDirection(trend, audiences, focus, attempt = 0, business) {
   if (!trend?.id) return { error: "Select a trend first." };
   if (!isGeminiConfigured()) return { error: NO_KEY };
 
@@ -147,6 +150,7 @@ export async function generateCampaignDirection(trend, audiences, focus, attempt
         cleanAudiences(audiences),
         cleanFocus,
         Math.max(0, Math.min(Number(attempt) || 0, 20)),
+        businessContext(business),
       ),
     };
   } catch (err) {
