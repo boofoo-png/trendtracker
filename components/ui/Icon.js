@@ -20,8 +20,15 @@ const paths = {
       <path d="M8 13v6H5l-1-6M16 8.5a4 4 0 0 1 0 3" />
     </>
   ),
+  check: <path d="m5 12 5 5L20 7" />,
   chevron: <path d="m9 18 6-6-6-6" />,
   content: <path d="M4 4h16v16H4zM8 8h8M8 12h5M8 16h7" />,
+  copy: (
+    <>
+      <rect x="8" y="8" width="12" height="12" rx="2" />
+      <path d="M16 8V6a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h2" />
+    </>
+  ),
   edit: (
     <>
       <path d="M4 20h4l11-11-4-4L4 16v4Z" />
@@ -74,6 +81,12 @@ const paths = {
       <circle cx="12" cy="12" r="9" />
       <circle cx="12" cy="12" r="5" />
       <circle cx="12" cy="12" r="1" />
+    </>
+  ),
+  trash: (
+    <>
+      <path d="M4 7h16M10 11v6M14 11v6" />
+      <path d="M6 7l1 12a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2l1-12M9 7V4h6v3" />
     </>
   ),
   trend: <path d="m3 17 6-6 4 4 8-9M15 6h6v6" />,

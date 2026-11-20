@@ -31,11 +31,13 @@ export function BackLink({ href = "/content-creation", children = "Back to Conte
   );
 }
 
+/** `back`: true for "Back to Content Creation", false for none, or { href, label }. */
 export function PageHeading({ title, description, back = true, action = <MyContentLink /> }) {
   return (
     <header className="mb-6 flex flex-col items-stretch justify-between gap-6 text-paper sm:flex-row sm:items-start">
       <div className="min-w-0">
-        {back && <BackLink />}
+        {back === true && <BackLink />}
+        {back?.href && <BackLink href={back.href}>{back.label}</BackLink>}
         <h1 className="text-[clamp(27px,3vw,38px)] font-medium tracking-[-0.035em]">{title}</h1>
         <p className="mt-2 max-w-[700px] text-[13px] leading-[1.6] text-paper/85">{description}</p>
       </div>
@@ -257,23 +259,52 @@ export function CopyBlock({ lead, paragraphs = [] }) {
   );
 }
 
-export function CopyButton({ text, size = 14 }) {
-  const [copied, setCopied] = useState(false);
+/**
+ * Copies `text` so it can be pasted elsewhere (e.g. into Instagram or TikTok).
+ * Shows a copy icon with words, and "Copied!" for a moment after clicking.
+ */
+/** Copy to the clipboard, falling back to the older method where the new one is blocked. */
+async function copyText(text) {
+  try {
+    await navigator.clipboard.writeText(text);
+    return true;
+  } catch {
+    const area = document.createElement("textarea");
+    area.value = text;
+    area.setAttribute("readonly", "");
+    area.style.cssText = "position:fixed;top:0;left:0;opacity:0";
+    document.body.appendChild(area);
+    area.select();
+    let ok = false;
+    try {
+      ok = document.execCommand("copy");
+    } catch {}
+    area.remove();
+    return ok;
+  }
+}
+
+export function CopyButton({ text, label = "Copy", size = 13, className = "" }) {
+  const [state, setState] = useState(null); // null | "copied" | "failed"
+  const copied = state === "copied";
   return (
     <button
       type="button"
-      title={copied ? "Copied" : "Copy"}
-      aria-label={copied ? "Copied" : "Copy"}
+      title="Copy to your clipboard, ready to paste into Instagram, TikTok or anywhere else"
       onClick={async () => {
-        try {
-          await navigator.clipboard.writeText(text);
-          setCopied(true);
-          setTimeout(() => setCopied(false), 1500);
-        } catch {}
+        setState((await copyText(text)) ? "copied" : "failed");
+        setTimeout(() => setState(null), 1800);
       }}
-      className="cursor-pointer rounded p-0.5 text-sense-blue transition-opacity hover:opacity-70"
+      className={`inline-flex shrink-0 cursor-pointer items-center gap-1 rounded-2xl border px-2.5 py-1 text-[10px] font-bold whitespace-nowrap transition-colors ${
+        copied
+          ? "border-[#4e8067] bg-[#4e8067] text-paper"
+          : state === "failed"
+            ? "border-[#b84f4f] bg-[#ff7f7f]/20 text-[#8a2f2f]"
+            : "border-sense-blue/25 bg-white/70 text-sense-blue hover:bg-sense-blue/10"
+      } ${className}`}
     >
-      {copied ? <span className="text-[10px] font-bold">✓</span> : <Icon name="content" size={size} />}
+      <Icon name={copied ? "check" : "copy"} size={size} />
+      <span aria-live="polite">{copied ? "Copied!" : state === "failed" ? "Couldn't copy" : label}</span>
     </button>
   );
 }

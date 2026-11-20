@@ -9,8 +9,9 @@ import { usePathname, useRouter } from "next/navigation";
 import { useEffect, useId, useRef, useState } from "react";
 import Icon from "@/components/ui/Icon";
 import { trends } from "@/lib/trends";
-import { fromISODate, upcoming, useCalendar, useToday } from "@/lib/calendar";
-import { initials, openSettingsSection, useSettings } from "@/lib/settings";
+import { channelLabel, fromISODate, upcoming, useCalendar, useToday } from "@/lib/calendar";
+import { ALERT_TYPES, initials, openSettingsSection, useSettings } from "@/lib/settings";
+import BusinessProfileDialog from "@/components/settings/BusinessProfileDialog";
 import useStored from "@/lib/useStored";
 import MobileNav from "./MobileNav";
 import Skeleton from "@/components/ui/Skeleton";
@@ -28,7 +29,7 @@ const DESTINATIONS = [
   ["Competitors", "/competitors", "target", "competitor benchmark campaigns comparison"],
   ["Content Creation", "/content-creation", "content", "content create write generate"],
   ["Social post", "/content-creation/social", "message", "social post caption instagram"],
-  ["Video", "/content-creation/video", "video", "video script storyboard reel tiktok youtube"],
+  ["Video", "/content-creation/video", "video", "video script storyboard reel tiktok"],
   ["Blog post", "/content-creation/blog", "content", "blog article seo outline"],
   ["Ad copy", "/content-creation/ad", "target", "ad copy advert headline campaign"],
   ["Edit posts", "/content-creation/edit", "edit", "edit post refine"],
@@ -188,7 +189,7 @@ function useAlerts() {
           type: "planner",
           icon: "calendar",
           title: `Next post: ${next.title}`,
-          body: `${next.channel} · ${fromISODate(next.date).toLocaleDateString("en-US", { weekday: "short", month: "short", day: "numeric" })} at ${next.time}`,
+          body: `${channelLabel(next)} · ${fromISODate(next.date).toLocaleDateString("en-US", { weekday: "short", month: "short", day: "numeric" })} at ${next.time}`,
           href: "/ai-management",
         }
       : {
@@ -214,6 +215,8 @@ function Alerts() {
   useDismiss(ref, open, () => setOpen(false));
 
   const markRead = (ids) => setRead((cur) => [...new Set([...(Array.isArray(cur) ? cur : []), ...ids])].slice(-100));
+  const [settings, setSettings] = useSettings();
+  const [choosing, setChoosing] = useState(false); // showing the alert switches
 
   return (
     <div ref={ref} className="relative">
@@ -272,16 +275,44 @@ function Alerts() {
           ) : (
             <p className="px-4 py-6 text-center text-xs text-[#5f706e]">All alerts are switched off.</p>
           )}
-          <Link
-            href="/settings#notifications"
-            onClick={() => {
-              openSettingsSection("notifications");
-              setOpen(false);
-            }}
-            className="block border-t border-sense-blue/10 px-4 py-3 text-center text-[11px] font-bold text-sense-blue hover:bg-sense-blue/5"
-          >
-            Manage alert settings
-          </Link>
+          {/* Choose alert types right here instead of going to Settings. */}
+          <div className="border-t border-sense-blue/10">
+            <button
+              type="button"
+              aria-expanded={choosing}
+              onClick={() => setChoosing((c) => !c)}
+              className="flex w-full cursor-pointer items-center justify-center gap-1 px-4 py-3 text-[11px] font-bold text-sense-blue hover:bg-sense-blue/5"
+            >
+              Choose which alerts you get
+              <Icon name="chevron" size={13} className={`transition-transform ${choosing ? "-rotate-90" : "rotate-90"}`} />
+            </button>
+            {choosing && (
+              <ul className="grid gap-1 px-3 pb-3">
+                {ALERT_TYPES.map(([key, title]) => {
+                  const on = settings.alerts[key];
+                  return (
+                    <li key={key}>
+                      <button
+                        type="button"
+                        role="switch"
+                        aria-checked={on}
+                        onClick={() => setSettings({ ...settings, alerts: { ...settings.alerts, [key]: !on } })}
+                        className="flex w-full cursor-pointer items-center justify-between gap-3 rounded-xl px-2.5 py-2 text-left text-xs hover:bg-sense-blue/5"
+                      >
+                        <span>{title}</span>
+                        <span
+                          aria-hidden="true"
+                          className={`relative h-5 w-9 shrink-0 rounded-full transition-colors ${on ? "bg-sense-blue" : "bg-[#d5dccf]"}`}
+                        >
+                          <span className={`absolute top-0.5 size-4 rounded-full bg-paper shadow transition-all ${on ? "left-[18px]" : "left-0.5"}`} />
+                        </span>
+                      </button>
+                    </li>
+                  );
+                })}
+              </ul>
+            )}
+          </div>
         </div>
       )}
     </div>
@@ -291,6 +322,7 @@ function Alerts() {
 function CompanyPill() {
   const [settings] = useSettings();
   const hydrated = useHydrated();
+  const [editing, setEditing] = useState(false);
   if (!hydrated) {
     return (
       <span aria-hidden="true" className={`flex h-12 shrink-0 items-center gap-2.5 rounded-full p-1.5 sm:pr-5 ${glass}`}>
@@ -301,19 +333,22 @@ function CompanyPill() {
   }
   const name = settings.company || "Set up your company";
   return (
-    <Link
-      href="/settings#workspace"
-      onClick={() => openSettingsSection("workspace")}
-      title={`${name} · Workspace settings`}
-      aria-label={`${name}: workspace settings`}
-      // Phones: just the round avatar. Wider screens: avatar and company name.
-      className={`flex h-12 max-w-[260px] shrink-0 items-center gap-2.5 rounded-full p-1.5 text-xs font-semibold transition hover:bg-[rgba(246,248,237,0.28)] sm:py-1 sm:pr-5 ${glass}`}
-    >
-      <span className="grid size-9 shrink-0 place-items-center rounded-full bg-[#f6f8ed] text-[11px] font-bold text-[#03525e]">
-        {settings.company ? initials(settings.company) : <Icon name="audience" size={18} />}
-      </span>
-      <span className="hidden truncate sm:inline">{name}</span>
-    </Link>
+    <>
+      <button
+        type="button"
+        onClick={() => setEditing(true)}
+        title={`${name} · Edit your business details`}
+        aria-label={`${name}: edit your business details`}
+        // Phones: just the round avatar. Wider screens: avatar and company name.
+        className={`flex h-12 max-w-[260px] shrink-0 cursor-pointer items-center gap-2.5 rounded-full p-1.5 text-xs font-semibold transition hover:bg-[rgba(246,248,237,0.28)] sm:py-1 sm:pr-5 ${glass}`}
+      >
+        <span className="grid size-9 shrink-0 place-items-center rounded-full bg-[#f6f8ed] text-[11px] font-bold text-[#03525e]">
+          {settings.company ? initials(settings.company) : <Icon name="audience" size={18} />}
+        </span>
+        <span className="hidden truncate sm:inline">{name}</span>
+      </button>
+      {editing && <BusinessProfileDialog onClose={() => setEditing(false)} />}
+    </>
   );
 }
 

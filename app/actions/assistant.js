@@ -6,7 +6,8 @@ import { getLatestTrends } from "@/lib/apify/getTrends";
 import { businessContext } from "@/lib/business";
 import { isGeminiConfigured } from "@/lib/gemini/client";
 import { askSenseAI } from "@/lib/gemini/assistant";
-import { SAMPLE_SUMMARY } from "@/lib/assistant/sampleData";
+import { sampleSummary } from "@/lib/assistant/sampleData";
+import { startOfToday } from "@/lib/calendarDates";
 import { SENSE_ROUTES } from "@/lib/assistant/shared";
 
 const clip = (v, n) => String(v ?? "").replace(/\s+/g, " ").trim().slice(0, n);
@@ -46,7 +47,7 @@ function browserSummary(c) {
   const audiences = list(c?.audiences, 5).map((a) => clip(a, 60)).filter(Boolean);
   lines.push(audiences.length ? `Selected audiences: ${audiences.join(", ")}.` : "No audiences selected yet.");
 
-  const posts = list(c?.upcomingPosts, 6).map((p) => `- ${clip(p.date, 12)} ${clip(p.time, 10)} ${clip(p.channel, 12)}: ${clip(p.title, 90)}`);
+  const posts = list(c?.upcomingPosts, 6).map((p) => `- ${clip(p.date, 12)} ${clip(p.time, 10)} ${clip(p.channel, 30)}: ${clip(p.title, 90)}`);
   lines.push(posts.length ? `UPCOMING CALENDAR POSTS:\n${posts.join("\n")}` : "CONTENT CALENDAR: nothing scheduled.");
 
   const saved = list(c?.savedContent, 10).map((s) => `- [${clip(s.type, 20)}] ${clip(s.title, 90)}`);
@@ -71,7 +72,7 @@ export async function askSense(messages, client, business) {
     `Today is ${new Date().toDateString()}.`,
     browserSummary(client),
     await trendSummary(),
-    SAMPLE_SUMMARY,
+    sampleSummary(startOfToday()),
   ].join("\n\n");
 
   try {

@@ -1,10 +1,11 @@
 // Building blocks shared by the Overview, Competitors and Reports screens
 // (styles from the Marketing Intelligence Hub Figma Make app).
 
-export const isNegative = (change) => change.startsWith("-");
+export const isNegative = (change) => String(change ?? "").startsWith("-");
 
 /** Lime pill for a positive change, coral for a negative one. */
 export function Change({ value, className = "" }) {
+  if (value == null) return null;
   return (
     <span
       className={`whitespace-nowrap rounded-[18px] px-2.5 py-[5px] text-[10px] font-bold text-sense-navy ${

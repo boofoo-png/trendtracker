@@ -46,7 +46,7 @@ const fmtDate = (iso) =>
 function creatorFor(item) {
   const t = `${item.channel} ${item.format}`.toLowerCase();
   if (/blog|article/.test(t)) return "blog";
-  if (/video|reel|short|tiktok|youtube/.test(t)) return "video";
+  if (/video|reel|tiktok/.test(t)) return "video";
   if (/\bad\b|ads|advert|sponsored/.test(t)) return "ad";
   return "social";
 }
@@ -351,7 +351,11 @@ function PlanView({ plan, brief, onEdit, onRegenerate, onSave, saved, pending, e
         format: item.format,
         hook: `${item.copy} (Part of the "${plan.name}" campaign.)`,
       },
-      { source: "campaign", path: `/content-creation/${creatorFor(item)}` },
+      {
+        source: "campaign",
+        path: `/content-creation/${creatorFor(item)}`,
+        returnTo: { href: "/content-creation/campaign", label: "Back to your campaign" },
+      },
     );
   const btn = "inline-flex min-h-[38px] cursor-pointer items-center justify-center gap-1.5 rounded-[20px] px-4 text-[11px] font-bold transition disabled:cursor-wait disabled:opacity-60";
 
@@ -446,7 +450,7 @@ function PlanView({ plan, brief, onEdit, onRegenerate, onSave, saved, pending, e
                 >
                   Create this <Icon name="chevron" size={13} />
                 </Link>
-                <CopyButton text={`${s.title}\n${s.copy}`} />
+                <CopyButton text={`${s.title}\n${s.copy}`} label="Copy idea" />
               </div>
             </article>
           ))}

@@ -13,7 +13,7 @@ import { askSense } from "@/app/actions/assistant";
 import { SENSE_EVENT, STARTER_PROMPTS } from "@/lib/assistant/shared";
 import { saveContentTrend } from "@/lib/contentTrend";
 import { listSaved } from "@/lib/savedContent";
-import { toISODate } from "@/lib/calendar";
+import { channelLabel, toISODate } from "@/lib/calendar";
 import { useBusiness } from "@/lib/settings";
 
 const readJSON = (key, fallback) => {
@@ -36,7 +36,7 @@ function browserContext(pathname) {
     upcomingPosts: (Array.isArray(calendar) ? calendar : [])
       .filter((p) => p.date >= today)
       .slice(0, 6)
-      .map(({ date, time, channel, title }) => ({ date, time, channel, title })),
+      .map((p) => ({ date: p.date, time: p.time, channel: channelLabel(p), title: p.title })),
     savedContent: listSaved()
       .slice(0, 10)
       .map(({ type, title }) => ({ type, title })),

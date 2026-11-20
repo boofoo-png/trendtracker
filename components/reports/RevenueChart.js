@@ -9,7 +9,7 @@ const SERIES = [
   { key: "google", label: "Google", color: "#03525e" },
   { key: "meta", label: "Meta", color: "#5f9a52" },
 ];
-const STEPS = [500, 1000, 2000, 2500, 5000, 10000, 20000, 25000, 50000, 100000];
+const STEPS = [500, 1000, 2000, 2500, 5000, 10000, 20000, 25000, 50000, 100000, 200000, 250000, 500000, 1000000];
 const money = (n) => `$${Math.round(n).toLocaleString("en-US")}`;
 const pct = (now, before) => {
   if (!before) return null;
@@ -45,6 +45,7 @@ export default function RevenueChart({ revenue }) {
   const [active, setActive] = useState(null); // index of the point being inspected
   const [plotWidth, setPlotWidth] = useState(0);
   const n = revenue.labels.length;
+  const labelEvery = Math.ceil(n / 7); // at most ~7 axis labels; every point still has a tooltip
 
   const max = Math.max(...revenue.google, ...revenue.meta);
   const step = STEPS.find((s) => s * 5 >= max) ?? STEPS.at(-1);
@@ -105,7 +106,7 @@ export default function RevenueChart({ revenue }) {
         <div aria-hidden="true" className="relative mr-2 w-9 shrink-0 text-right text-[9px] text-sense-blue">
           {ticks.map((t) => (
             <span key={t} className="absolute right-0 -translate-y-1/2" style={{ top: `${100 - (t / top) * 100}%` }}>
-              ${t / 1000}k
+              {t >= 1000000 ? `$${t / 1000000}M` : `$${t / 1000}k`}
             </span>
           ))}
         </div>
@@ -189,15 +190,15 @@ export default function RevenueChart({ revenue }) {
 
       {/* X axis */}
       <div aria-hidden="true" className="relative mt-2 ml-11 h-4 text-[9px] text-sense-blue">
-        {revenue.labels.map((l, i) => (
+        {revenue.labels.map((l, i) => (i % labelEvery !== 0 ? null : (
           <span
             key={l}
-            className={`absolute whitespace-nowrap ${active === i ? "font-bold" : ""}`}
-            style={{ left: `${x(i)}%`, transform: i === 0 ? "none" : i === n - 1 ? "translateX(-100%)" : "translateX(-50%)" }}
+            className={`absolute whitespace-nowrap ${active !== null && Math.abs(active - i) < labelEvery / 2 ? "font-bold" : ""}`}
+            style={{ left: `${x(i)}%`, transform: i === 0 ? "none" : i + labelEvery > n - 1 ? "translateX(-100%)" : "translateX(-50%)" }}
           >
             {l}
           </span>
-        ))}
+        )))}
       </div>
 
       <div className="mt-2 ml-11 flex flex-wrap items-center justify-between gap-2 text-[10px] text-[#647477]">

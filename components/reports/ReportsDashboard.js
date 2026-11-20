@@ -1,79 +1,22 @@
 "use client";
 
 // Insights / Reports, laid out like the Marketing Intelligence Hub Figma Make app.
-// Placeholder data until ad and analytics accounts are connected; swap REPORT_DATA for real values.
+// Figures are sample data (lib/sample) for the chosen date range until ad and analytics
+// accounts are connected.
 
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import Icon from "@/components/ui/Icon";
-import { PageTitle, Panel, SampleNote, Toggle } from "@/components/ui/Dashboard";
+import { PageTitle, Panel, SampleNote } from "@/components/ui/Dashboard";
+import PeriodPicker from "@/components/ui/PeriodPicker";
+import { SkeletonPanel } from "@/components/ui/Skeleton";
+import { rangeLabel, resolvePeriod } from "@/lib/periods";
+import { reportFor } from "@/lib/sample/reports";
+import { useToday } from "@/lib/calendar";
+import usePeriod from "@/lib/usePeriod";
 import RevenueChart from "./RevenueChart";
 
-const PERIODS = ["7 days", "30 days"];
 const METRICS = ["Revenue", "Conversions"];
 const SORTS = ["Top countries", "Lowest countries"];
-
-const REPORT_DATA = {
-  "7 days": {
-    compareTo: "week",
-    kpis: [
-      ["Total Spend", "$12,450", "+12.5%"],
-      ["Revenue", "$89,540", "+12.5%"],
-      ["ROAS", "7.2×", "+5%"],
-      ["Impressions", "2.53M", "-3.5%"],
-      ["Conversions", "7,485", "+122"],
-      ["Clicks", "112,576", "-1,235"],
-    ],
-    // Daily revenue by ad platform (USD). Thursday's Meta peak matches the insight below.
-    revenue: {
-      compare: "day",
-      labels: ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"],
-      names: ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"],
-      google: [3120, 4510, 3870, 4812, 5240, 4090, 5630],
-      meta: [2280, 3150, 5420, 8673, 6210, 5080, 6840],
-    },
-    insight:
-      "Meta delivered the strongest ROAS this week (+18%), while Google's CPA increased by 12%. Thursday recorded your best overall performance, driven by Meta conversions.",
-    countries: [
-      { name: "United States", Revenue: 20500, Conversions: 1720 },
-      { name: "Canada", Revenue: 9800, Conversions: 910 },
-      { name: "United Kingdom", Revenue: 8700, Conversions: 830 },
-      { name: "Germany", Revenue: 5900, Conversions: 540 },
-      { name: "Australia", Revenue: 5100, Conversions: 470 },
-    ],
-    campaign: { bars: [48, 84, 59, 76, 51, 68], spend: "$5,000", revenue: "$12,000", conversions: "6,000", roas: "2.4×" },
-    score: { value: 64, note: "You earned $18,000 this week, outperforming last week by +12%." },
-  },
-  "30 days": {
-    compareTo: "month",
-    kpis: [
-      ["Total Spend", "$48,820", "+9.8%"],
-      ["Revenue", "$342,610", "+15.4%"],
-      ["ROAS", "7.0×", "+7%"],
-      ["Impressions", "10.8M", "+8.1%"],
-      ["Conversions", "28,940", "+864"],
-      ["Clicks", "438,220", "+6.7%"],
-    ],
-    // Revenue per 5-day block by ad platform (USD).
-    revenue: {
-      compare: "5 days",
-      labels: ["1–5", "6–10", "11–15", "16–20", "21–25", "26–30"],
-      names: ["Days 1–5", "Days 6–10", "Days 11–15", "Days 16–20", "Days 21–25", "Days 26–30"],
-      google: [17800, 21900, 20400, 26700, 24100, 28900],
-      meta: [15400, 21000, 26300, 31240, 28100, 29500],
-    },
-    insight:
-      "Meta delivered the strongest ROAS this month (+18%), while Google's CPA increased by 12%. Thursdays were consistently your best days, driven by Meta conversions.",
-    countries: [
-      { name: "United States", Revenue: 81200, Conversions: 6840 },
-      { name: "Canada", Revenue: 37900, Conversions: 3520 },
-      { name: "United Kingdom", Revenue: 35100, Conversions: 3310 },
-      { name: "Germany", Revenue: 22800, Conversions: 2090 },
-      { name: "Australia", Revenue: 19600, Conversions: 1880 },
-    ],
-    campaign: { bars: [55, 72, 66, 88, 61, 79], spend: "$19,500", revenue: "$47,800", conversions: "23,100", roas: "2.5×" },
-    score: { value: 71, note: "You earned $71,400 this month, outperforming last month by +9%." },
-  },
-};
 
 const isNegative = (change) => change.startsWith("-");
 const money = (n) => `$${n.toLocaleString("en-US")}`;
@@ -91,12 +34,12 @@ function Kpi({ label, value, change, compareTo, icon }) {
       <small className={`mt-[7px] text-[10px] font-semibold ${isNegative(change) ? "text-[#b84f4f]" : "text-[#4e8665]"}`}>
         {change}
       </small>
-      <p className="mt-auto text-[10px] leading-[1.4] text-[#6a787a]">compared to last {compareTo}</p>
+      <p className="mt-auto text-[10px] leading-[1.4] text-[#6a787a]">vs the {compareTo}</p>
     </article>
   );
 }
 
-function InsightsPanel({ data, period }) {
+function InsightsPanel({ data, chartKey }) {
   const [full, setFull] = useState(false);
   return (
     <Panel className="xl:col-span-7">
@@ -107,19 +50,17 @@ function InsightsPanel({ data, period }) {
         <h3 className="text-[15px] font-bold text-sense-blue">AI Insights Summary</h3>
       </div>
       <div className="mt-2.5 grid gap-[17px] md:grid-cols-[minmax(250px,1.15fr)_minmax(190px,0.85fr)]">
-        <RevenueChart key={period} revenue={data.revenue} />
+        <RevenueChart key={chartKey} revenue={data.revenue} />
         <div className="flex flex-col">
           <h4 className="text-xs font-bold text-sense-blue">Insights</h4>
           <p className="mt-[7px] text-[11px] leading-[1.6] text-[#536669]">{data.insight}</p>
           <ul className="mt-2 grid gap-1 text-[11px] text-[#536669]">
-            <li><strong className="text-sense-blue">Top performer:</strong> Meta ROAS +18%</li>
-            <li><strong className="text-sense-blue">Underperforming:</strong> Google CPA +12%</li>
+            <li><strong className="text-sense-blue">Top performer:</strong> {data.topPerformer}</li>
+            <li><strong className="text-sense-blue">Underperforming:</strong> {data.underperforming}</li>
           </ul>
           {full && (
             <p className="mt-2 text-[11px] leading-[1.6] text-[#536669]">
-              <strong className="text-sense-blue">AI suggestion:</strong> Reallocate 10% of spend from
-              Google to Meta for a predicted +6% in conversions. Meta&apos;s conversion efficiency is
-              strongest on Thursday, so recheck Google CPA after the next {period === "7 days" ? "seven-day" : "30-day"} period.
+              <strong className="text-sense-blue">AI suggestion:</strong> {data.suggestion}
             </p>
           )}
           <button
@@ -151,7 +92,7 @@ function CycleButton({ options, value, onChange, label }) {
   );
 }
 
-function CountryPanel({ data, period }) {
+function CountryPanel({ data, days }) {
   const [metric, setMetric] = useState(METRICS[0]);
   const [sort, setSort] = useState(SORTS[0]);
   const rows = [...data.countries].sort((a, b) =>
@@ -177,7 +118,7 @@ function CountryPanel({ data, period }) {
           <dt>Total across countries</dt>
           <dd className="mb-2 text-xl font-medium text-sense-navy">{show(total)}</dd>
           <dt>Period</dt>
-          <dd className="text-xl font-medium text-sense-navy">{period === "7 days" ? "1 week" : "30 days"}</dd>
+          <dd className="text-xl font-medium text-sense-navy">{days} days</dd>
         </dl>
         <ul className="grid content-start gap-3">
           {rows.map((c) => (
@@ -220,7 +161,7 @@ function CampaignPanel({ data }) {
         </div>
         <dl className="grid content-start gap-1.5 text-[11px] text-[#647477]">
           {[
-            ["Campaign", "Meta"],
+            ["Campaign", campaign.name],
             ["Spend", campaign.spend],
             ["Revenue", campaign.revenue],
             ["Conversions", campaign.conversions],
@@ -245,14 +186,21 @@ function CampaignPanel({ data }) {
 }
 
 export default function ReportsDashboard() {
-  const [period, setPeriod] = useState(PERIODS[0]);
-  const data = REPORT_DATA[period];
+  const today = useToday(); // null until the browser takes over (dates depend on "today")
+  const [period, setPeriod] = usePeriod();
+  const range = today ? resolvePeriod(period, today) : null;
+  const key = range?.key;
+  // eslint-disable-next-line react-hooks/exhaustive-deps -- the range key captures everything that matters
+  const data = useMemo(() => (range ? reportFor(range) : null), [key]);
   const icons = ["chevron", "chevron", "trend", "chevron", "chevron", "chevron"];
 
   return (
     <div className="w-full">
-      <PageTitle title="Insights / Reports">
-        <div className="flex items-center gap-3">
+      <PageTitle
+        title="Insights / Reports"
+        description={range ? `Showing ${rangeLabel(range.from, range.to)}, compared with the ${range.compareLabel}.` : "\u00a0"}
+      >
+        <div className="flex flex-wrap items-center gap-3">
           <button
             type="button"
             onClick={() => window.print()}
@@ -260,20 +208,27 @@ export default function ReportsDashboard() {
           >
             <Icon name="upload" size={14} className="rotate-180" /> Download PDF
           </button>
-          <Toggle label="Time period" options={PERIODS} value={period} onChange={setPeriod} />
+          {today && <PeriodPicker value={period} onChange={setPeriod} today={today} />}
         </div>
       </PageTitle>
 
-      <div className="grid gap-[18px] xl:grid-cols-12">
-        <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 xl:col-span-5">
-          {data.kpis.map(([label, value, change], i) => (
-            <Kpi key={label} label={label} value={value} change={change} compareTo={data.compareTo} icon={icons[i]} />
-          ))}
+      {!data ? (
+        <div role="status" aria-label="Loading reports" className="grid gap-[18px] xl:grid-cols-12">
+          <SkeletonPanel lines={3} className="xl:col-span-5" />
+          <SkeletonPanel lines={4} className="xl:col-span-7" />
         </div>
-        <InsightsPanel key={period} data={data} period={period} />
-        <CountryPanel data={data} period={period} />
-        <CampaignPanel data={data} />
-      </div>
+      ) : (
+        <div className="grid gap-[18px] xl:grid-cols-12">
+          <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 xl:col-span-5">
+            {data.kpis.map(([label, value, change], i) => (
+              <Kpi key={label} label={label} value={value} change={change} compareTo={data.compareTo} icon={icons[i]} />
+            ))}
+          </div>
+          <InsightsPanel key={key} data={data} chartKey={key} />
+          <CountryPanel data={data} days={range.days} />
+          <CampaignPanel data={data} />
+        </div>
+      )}
 
       <SampleNote />
     </div>

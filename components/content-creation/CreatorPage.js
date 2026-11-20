@@ -441,6 +441,7 @@ export default function CreatorPage({ kind }) {
   const business = useBusiness();
   const [fields, setFields] = useState(DEFAULTS[kind]);
   const [trend, setTrend] = useState(null);
+  const [back, setBack] = useState(true); // where the Back link goes; set by the handoff
   const [result, setResult] = useState(null);
   const [error, setError] = useState(null);
   const [savedId, setSavedId] = useState(null);
@@ -452,6 +453,7 @@ export default function CreatorPage({ kind }) {
     // Read after mount so server and client markup match on hydration.
     // eslint-disable-next-line react-hooks/set-state-in-effect
     setTrend(t);
+    if (t.returnTo?.href) setBack(t.returnTo);
     setFields((f) => ({
       ...f,
       ...("idea" in f && !f.idea ? { idea: ideaFromTrend(t) } : {}),
@@ -486,7 +488,7 @@ export default function CreatorPage({ kind }) {
 
   return (
     <div className="w-full">
-      <PageHeading title={meta.title} description={meta.description} />
+      <PageHeading title={meta.title} description={meta.description} back={back} />
 
       <div className="grid gap-3.5 lg:grid-cols-[minmax(270px,0.72fr)_minmax(0,1.45fr)]">
         <Panel>
