@@ -62,14 +62,18 @@ export default function TrendRow({ trend, selected, expanded, saved, onSelect, o
         <button
           type="button"
           aria-pressed={saved}
-          aria-label={saved ? `Remove ${trend.name} from watchlist` : `Add ${trend.name} to watchlist`}
+          aria-label={saved ? `Remove ${trend.name} from watchlist` : `Save ${trend.name} to watchlist`}
+          title={saved ? "Saved to watchlist. Tap to remove" : "Save to watchlist"}
           onClick={(e) => {
             e.stopPropagation();
             onToggleSave();
           }}
-          className={`text-lg ${saved ? "text-amber-300" : "text-sense-blue/25 hover:text-sense-blue/50"}`}
+          // Outline star = not saved, gold star = saved; a round hover area makes it read as a button.
+          className={`ml-auto grid size-9 cursor-pointer place-items-center rounded-full text-[22px] leading-none transition hover:scale-110 ${
+            saved ? "text-amber-400 hover:bg-amber-400/15" : "text-sense-blue/70 hover:bg-sense-blue/10 hover:text-amber-500"
+          }`}
         >
-          ★
+          {saved ? "★" : "☆"}
         </button>
       </td>
     </tr>

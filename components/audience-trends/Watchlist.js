@@ -27,7 +27,8 @@ export default function Watchlist({ watchedTrends, watchlistLoaded, selectedTren
         </div>
       ) : count === 0 ? (
         <p className="text-[11px] text-ink-500">
-          Star a trend in the list to keep an eye on it here.
+          Tap <span aria-hidden="true" className="text-sm text-sense-blue">☆</span>
+          <span className="sr-only">the star</span> on any trend in the list below to save it here.
         </p>
       ) : (
         <ul className="flex flex-col gap-2">
