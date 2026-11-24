@@ -42,8 +42,8 @@ import {
 const DEFAULTS = {
   social: { goal: "Awareness", tone: "Professional", idea: "" },
   video: { platform: "Instagram", goal: "Awareness", format: "Short-form", duration: "15 seconds", idea: "" },
-  blog: { tone: "Professional", idea: "" },
-  ad: { product: "", adGoal: "Awareness", adFormat: "Image Ad", idea: "" },
+  blog: { tone: "Professional", blogLength: "Medium (about 900 words)", blogGoal: "Explain or teach", blogAudience: "", idea: "" },
+  ad: { product: "", adPlatform: "Instagram", adGoal: "Awareness", adFormat: "Image Ad", idea: "" },
   improve: { text: "", writingType: "Social post", intent: "Improve it", instructions: "" },
 };
 
@@ -102,6 +102,14 @@ function Form({ kind, f, set }) {
       return (
         <>
           <Select label="Tone of voice" value={f.tone} options={O.tone} onChange={set("tone")} />
+          <Select label="Length" value={f.blogLength} options={O.blogLength} onChange={set("blogLength")} />
+          <Select label="Goal" value={f.blogGoal} options={O.blogGoal} onChange={set("blogGoal")} />
+          <TextInput
+            label="Who it's for (optional)"
+            value={f.blogAudience}
+            onChange={set("blogAudience")}
+            placeholder="e.g. First-time customers, local families, other businesses"
+          />
           {idea("Describe your topic")}
         </>
       );
@@ -114,6 +122,7 @@ function Form({ kind, f, set }) {
             onChange={set("product")}
             placeholder="e.g. Our new spring collection"
           />
+          <Select label="Where will the ad run?" value={f.adPlatform} options={O.adPlatform} onChange={set("adPlatform")} />
           <Select label="Campaign Goal" value={f.adGoal} options={O.adGoal} onChange={set("adGoal")} />
           <Select label="Ad Format" value={f.adFormat} options={O.adFormat} onChange={set("adFormat")} />
           {idea("Key message (optional)")}
