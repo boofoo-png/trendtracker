@@ -12,6 +12,7 @@ import { removeItem } from "@/lib/savedContent";
 import { useContentStore } from "@/lib/contentStore";
 import { channelLabel, channelsOf, useCalendar, useToday } from "@/lib/calendar";
 import { saveContentTrend } from "@/lib/contentTrend";
+import { ADAPT_PATH, setAdaptSource } from "@/lib/adaptSource";
 import useHydrated from "@/lib/useHydrated";
 import Skeleton from "@/components/ui/Skeleton";
 import { CopyButton, PageHeading } from "./ui";
@@ -87,7 +88,7 @@ const CARD_STYLE = {
 };
 const DEFAULT_STYLE = "bg-[linear-gradient(145deg,var(--color-sense-lime),#efffae)] text-sense-navy";
 
-function SavedCard({ item, open, onToggle }) {
+function SavedCard({ item, open, onToggle, onAdapt }) {
   return (
     <article className="min-w-0 overflow-hidden rounded-[18px] border border-paper/70 bg-paper/95 text-sense-navy shadow-[0_5px_0_rgba(0,31,62,0.16),0_15px_25px_rgba(0,31,62,0.1)] transition hover:-translate-y-0.5 hover:shadow-[0_3px_0_rgba(0,31,62,0.19),0_18px_30px_rgba(0,31,62,0.14)]">
       <button
@@ -115,6 +116,14 @@ function SavedCard({ item, open, onToggle }) {
         </div>
         <div className="flex items-center justify-between gap-1.5">
           <CopyButton text={item.text} label="Copy text" />
+          <button
+            type="button"
+            title="Turn this into versions for Instagram, Facebook, TikTok or your blog"
+            onClick={onAdapt}
+            className="inline-flex cursor-pointer items-center gap-1 rounded-2xl px-2 py-1 text-[10px] font-bold text-sense-blue transition-colors hover:bg-sense-blue/10"
+          >
+            <Icon name="repeat" size={13} /> Adapt
+          </button>
           <button
             type="button"
             title="Delete from My Content"
@@ -249,6 +258,10 @@ export default function MyContentPage() {
                 item={item}
                 open={openId === item.id}
                 onToggle={() => setOpenId((id) => (id === item.id ? null : item.id))}
+                onAdapt={() => {
+                  setAdaptSource(item.text);
+                  router.push(ADAPT_PATH);
+                }}
               />
             ),
           )}

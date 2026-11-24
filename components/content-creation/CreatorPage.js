@@ -1,11 +1,13 @@
 "use client";
 
 // One Content Creation screen (Write a new post, Video, Blog, Ad Copy, Improve your
-// writing, Repurpose). Layout follows the Figma Make app; results
+// writing, Adapt for other platforms). Layout follows the Figma Make app; results
 // are written by Gemini via the generateContent server action.
 
 import Link from "next/link";
 import { useEffect, useState, useTransition } from "react";
+import { useRouter } from "next/navigation";
+import { ADAPT_PATH, setAdaptSource, takeAdaptSource } from "@/lib/adaptSource";
 import { generateContent } from "@/app/(dashboard)/content-creation/actions";
 import { CONTENT_KINDS, FIELD_OPTIONS as O } from "@/lib/contentKinds";
 import { clearContentTrend, loadContentTrend, saveContentTrend } from "@/lib/contentTrend";
@@ -174,10 +176,10 @@ function RepurposeForm({ f, set }) {
           ))}
         </select>
       </Field>
-      <TextArea label="Paste your content" value={f.source} onChange={set("source")} placeholder="Paste the content to repurpose." />
+      <TextArea label="Or paste your content" value={f.source} onChange={set("source")} placeholder="Paste a post, article or any content you want on other platforms." />
       <ChoiceGrid
         multiple
-        label="Repurpose for"
+        label="Make versions for"
         options={O.platforms}
         value={f.platforms}
         onChange={set("platforms")}
@@ -404,8 +406,12 @@ function toSaved(kind, r) {
 
 // ---------- Page ----------
 
+// Results that make sense to turn into posts for other platforms.
+const ADAPTABLE = new Set(["social", "blog", "ad", "improve"]);
+
 export default function CreatorPage({ kind }) {
   const meta = CONTENT_KINDS[kind];
+  const router = useRouter();
   const business = useBusiness();
   const [fields, setFields] = useState(DEFAULTS[kind]);
   const [trend, setTrend] = useState(null);
@@ -414,6 +420,14 @@ export default function CreatorPage({ kind }) {
   const [error, setError] = useState(null);
   const [savedId, setSavedId] = useState(null);
   const [pending, startTransition] = useTransition();
+
+  // Opened from "Adapt for other platforms": start with that content filled in.
+  useEffect(() => {
+    if (kind !== "repurpose") return;
+    const text = takeAdaptSource();
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    if (text) setFields((f) => ({ ...f, source: text }));
+  }, [kind]);
 
   useEffect(() => {
     const t = loadContentTrend(`/content-creation/${kind}`);
@@ -507,6 +521,14 @@ export default function CreatorPage({ kind }) {
               <ResultActions
                 onRegenerate={run}
                 onSave={save}
+                onAdapt={
+                  ADAPTABLE.has(kind) && !["summarize", "feedback"].includes(result.mode)
+                    ? () => {
+                        setAdaptSource(toSaved(kind, result).text);
+                        router.push(ADAPT_PATH);
+                      }
+                    : undefined
+                }
                 saved={Boolean(savedId)}
                 pending={pending}
                 saveLabel="Save"

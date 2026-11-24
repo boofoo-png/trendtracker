@@ -43,12 +43,6 @@ const EDIT_OPTIONS = [
     title: "Improve your writing",
     description: "Upload or paste a post, ad, email or document. Improve it, rewrite it, summarize it or get feedback.",
   },
-  {
-    icon: "repeat",
-    id: "repurpose",
-    title: "Repurpose content",
-    description: "Transform your content into different formats and platforms.",
-  },
 ];
 
 const SECTIONS = [

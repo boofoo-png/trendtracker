@@ -405,10 +405,21 @@ export function Tabs({ tabs, active, onChange }) {
   );
 }
 
-export function ResultActions({ onRegenerate, onSave, saved, saveLabel = "Save", pending }) {
+export function ResultActions({ onRegenerate, onSave, onAdapt, saved, saveLabel = "Save", pending }) {
   const btn = "min-h-[35px] min-w-[90px] flex-1 cursor-pointer rounded-[18px] px-4 text-[10px] font-bold transition-opacity hover:opacity-85 disabled:cursor-wait disabled:opacity-60 sm:flex-none";
   return (
-    <div className="mt-auto flex justify-end gap-[9px] pt-3.5">
+    <div className="mt-auto flex flex-wrap justify-end gap-[9px] pt-3.5">
+      {onAdapt && (
+        <button
+          type="button"
+          onClick={onAdapt}
+          disabled={pending}
+          title="Turn this into versions for Instagram, Facebook, TikTok or your blog"
+          className={`${btn} mr-auto inline-flex items-center justify-center gap-1.5 border border-sense-blue/25 bg-white/70 text-sense-blue`}
+        >
+          <Icon name="repeat" size={13} /> Adapt for other platforms
+        </button>
+      )}
       <button type="button" onClick={onRegenerate} disabled={pending} className={`${btn} bg-sense-blue text-paper`}>
         {pending ? "Generating…" : "Regenerate"}
       </button>
