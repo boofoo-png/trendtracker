@@ -59,7 +59,7 @@ const EDIT_OPTIONS = [
     icon: "upload",
     id: "upload",
     title: "Upload your file",
-    description: "Upload existing content drafts to edit or enhance with AI tools.",
+    description: "Upload a Word, PDF or text draft to edit or enhance with AI tools.",
   },
 ];
 

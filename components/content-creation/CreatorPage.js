@@ -32,6 +32,7 @@ import {
   TextArea,
   TextInput,
   UploadZone,
+  UPLOAD_HINT,
 } from "./ui";
 
 const DEFAULTS = {
@@ -64,7 +65,7 @@ function Form({ kind, f, set }) {
         <>
           <UploadZone
             label="Upload your post"
-            hint="An existing draft as a text file (optional)"
+            hint={`An existing draft (optional) · ${UPLOAD_HINT}`}
             onText={(text) => set("idea")(text)}
           />
           <Select label="Content Goal" value={f.goal} options={O.goal} onChange={set("goal")} />
@@ -106,7 +107,7 @@ function Form({ kind, f, set }) {
     case "edit":
       return (
         <>
-          <UploadZone label="Upload your post" hint="Caption or draft as a text file" onText={(text) => set("post")(text)} />
+          <UploadZone label="Upload your post" hint={UPLOAD_HINT} onText={(text) => set("post")(text)} />
           <TextArea label="Your post" value={f.post} onChange={set("post")} placeholder="Paste the post you want to edit." />
           <TextArea
             label="What would you like to change?"
@@ -153,7 +154,7 @@ function Form({ kind, f, set }) {
           <UploadZone
             large
             label="Upload your file"
-            hint="TXT, MD, CSV or HTML up to 1 MB"
+            hint={UPLOAD_HINT}
             onText={(text) => set("fileText")(text)}
           />
           <TextArea

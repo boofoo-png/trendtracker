@@ -145,6 +145,9 @@ export function TextArea({ label, value, onChange, placeholder, rows = 4, classN
 }
 
 const TEXT_FILE = /\.(txt|md|markdown|csv|html?|json|rtf)$/i;
+// Word and PDF files are read on the server (app/api/extract-text); text files right here.
+const DOC_FILE = /\.(docx|doc|pdf)$/i;
+export const UPLOAD_HINT = "Word, PDF or text file, up to 10 MB";
 
 /** Reads a plain-text file into `onText(text, fileName)`. */
 export function UploadZone({ label = "Upload your file", hint, onText, large = false }) {
@@ -152,12 +155,31 @@ export function UploadZone({ label = "Upload your file", hint, onText, large = f
 
   const read = async (file) => {
     if (!file) return;
-    if (!(file.type.startsWith("text/") || TEXT_FILE.test(file.name))) {
-      setStatus({ error: true, text: `${file.name}: only text files (.txt, .md, .csv, .html) can be read for now. Paste the content instead.` });
+    if (file.size > 10 * 1024 * 1024) {
+      setStatus({ error: true, text: `${file.name} is over 10 MB.` });
       return;
     }
-    if (file.size > 1_000_000) {
-      setStatus({ error: true, text: `${file.name} is over 1 MB.` });
+    if (DOC_FILE.test(file.name)) {
+      setStatus({ loading: true, text: `Reading ${file.name}…` });
+      try {
+        const body = new FormData();
+        body.append("file", file);
+        const res = await fetch("/api/extract-text", { method: "POST", body });
+        const data = await res.json().catch(() => ({ error: "Couldn't read the file. Try again." }));
+        if (!res.ok || data.error) return setStatus({ error: true, text: data.error ?? "Couldn't read the file." });
+        onText(data.text, file.name);
+        setStatus({
+          text: data.truncated
+            ? `Loaded ${file.name} (long file: only the first part is used)`
+            : `Loaded ${file.name}`,
+        });
+      } catch {
+        setStatus({ error: true, text: "Couldn't upload the file. Check your connection and try again." });
+      }
+      return;
+    }
+    if (!(file.type.startsWith("text/") || TEXT_FILE.test(file.name))) {
+      setStatus({ error: true, text: `${file.name}: upload a Word (.docx), PDF or text file.` });
       return;
     }
     onText(await file.text(), file.name);
@@ -170,14 +192,15 @@ export function UploadZone({ label = "Upload your file", hint, onText, large = f
     >
       <input
         type="file"
-        accept=".txt,.md,.markdown,.csv,.html,.htm,.json,.rtf,text/*"
+        accept=".docx,.doc,.pdf,.txt,.md,.markdown,.csv,.html,.htm,.json,.rtf,text/*,application/pdf,application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+        disabled={status?.loading}
         className="absolute size-px overflow-hidden opacity-0"
         onChange={(e) => {
           read(e.target.files?.[0]);
           e.target.value = "";
         }}
       />
-      <Icon name="upload" size={large ? 20 : 18} />
+      <Icon name="upload" size={large ? 20 : 18} className={status?.loading ? "animate-pulse" : ""} />
       <span className="text-xs font-bold">{label}</span>
       <small className={`text-[11px] ${status?.error ? "text-coral-400" : "text-[#647477]"}`}>
         {status?.text ?? hint}
