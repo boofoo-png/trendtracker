@@ -93,7 +93,7 @@ function Message({ message, onFollowUp, onAction, last }) {
   }
   return (
     <div className="mr-4 grid gap-3 rounded-[16px] rounded-bl-[5px] bg-paper px-4 py-3.5 text-sense-navy shadow-[0_8px_20px_rgba(0,0,0,0.15)]">
-      <span className="flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-wider text-sense-blue">
+      <span className="flex items-center gap-1.5 text-xs font-bold uppercase tracking-wider text-sense-blue">
         <Icon name="sparkles" size={13} /> Sense AI
       </span>
       <Answer text={message.text} />
@@ -101,7 +101,7 @@ function Message({ message, onFollowUp, onAction, last }) {
         <button
           type="button"
           onClick={() => onAction(message.action)}
-          className="inline-flex min-h-9 w-fit cursor-pointer items-center gap-1.5 rounded-[18px] bg-sense-blue px-4 text-[11px] font-bold text-paper transition hover:bg-sense-blue/85"
+          className="inline-flex min-h-9 w-fit cursor-pointer items-center gap-1.5 rounded-[18px] bg-sense-blue px-4 text-[13px] font-bold text-paper transition hover:bg-sense-blue/85"
         >
           {message.action.label} <Icon name="chevron" size={13} />
         </button>
@@ -113,7 +113,7 @@ function Message({ message, onFollowUp, onAction, last }) {
               key={f}
               type="button"
               onClick={() => onFollowUp(f)}
-              className="cursor-pointer rounded-2xl border border-sense-blue/20 bg-white/70 px-3 py-1.5 text-left text-[11px] font-semibold text-sense-blue transition hover:bg-sense-blue hover:text-paper"
+              className="cursor-pointer rounded-2xl border border-sense-blue/20 bg-white/70 px-3 py-1.5 text-left text-[13px] font-semibold text-sense-blue transition hover:bg-sense-blue hover:text-paper"
             >
               {f}
             </button>
@@ -218,14 +218,14 @@ function Drawer({ onClose, messages, setMessages, initialQuestion }) {
           </span>
           <div className="min-w-0 flex-1">
             <p className="text-sm font-bold">Sense AI</p>
-            <p className="text-[11px] text-paper/80">Your marketing research assistant</p>
+            <p className="text-[13px] text-paper/80">Your marketing research assistant</p>
           </div>
           {messages.length > 0 && (
             <button
               type="button"
               onClick={() => setMessages([])}
               disabled={pending}
-              className="cursor-pointer rounded-full px-3 py-1.5 text-[11px] font-semibold text-paper/80 transition hover:bg-paper/10 disabled:opacity-50"
+              className="cursor-pointer rounded-full px-3 py-1.5 text-[13px] font-semibold text-paper/80 transition hover:bg-paper/10 disabled:opacity-50"
             >
               New chat
             </button>
@@ -239,7 +239,7 @@ function Drawer({ onClose, messages, setMessages, initialQuestion }) {
           {messages.length === 0 && (
             <>
               <div className="rounded-[14px] bg-[radial-gradient(circle_at_90%_15%,rgba(221,254,86,0.28),transparent_38%),linear-gradient(135deg,#03525e,#0b3a52)] p-5 shadow-[0_6px_0_rgba(0,0,0,0.18)]">
-                <p className="mb-1.5 text-[10px] font-bold uppercase tracking-[0.11em] text-[#ff7f7f]">Ask about your market</p>
+                <p className="mb-1.5 text-xs font-bold uppercase tracking-[0.11em] text-[#ff7f7f]">Ask about your market</p>
                 <h2 className="text-lg font-semibold tracking-[-0.02em]">What would you like to understand?</h2>
                 <p className="mt-2 text-xs leading-[1.6] text-paper/85">
                   I can connect audience, competitor, content and performance signals from your workspace.
@@ -267,7 +267,7 @@ function Drawer({ onClose, messages, setMessages, initialQuestion }) {
 
           {pending && (
             <div role="status" className="mr-16 grid gap-2 rounded-[16px] rounded-bl-[5px] bg-paper px-4 py-3.5">
-              <span className="flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-wider text-sense-blue">
+              <span className="flex items-center gap-1.5 text-xs font-bold uppercase tracking-wider text-sense-blue">
                 <Icon name="sparkles" size={13} /> Sense AI is thinking…
               </span>
               <span className="h-2.5 w-11/12 animate-pulse rounded bg-sense-blue/15" />
@@ -300,17 +300,17 @@ function Drawer({ onClose, messages, setMessages, initialQuestion }) {
               }}
               aria-label="Ask a question about your market"
               placeholder="Ask a question about your market"
-              className="max-h-32 min-h-11 flex-1 resize-none rounded-[22px] border-2 border-transparent bg-paper px-4 py-2.5 text-[13px] text-sense-navy outline-none placeholder:text-[#6b7b7d] focus:border-sense-lime"
+              className="max-h-32 min-h-11 flex-1 resize-none rounded-[22px] border-2 border-transparent bg-paper px-4 py-2.5 text-[13px] text-sense-navy outline-none placeholder:text-[#4b5d60] focus:border-sense-lime"
             />
             <button
               type="submit"
               disabled={pending}
-              className="min-h-11 min-w-[68px] shrink-0 cursor-pointer rounded-[22px] bg-sense-lime px-5 text-[11px] font-extrabold uppercase text-sense-navy shadow-[0_4px_0_rgba(0,0,0,0.25)] transition hover:translate-y-px hover:shadow-[0_3px_0_rgba(0,0,0,0.25)] disabled:cursor-wait"
+              className="min-h-11 min-w-[68px] shrink-0 cursor-pointer rounded-[22px] bg-sense-lime px-5 text-[13px] font-extrabold uppercase text-sense-navy shadow-[0_4px_0_rgba(0,0,0,0.25)] transition hover:translate-y-px hover:shadow-[0_3px_0_rgba(0,0,0,0.25)] disabled:cursor-wait"
             >
               {pending ? "…" : "Ask"}
             </button>
           </form>
-          <p className="mt-2 text-[10px] text-paper/75">
+          <p className="mt-2 text-xs text-paper/75">
             Uses your Instagram numbers, competitors, trends, calendar, saved content and settings.
           </p>
         </footer>

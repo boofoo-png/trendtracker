@@ -49,7 +49,7 @@ export default function CampaignFocusForm({ focus, onChange, disabled }) {
       ) : (
         <div className="grid gap-2 sm:grid-cols-[minmax(0,1fr)_minmax(0,1.4fr)]">
           <div>
-            <label htmlFor={`${id}-name`} className="mb-1 block text-[13px] font-semibold text-[#53676a]">
+            <label htmlFor={`${id}-name`} className="mb-1 block text-[13px] font-semibold text-[#3d5053]">
               {focus.type} name
             </label>
             <input
@@ -63,7 +63,7 @@ export default function CampaignFocusForm({ focus, onChange, disabled }) {
             />
           </div>
           <div>
-            <label htmlFor={`${id}-details`} className="mb-1 block text-[13px] font-semibold text-[#53676a]">
+            <label htmlFor={`${id}-details`} className="mb-1 block text-[13px] font-semibold text-[#3d5053]">
               Details <span className="font-normal text-[#4b5d60]">(optional)</span>
             </label>
             <input

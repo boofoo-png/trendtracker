@@ -9,7 +9,7 @@ const styles = {
 
 export default function AdviceBadge({ advice }) {
   return (
-    <span className={`inline-block rounded-full px-2.5 py-1 text-center text-[10px] leading-tight font-bold uppercase sm:whitespace-nowrap ${styles[advice]}`}>
+    <span className={`inline-block rounded-full px-2.5 py-1 text-center text-xs leading-tight font-bold uppercase sm:whitespace-nowrap ${styles[advice]}`}>
       {advice}
     </span>
   );

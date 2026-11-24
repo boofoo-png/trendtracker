@@ -28,9 +28,9 @@ const BADGE = {
 };
 
 const primary =
-  "inline-flex min-h-[42px] cursor-pointer items-center justify-center gap-2 rounded-[22px] bg-sense-lime px-[18px] text-[10px] font-extrabold uppercase text-sense-navy shadow-[0_5px_0_rgba(0,31,62,0.17)] transition hover:translate-y-0.5 hover:shadow-[0_3px_0_rgba(0,31,62,0.2)] disabled:cursor-wait disabled:opacity-60";
+  "inline-flex min-h-[42px] cursor-pointer items-center justify-center gap-2 rounded-[22px] bg-sense-lime px-[18px] text-xs font-extrabold uppercase text-sense-navy shadow-[0_5px_0_rgba(0,31,62,0.17)] transition hover:translate-y-0.5 hover:shadow-[0_3px_0_rgba(0,31,62,0.2)] disabled:cursor-wait disabled:opacity-60";
 const outline =
-  "inline-flex min-h-[38px] cursor-pointer items-center justify-center gap-1.5 rounded-[20px] border border-sense-blue/25 px-4 text-[11px] font-bold text-sense-blue transition hover:bg-sense-blue/10";
+  "inline-flex min-h-[38px] cursor-pointer items-center justify-center gap-1.5 rounded-[20px] border border-sense-blue/25 px-4 text-[13px] font-bold text-sense-blue transition hover:bg-sense-blue/10";
 
 const fmtDay = (iso) =>
   fromISODate(iso).toLocaleDateString("en-US", { weekday: "short", month: "short", day: "numeric" });
@@ -38,7 +38,7 @@ const fmtDay = (iso) =>
 function Badge({ channel }) {
   const code = CHANNEL_CODES[channel] ?? channel.slice(0, 2).toUpperCase();
   return (
-    <span className={`inline-grid h-[18px] min-w-[22px] place-items-center rounded-md px-1 text-[9px] font-extrabold ${BADGE[code] ?? "bg-[#e2eadf]"}`}>
+    <span className={`inline-grid h-[18px] min-w-[22px] place-items-center rounded-md px-1 text-[11px] font-extrabold ${BADGE[code] ?? "bg-[#e2eadf]"}`}>
       {code}
     </span>
   );
@@ -60,7 +60,7 @@ function BackButton({ onClick, children }) {
     <button
       type="button"
       onClick={onClick}
-      className="mb-4 inline-flex cursor-pointer items-center gap-1.5 text-[11px] font-bold text-paper/90 transition-colors hover:text-sense-lime"
+      className="mb-4 inline-flex cursor-pointer items-center gap-1.5 text-[13px] font-bold text-paper/90 transition-colors hover:text-sense-lime"
     >
       <Icon name="chevron" size={16} className="rotate-180" /> {children}
     </button>
@@ -69,7 +69,7 @@ function BackButton({ onClick, children }) {
 
 function Step({ n }) {
   return (
-    <span className="mb-2 inline-block rounded-full bg-paper/15 px-3 py-1 text-[10px] font-bold text-paper">
+    <span className="mb-2 inline-block rounded-full bg-paper/15 px-3 py-1 text-xs font-bold text-paper">
       Step {n} of 2
     </span>
   );
@@ -85,7 +85,7 @@ function Question({ n, title, hint, children }) {
       <div className="grid gap-3">
         <div>
           <strong className="text-sm text-sense-blue">{title}</strong>
-          <p className="text-[11px] text-[#5f706e]">{hint}</p>
+          <p className="text-[13px] text-[#4b5d60]">{hint}</p>
         </div>
         {children}
       </div>
@@ -156,10 +156,10 @@ function PlanForm({ form, setForm, onSubmit, pending, error, onBack }) {
             <Icon name="sparkles" size={20} />
           </span>
           <h2 className="text-base font-bold text-sense-blue">That&apos;s all Sense AI needs</h2>
-          <p className="text-xs leading-[1.55] text-[#5f706e]">
+          <p className="text-xs leading-[1.55] text-[#4b5d60]">
             It will draft {form.perWeek * 2} posts for the next two weeks and pick a time for each one.
           </p>
-          <ul className="grid gap-2 text-[11px] text-sense-blue">
+          <ul className="grid gap-2 text-[13px] text-sense-blue">
             <li className="flex items-center gap-2"><Icon name="content" size={14} /> {form.perWeek * 2} ready-to-review drafts</li>
             <li className="flex items-center gap-2"><Icon name="calendar" size={14} /> Dates and times selected</li>
             <li className="flex items-center gap-2"><Icon name="message" size={14} /> A caption for every post</li>
@@ -167,7 +167,7 @@ function PlanForm({ form, setForm, onSubmit, pending, error, onBack }) {
           <button type="button" onClick={onSubmit} disabled={pending} className={`${primary} mt-2`}>
             <Icon name="sparkles" size={14} /> {pending ? "Creating your plan…" : "Create my plan"}
           </button>
-          {error && <p role="alert" className="text-[11px] font-semibold text-[#b84f4f]">{error}</p>}
+          {error && <p role="alert" className="text-[13px] font-semibold text-[#b84f4f]">{error}</p>}
         </Panel>
       </div>
     </div>
@@ -189,7 +189,7 @@ function Review({ plan, form, selected, setSelected, onBack, onAdd }) {
       <Panel className="mb-[18px] flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <div className="flex items-start gap-3">
           <Icon name="sparkles" size={18} className="mt-0.5 shrink-0 text-sense-blue" />
-          <p className="grid gap-1 text-[11px] leading-[1.5] text-[#5f706e]">
+          <p className="grid gap-1 text-[13px] leading-[1.5] text-[#4b5d60]">
             <strong className="text-xs text-sense-blue">
               {form.perWeek} posts per week across {form.channels.length} channel{form.channels.length > 1 ? "s" : ""}
             </strong>
@@ -219,14 +219,14 @@ function Review({ plan, form, selected, setSelected, onBack, onAdd }) {
                 </span>
                 <span className="grid min-w-0 gap-1">
                   <strong className="text-[13px] text-sense-blue">{post.title}</strong>
-                  <small className="flex items-center gap-1.5 text-[10px] text-[#5f706e]">
+                  <small className="flex items-center gap-1.5 text-xs text-[#4b5d60]">
                     <Badges post={post} /> {channelLabel(post)} · {post.format}
                   </small>
-                  <span className="text-[11px] leading-[1.5] text-[#536669]">{post.caption}</span>
+                  <span className="text-[13px] leading-[1.5] text-[#3d5053]">{post.caption}</span>
                 </span>
-                <time className="grid text-right text-[11px] font-semibold text-sense-blue">
+                <time className="grid text-right text-[13px] font-semibold text-sense-blue">
                   {fmtDay(post.date)}
-                  <small className="font-normal text-[#5f706e]">{post.time}</small>
+                  <small className="font-normal text-[#4b5d60]">{post.time}</small>
                 </time>
               </button>
             </li>
@@ -239,7 +239,7 @@ function Review({ plan, form, selected, setSelected, onBack, onAdd }) {
           <strong>{selected.length} posts selected</strong> · Nothing is published automatically.
         </p>
         <div className="flex gap-2">
-          <button type="button" onClick={onBack} className="min-h-[42px] cursor-pointer rounded-[22px] border border-paper/40 px-4 text-[11px] font-bold transition hover:bg-paper/15">
+          <button type="button" onClick={onBack} className="min-h-[42px] cursor-pointer rounded-[22px] border border-paper/40 px-4 text-[13px] font-bold transition hover:bg-paper/15">
             Back
           </button>
           <button type="button" onClick={onAdd} disabled={!selected.length} className={`${primary} disabled:cursor-not-allowed`}>
@@ -263,7 +263,7 @@ function MonthCalendar({ posts, month, today: todayDate, onSelect, selectedId, o
 
   return (
     <div className="hidden sm:block">
-      <div className="grid grid-cols-7 pb-2 text-center text-[10px] font-bold text-[#5f706e]">
+      <div className="grid grid-cols-7 pb-2 text-center text-xs font-bold text-[#4b5d60]">
         {WEEKDAYS.map((d) => (
           <span key={d}>{d.slice(0, 3)}</span>
         ))}
@@ -281,10 +281,10 @@ function MonthCalendar({ posts, month, today: todayDate, onSelect, selectedId, o
               key={iso}
               className={`group relative flex min-h-[92px] min-w-0 flex-col gap-1 rounded-xl border p-1.5 transition ${
                 !inMonth
-                  ? "border-transparent bg-white/25 text-[#9aa6a6]"
+                  ? "border-transparent bg-white/25 text-[#56686b]"
                   : canAdd
                     ? "border-sense-blue/10 bg-white/70 hover:border-sense-blue/40 hover:bg-white"
-                    : "border-sense-blue/5 bg-white/40 text-[#7d8b8c]" // past days: faded, not clickable
+                    : "border-sense-blue/5 bg-white/40 text-[#4b5d60]" // past days: faded, not clickable
               }`}
             >
               {/* The whole day is a button for adding a post; posts sit on top of it. */}
@@ -298,7 +298,7 @@ function MonthCalendar({ posts, month, today: todayDate, onSelect, selectedId, o
               )}
               <span className="pointer-events-none relative flex items-center justify-between">
                 <span
-                  className={`grid size-6 place-items-center rounded-full text-[11px] font-semibold ${
+                  className={`grid size-6 place-items-center rounded-full text-[13px] font-semibold ${
                     iso === today ? "bg-sense-blue text-paper" : ""
                   }`}
                 >
@@ -319,10 +319,10 @@ function MonthCalendar({ posts, month, today: todayDate, onSelect, selectedId, o
                     selectedId === p.id ? "bg-sense-lime" : "bg-[#e9f0d8] hover:bg-sense-lime/70"
                   }`}
                 >
-                  <small className="flex items-center gap-1 text-[9px] text-[#5f706e]">
+                  <small className="flex items-center gap-1 text-[11px] text-[#4b5d60]">
                     <Badges post={p} /> {p.time}
                   </small>
-                  <strong className="line-clamp-2 text-[10px] leading-tight text-sense-navy">{p.title}</strong>
+                  <strong className="line-clamp-2 text-xs leading-tight text-sense-navy">{p.title}</strong>
                 </button>
               ))}
             </div>
@@ -335,7 +335,7 @@ function MonthCalendar({ posts, month, today: todayDate, onSelect, selectedId, o
 
 /** Small screens get a list instead of a 7-column grid. */
 function AgendaList({ posts, onSelect, selectedId }) {
-  if (!posts.length) return <p className="py-6 text-center text-xs text-[#5f706e] sm:hidden">No posts this month.</p>;
+  if (!posts.length) return <p className="py-6 text-center text-xs text-[#4b5d60] sm:hidden">No posts this month.</p>;
   return (
     <ul className="grid gap-2 sm:hidden">
       {posts.map((p) => (
@@ -348,7 +348,7 @@ function AgendaList({ posts, onSelect, selectedId }) {
             <Badges post={p} />
             <span className="min-w-0 flex-1">
               <strong className="block truncate text-xs">{p.title}</strong>
-              <small className="text-[10px] text-[#5f706e]">{fmtDay(p.date)} · {p.time}</small>
+              <small className="text-xs text-[#4b5d60]">{fmtDay(p.date)} · {p.time}</small>
             </span>
           </button>
         </li>
@@ -360,11 +360,11 @@ function AgendaList({ posts, onSelect, selectedId }) {
 function StatusCard({ icon, label, value, note }) {
   return (
     <Panel className="grid gap-1.5">
-      <span className="flex items-center gap-1.5 text-[11px] font-bold text-[#5f706e]">
+      <span className="flex items-center gap-1.5 text-[13px] font-bold text-[#4b5d60]">
         <Icon name={icon} size={16} /> {label}
       </span>
       <strong className="text-base text-sense-blue">{value}</strong>
-      <small className="text-[11px] text-[#5f706e]">{note}</small>
+      <small className="text-[13px] text-[#4b5d60]">{note}</small>
     </Panel>
   );
 }
@@ -456,7 +456,7 @@ function Dashboard({ onCreate, added, onDismiss }) {
             <strong className="block">{added} posts added to your calendar</strong>
             Click a post to edit it or start writing it.
           </p>
-          <button type="button" onClick={onDismiss} className="cursor-pointer rounded-full px-3 py-1.5 text-[11px] font-bold hover:bg-sense-navy/10">
+          <button type="button" onClick={onDismiss} className="cursor-pointer rounded-full px-3 py-1.5 text-[13px] font-bold hover:bg-sense-navy/10">
             Dismiss
           </button>
         </div>
@@ -489,7 +489,7 @@ function Dashboard({ onCreate, added, onDismiss }) {
           <button
             type="button"
             onClick={() => setEditor({ date: addDate })}
-            className="order-last inline-flex min-h-8 cursor-pointer items-center gap-1.5 rounded-2xl bg-sense-lime px-3.5 text-[11px] font-extrabold text-sense-navy shadow-[0_3px_0_rgba(0,31,62,0.15)] transition hover:translate-y-px sm:order-none"
+            className="order-last inline-flex min-h-8 cursor-pointer items-center gap-1.5 rounded-2xl bg-sense-lime px-3.5 text-[13px] font-extrabold text-sense-navy shadow-[0_3px_0_rgba(0,31,62,0.15)] transition hover:translate-y-px sm:order-none"
           >
             + Add post
           </button>
@@ -500,7 +500,7 @@ function Dashboard({ onCreate, added, onDismiss }) {
                 type="button"
                 aria-pressed={channel === c}
                 onClick={() => setChannel(c)}
-                className={`min-h-8 cursor-pointer rounded-2xl px-3.5 text-[11px] font-bold transition ${
+                className={`min-h-8 cursor-pointer rounded-2xl px-3.5 text-[13px] font-bold transition ${
                   channel === c ? "bg-sense-blue text-paper" : "bg-white/70 text-sense-blue hover:bg-sense-blue/10"
                 }`}
               >
@@ -509,11 +509,11 @@ function Dashboard({ onCreate, added, onDismiss }) {
             ))}
           </div>
         </div>
-        <p className="mb-3 hidden text-[11px] text-[#5f706e] sm:block">Click any day to add a post to it.</p>
+        <p className="mb-3 hidden text-[13px] text-[#4b5d60] sm:block">Click any day to add a post to it.</p>
         <MonthCalendar posts={visible} month={month} today={today} onSelect={openPost} selectedId={selectedId} onAdd={(date) => setEditor({ date })} />
         <AgendaList posts={visible} onSelect={openPost} selectedId={selectedId} />
         {!posts.length && (
-          <p className="mt-4 text-center text-xs text-[#5f706e]">
+          <p className="mt-4 text-center text-xs text-[#4b5d60]">
             Your calendar is empty. Click a day to add a post, or press <strong>Create a plan</strong> and Sense AI will fill it in.
           </p>
         )}

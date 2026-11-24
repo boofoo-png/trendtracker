@@ -34,19 +34,19 @@ function PlannedCard({ item, open, onToggle, onEdit, onWrite, onRemove }) {
         aria-expanded={open}
         className="flex min-h-[118px] w-full cursor-pointer flex-col items-start justify-center gap-2 bg-[linear-gradient(145deg,#001f3e,#0b3a52)] p-[17px] text-left text-paper"
       >
-        <span className="flex items-center gap-1.5 text-[9px] font-extrabold uppercase tracking-[0.08em] text-sense-lime">
+        <span className="flex items-center gap-1.5 text-[11px] font-extrabold uppercase tracking-[0.08em] text-sense-lime">
           <Icon name="calendar" size={13} /> {PLANNED}
         </span>
         <strong className="line-clamp-2 text-[13px] leading-tight">{item.title}</strong>
-        <span className="text-[11px] text-paper/80">{plannedWhen(item)}</span>
+        <span className="text-[13px] text-paper/80">{plannedWhen(item)}</span>
       </button>
       {open && (
-        <p className="max-h-[260px] overflow-y-auto border-b border-sense-blue/10 px-3.5 py-3 text-[11px] leading-[1.55] whitespace-pre-line text-[#41585c]">
+        <p className="max-h-[260px] overflow-y-auto border-b border-sense-blue/10 px-3.5 py-3 text-[13px] leading-[1.55] whitespace-pre-line text-[#33484c]">
           {item.text || "No caption yet. Press “Write caption with AI” to draft one."}
         </p>
       )}
       <div className="grid gap-2.5 px-3.5 pt-3 pb-3.5">
-        <span className="truncate text-[9px] font-extrabold uppercase text-sense-blue">
+        <span className="truncate text-[11px] font-extrabold uppercase text-sense-blue">
           {channelLabel(item)} · {item.format}
         </span>
         <div className="grid gap-1.5">
@@ -54,7 +54,7 @@ function PlannedCard({ item, open, onToggle, onEdit, onWrite, onRemove }) {
             type="button"
             onClick={onWrite}
             title="Opens Content Creation so Sense AI can draft this post's caption"
-            className="inline-flex cursor-pointer items-center justify-center gap-1.5 rounded-2xl bg-sense-blue px-3 py-2 text-[11px] font-bold text-paper transition hover:bg-sense-blue/85"
+            className="inline-flex cursor-pointer items-center justify-center gap-1.5 rounded-2xl bg-sense-blue px-3 py-2 text-[13px] font-bold text-paper transition hover:bg-sense-blue/85"
           >
             <Icon name="sparkles" size={13} /> {item.text ? "Rewrite caption with AI" : "Write caption with AI"}
           </button>
@@ -62,18 +62,18 @@ function PlannedCard({ item, open, onToggle, onEdit, onWrite, onRemove }) {
             type="button"
             onClick={onEdit}
             title="Change the date, time, channels or caption in your calendar"
-            className="inline-flex cursor-pointer items-center justify-center gap-1.5 rounded-2xl border border-sense-blue/25 px-3 py-2 text-[11px] font-bold text-sense-blue transition hover:bg-sense-blue/10"
+            className="inline-flex cursor-pointer items-center justify-center gap-1.5 rounded-2xl border border-sense-blue/25 px-3 py-2 text-[13px] font-bold text-sense-blue transition hover:bg-sense-blue/10"
           >
             <Icon name="edit" size={13} /> Change details
           </button>
         </div>
         <div className="flex items-center justify-between gap-1.5">
-          {item.text ? <CopyButton text={item.text} label="Copy caption" /> : <span className="text-[10px] text-[#8a9799]">No caption yet</span>}
+          {item.text ? <CopyButton text={item.text} label="Copy caption" /> : <span className="text-xs text-[#6f7f82]">No caption yet</span>}
           <button
             type="button"
             title="Remove this post from your calendar"
             onClick={onRemove}
-            className="inline-flex cursor-pointer items-center gap-1 rounded-2xl px-2 py-1 text-[10px] font-bold text-[#708083] transition-colors hover:bg-[#ff7f7f]/15 hover:text-[#b84f4f]"
+            className="inline-flex cursor-pointer items-center gap-1 rounded-2xl px-2 py-1 text-xs font-bold text-[#4b5d60] transition-colors hover:bg-[#ff7f7f]/15 hover:text-[#b84f4f]"
           >
             <Icon name="trash" size={13} /> Remove
           </button>
@@ -110,14 +110,14 @@ function SavedCard({ item, open, onToggle, onAdapt, scheduled = [], onEditSchedu
     setEditing(false);
   };
 
-  const small = "inline-flex cursor-pointer items-center gap-1 rounded-2xl px-2 py-1 text-[10px] font-bold transition-colors";
+  const small = "inline-flex cursor-pointer items-center gap-1 rounded-2xl px-2 py-1 text-xs font-bold transition-colors";
 
   if (editing) {
     return (
       <article className="min-w-0 overflow-hidden rounded-[18px] border-2 border-sense-blue/40 bg-paper text-sense-navy shadow-[0_5px_0_rgba(0,31,62,0.16),0_15px_25px_rgba(0,31,62,0.1)] sm:col-span-2">
         <div className="grid gap-3 p-4">
-          <span className="text-[10px] font-extrabold uppercase tracking-[0.08em] text-sense-blue">Editing · {item.type}</span>
-          <label className="grid gap-1 text-[11px] font-semibold text-[#3d5053]">
+          <span className="text-xs font-extrabold uppercase tracking-[0.08em] text-sense-blue">Editing · {item.type}</span>
+          <label className="grid gap-1 text-[13px] font-semibold text-[#3d5053]">
             Title
             <input
               value={title}
@@ -126,7 +126,7 @@ function SavedCard({ item, open, onToggle, onAdapt, scheduled = [], onEditSchedu
               className="min-h-10 rounded-[9px] border border-sense-blue/25 bg-white px-3 text-[13px] font-normal text-sense-navy outline-none focus:border-sense-blue"
             />
           </label>
-          <label className="grid gap-1 text-[11px] font-semibold text-[#3d5053]">
+          <label className="grid gap-1 text-[13px] font-semibold text-[#3d5053]">
             Text
             <textarea
               value={text}
@@ -137,14 +137,14 @@ function SavedCard({ item, open, onToggle, onAdapt, scheduled = [], onEditSchedu
             />
           </label>
           <div className="flex flex-wrap justify-end gap-2">
-            <button type="button" onClick={cancel} className={`${small} border border-sense-blue/25 px-3.5 py-2 text-[11px] text-sense-blue hover:bg-sense-blue/10`}>
+            <button type="button" onClick={cancel} className={`${small} border border-sense-blue/25 px-3.5 py-2 text-[13px] text-sense-blue hover:bg-sense-blue/10`}>
               Cancel
             </button>
             <button
               type="button"
               onClick={saveEdits}
               disabled={!changed || !text.trim()}
-              className={`${small} bg-sense-blue px-3.5 py-2 text-[11px] text-paper hover:bg-sense-blue/85 disabled:cursor-not-allowed disabled:opacity-50`}
+              className={`${small} bg-sense-blue px-3.5 py-2 text-[13px] text-paper hover:bg-sense-blue/85 disabled:cursor-not-allowed disabled:opacity-50`}
             >
               Save changes
             </button>
@@ -162,11 +162,11 @@ function SavedCard({ item, open, onToggle, onAdapt, scheduled = [], onEditSchedu
         aria-expanded={open}
         className={`flex min-h-[118px] w-full cursor-pointer flex-col items-start justify-center p-[17px] text-left ${CARD_STYLE[item.type] ?? DEFAULT_STYLE}`}
       >
-        <span className="mb-2 text-[9px] font-extrabold uppercase tracking-[0.08em]">{item.type}</span>
+        <span className="mb-2 text-[11px] font-extrabold uppercase tracking-[0.08em]">{item.type}</span>
         <strong className="line-clamp-3 text-[13px] leading-tight">{item.title}</strong>
       </button>
       {open && (
-        <p className="max-h-[260px] overflow-y-auto border-b border-sense-blue/10 px-3.5 py-3 text-[11px] leading-[1.55] whitespace-pre-line text-[#41585c]">
+        <p className="max-h-[260px] overflow-y-auto border-b border-sense-blue/10 px-3.5 py-3 text-[13px] leading-[1.55] whitespace-pre-line text-[#33484c]">
           {item.text}
         </p>
       )}
@@ -179,7 +179,7 @@ function SavedCard({ item, open, onToggle, onAdapt, scheduled = [], onEditSchedu
                   type="button"
                   onClick={() => onEditScheduled(p)}
                   title="Change the date, time or platforms"
-                  className="flex w-full min-w-0 cursor-pointer items-center gap-1.5 rounded-lg bg-sense-blue/10 px-2 py-1.5 text-left text-[11px] font-bold text-sense-blue transition-colors hover:bg-sense-blue/15"
+                  className="flex w-full min-w-0 cursor-pointer items-center gap-1.5 rounded-lg bg-sense-blue/10 px-2 py-1.5 text-left text-[13px] font-bold text-sense-blue transition-colors hover:bg-sense-blue/15"
                 >
                   <Icon name="calendar" size={13} />
                   <span className="min-w-0 flex-1 truncate" title={`${plannedWhen(p)} · ${channelLabel(p)}`}>
@@ -194,10 +194,10 @@ function SavedCard({ item, open, onToggle, onAdapt, scheduled = [], onEditSchedu
           </ul>
         )}
         <div className="flex items-baseline justify-between gap-2">
-          <span className="truncate text-[9px] font-extrabold uppercase text-sense-blue">
+          <span className="truncate text-[11px] font-extrabold uppercase text-sense-blue">
             {item.trend ? `Trend: ${item.trend}` : "No trend"}
           </span>
-          <small className="shrink-0 text-[10px] text-[#708083]">
+          <small className="shrink-0 text-xs text-[#4b5d60]">
             {new Date(item.createdAt).toLocaleDateString(undefined, { month: "short", day: "numeric", year: "numeric" })}
           </small>
         </div>
@@ -225,7 +225,7 @@ function SavedCard({ item, open, onToggle, onAdapt, scheduled = [], onEditSchedu
                   : `Delete "${item.title}" from My Content?`,
               ) && removeItem(item.id)
             }
-            className={`${small} text-[#708083] hover:bg-[#ff7f7f]/15 hover:text-[#b84f4f]`}
+            className={`${small} text-[#4b5d60] hover:bg-[#ff7f7f]/15 hover:text-[#b84f4f]`}
           >
             <Icon name="trash" size={13} /> Delete
           </button>
@@ -291,7 +291,7 @@ export default function MyContentPage() {
         action={
           <Link
             href="/content-creation/improve"
-            className="inline-flex min-h-[42px] shrink-0 cursor-pointer items-center justify-center gap-2 rounded-[22px] bg-sense-lime px-[18px] text-[10px] font-extrabold uppercase text-sense-navy shadow-[0_5px_0_rgba(0,31,62,0.17)] transition duration-150 hover:translate-y-0.5 hover:shadow-[0_3px_0_rgba(0,31,62,0.2)]"
+            className="inline-flex min-h-[42px] shrink-0 cursor-pointer items-center justify-center gap-2 rounded-[22px] bg-sense-lime px-[18px] text-xs font-extrabold uppercase text-sense-navy shadow-[0_5px_0_rgba(0,31,62,0.17)] transition duration-150 hover:translate-y-0.5 hover:shadow-[0_3px_0_rgba(0,31,62,0.2)]"
           >
             <Icon name="upload" size={16} />
             Upload
@@ -307,7 +307,7 @@ export default function MyContentPage() {
           onChange={(e) => setQuery(e.target.value)}
           placeholder="Search your content"
           aria-label="Search your content"
-          className="h-11 w-full bg-transparent text-xs text-sense-navy outline-none placeholder:text-[#8a9799]"
+          className="h-11 w-full bg-transparent text-xs text-sense-navy outline-none placeholder:text-[#6f7f82]"
         />
       </label>
 
@@ -319,7 +319,7 @@ export default function MyContentPage() {
               type="button"
               aria-pressed={t === type}
               onClick={() => setType(t)}
-              className={`min-h-7 cursor-pointer rounded-2xl border px-3.5 text-[10px] font-bold transition-colors ${
+              className={`min-h-7 cursor-pointer rounded-2xl border px-3.5 text-xs font-bold transition-colors ${
                 t === type ? "border-sense-blue bg-sense-blue text-paper" : "border-paper/50 bg-paper/90 text-sense-navy hover:bg-paper"
               }`}
             >
@@ -327,7 +327,7 @@ export default function MyContentPage() {
             </button>
           ))}
         </div>
-        <span className="text-[11px] whitespace-nowrap text-paper/85">
+        <span className="text-[13px] whitespace-nowrap text-paper/85">
           {ready ? `${shown.length} ${shown.length === 1 ? "item" : "items"}` : "Loading…"}
         </span>
       </div>
@@ -373,13 +373,13 @@ export default function MyContentPage() {
         <div className="grid min-h-[340px] place-items-center content-center gap-2 rounded-[18px] border border-dashed border-paper/55 bg-paper/10 px-4 text-center text-paper">
           <Icon name="content" size={24} />
           <strong className="text-sm">{items.length ? "Nothing matches your search" : "No content yet"}</strong>
-          <p className="text-[11px] text-paper/80">
+          <p className="text-[13px] text-paper/80">
             {items.length
               ? "Try another word or filter."
               : "Generate something in Content Creation and press Save, or plan posts in your Content Calendar."}
           </p>
           {!items.length && (
-            <Link href="/content-creation" className="mt-2 text-[11px] font-bold text-sense-lime underline-offset-2 hover:underline">
+            <Link href="/content-creation" className="mt-2 text-[13px] font-bold text-sense-lime underline-offset-2 hover:underline">
               Go to Content Creation
             </Link>
           )}

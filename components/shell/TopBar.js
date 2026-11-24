@@ -138,11 +138,11 @@ function Search() {
               >
                 <Icon name={d.icon} size={16} className="shrink-0 text-sense-blue" />
                 <span className="flex-1">{d.label}</span>
-                {i === active && <span className="text-[10px] text-[#5f706e]">Enter ↵</span>}
+                {i === active && <span className="text-xs text-[#4b5d60]">Enter ↵</span>}
               </li>
             ))
           ) : (
-            <li role="presentation" className="px-4 py-3 text-xs text-[#5f706e]">
+            <li role="presentation" className="px-4 py-3 text-xs text-[#4b5d60]">
               No pages match “{query}”.
             </li>
           )}
@@ -265,7 +265,7 @@ function Alerts() {
           <div className="flex items-center justify-between border-b border-sense-blue/10 px-4 py-3">
             <strong className="text-sm text-sense-blue">Alerts</strong>
             {unread.length > 0 && (
-              <button type="button" onClick={() => markRead(alerts.map((a) => a.id))} className="cursor-pointer text-[11px] font-bold text-sense-blue hover:underline">
+              <button type="button" onClick={() => markRead(alerts.map((a) => a.id))} className="cursor-pointer text-[13px] font-bold text-sense-blue hover:underline">
                 Mark all as read
               </button>
             )}
@@ -288,8 +288,8 @@ function Alerts() {
                         <Icon name={a.icon} size={16} />
                       </span>
                       <span className="min-w-0 flex-1">
-                        <strong className={`block text-xs ${isUnread ? "text-sense-navy" : "font-medium text-[#5f706e]"}`}>{a.title}</strong>
-                        <span className="text-[11px] leading-[1.4] text-[#5f706e]">{a.body}</span>
+                        <strong className={`block text-xs ${isUnread ? "text-sense-navy" : "font-medium text-[#4b5d60]"}`}>{a.title}</strong>
+                        <span className="text-[13px] leading-[1.4] text-[#4b5d60]">{a.body}</span>
                       </span>
                       {isUnread && <span className="mt-1.5 size-2 shrink-0 rounded-full bg-[#ff7f7f]" aria-label="Unread" />}
                     </Link>
@@ -298,7 +298,7 @@ function Alerts() {
               })}
             </ul>
           ) : (
-            <p className="px-4 py-6 text-center text-xs text-[#5f706e]">All alerts are switched off.</p>
+            <p className="px-4 py-6 text-center text-xs text-[#4b5d60]">All alerts are switched off.</p>
           )}
           {/* Choose alert types right here instead of going to Settings. */}
           <div className="border-t border-sense-blue/10">
@@ -306,7 +306,7 @@ function Alerts() {
               type="button"
               aria-expanded={choosing}
               onClick={() => setChoosing((c) => !c)}
-              className="flex w-full cursor-pointer items-center justify-center gap-1 px-4 py-3 text-[11px] font-bold text-sense-blue hover:bg-sense-blue/5"
+              className="flex w-full cursor-pointer items-center justify-center gap-1 px-4 py-3 text-[13px] font-bold text-sense-blue hover:bg-sense-blue/5"
             >
               Choose which alerts you get
               <Icon name="chevron" size={13} className={`transition-transform ${choosing ? "-rotate-90" : "rotate-90"}`} />
@@ -369,17 +369,17 @@ function AccountSwitcher({ fullName, company }) {
   }, [userId]);
 
   const row = "flex w-full items-center gap-3 px-4 py-2 text-left transition";
-  const badge = "grid size-8 shrink-0 place-items-center rounded-full text-[10px] font-bold";
+  const badge = "grid size-8 shrink-0 place-items-center rounded-full text-xs font-bold";
 
   return (
     <div className="border-b border-sense-blue/10 py-1.5">
-      <p className="px-4 pt-1 pb-1.5 text-[9px] font-bold uppercase tracking-[0.08em] text-[#647477]">Accounts</p>
+      <p className="px-4 pt-1 pb-1.5 text-[11px] font-bold uppercase tracking-[0.08em] text-[#4b5d60]">Accounts</p>
       <ul>
         <li className={`${row} cursor-default`} aria-current="true">
           <span className={`${badge} bg-sense-blue text-paper`}>{initials(company || fullName)}</span>
           <span className="grid min-w-0 flex-1">
             <span className="truncate text-xs font-semibold">{company || fullName || "This account"}</span>
-            <span className="truncate text-[10px] text-[#647477]">{fullName}</span>
+            <span className="truncate text-xs text-[#4b5d60]">{fullName}</span>
           </span>
           <Icon name="check" size={15} className="text-sense-blue" />
         </li>
@@ -404,9 +404,9 @@ function AccountSwitcher({ fullName, company }) {
               <span className={`${badge} bg-sense-blue/10 text-sense-blue`}>{initials(a.company || a.name || a.email)}</span>
               <span className="grid min-w-0 flex-1">
                 <span className="truncate text-xs font-semibold">{a.company || a.name || a.email}</span>
-                <span className="truncate text-[10px] text-[#647477]">{a.email}</span>
+                <span className="truncate text-xs text-[#4b5d60]">{a.email}</span>
               </span>
-              {busy === a.userId && <span className="text-[10px] text-[#647477]">Switching…</span>}
+              {busy === a.userId && <span className="text-xs text-[#4b5d60]">Switching…</span>}
             </button>
           </li>
         ))}
@@ -424,7 +424,7 @@ function AccountSwitcher({ fullName, company }) {
         <span className={`${badge} border border-dashed border-sense-blue/40 text-base leading-none`}>+</span>
         {busy === "add" ? "Opening sign in…" : "Add account"}
       </button>
-      {error && <p role="alert" className="px-4 pb-1.5 text-[11px] text-coral-400">{error}</p>}
+      {error && <p role="alert" className="px-4 pb-1.5 text-[13px] text-coral-400">{error}</p>}
     </div>
   );
 }
@@ -464,7 +464,7 @@ function AccountMenu() {
         // Phones: just the round avatar. Wider screens: avatar, company name and a caret.
         className={`flex h-12 max-w-[260px] shrink-0 cursor-pointer items-center gap-2.5 rounded-full p-1.5 text-xs font-semibold transition hover:bg-[rgba(246,248,237,0.28)] sm:py-1 sm:pr-4 ${glass}`}
       >
-        <span className="grid size-9 shrink-0 place-items-center rounded-full bg-[#f6f8ed] text-[11px] font-bold text-[#03525e]">
+        <span className="grid size-9 shrink-0 place-items-center rounded-full bg-[#f6f8ed] text-[13px] font-bold text-[#03525e]">
           {fullName || settings.company ? avatar : <Icon name="audience" size={18} />}
         </span>
         <span className="hidden truncate sm:inline">{company}</span>
@@ -477,8 +477,8 @@ function AccountMenu() {
             <span className="grid size-10 shrink-0 place-items-center rounded-full bg-sense-blue text-xs font-bold text-paper">{avatar}</span>
             <span className="grid min-w-0 gap-px">
               <strong className="truncate text-sm">{fullName || "Your name"}</strong>
-              {settings.email && <span className="truncate text-[11px] text-[#5f706e]">{settings.email}</span>}
-              {subtitle && <span className="truncate text-[11px] font-semibold text-sense-blue">{subtitle}</span>}
+              {settings.email && <span className="truncate text-[13px] text-[#4b5d60]">{settings.email}</span>}
+              {subtitle && <span className="truncate text-[13px] font-semibold text-sense-blue">{subtitle}</span>}
             </span>
           </div>
           <AccountSwitcher fullName={fullName} company={settings.company} />
@@ -499,7 +499,7 @@ function AccountMenu() {
                   </span>
                   <span className="grid min-w-0 gap-px">
                     <strong className="text-xs">{label}</strong>
-                    <span className="truncate text-[11px] text-[#5f706e]">{hint}</span>
+                    <span className="truncate text-[13px] text-[#4b5d60]">{hint}</span>
                   </span>
                 </Link>
               </li>

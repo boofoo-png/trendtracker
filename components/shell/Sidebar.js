@@ -15,7 +15,7 @@ export default function Sidebar() {
         <span className="text-lg font-bold tracking-[0.15px]">Sixth Sense</span>
       </div>
 
-      <p className="mt-10 pl-[3px] text-[11px] font-medium tracking-[0.15px] opacity-75">WORKSPACE</p>
+      <p className="mt-10 pl-[3px] text-[13px] font-medium tracking-[0.15px] opacity-75">WORKSPACE</p>
 
       <nav aria-label="Main" className="mt-3 flex flex-col gap-2">
         {NAV.map((item) => (

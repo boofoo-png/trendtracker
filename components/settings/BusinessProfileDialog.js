@@ -9,8 +9,8 @@ import { CUSTOMER_TYPES, INDUSTRIES, useSettings } from "@/lib/settings";
 import { lockScroll } from "@/lib/scrollLock";
 
 const field =
-  "w-full min-h-10 rounded-[9px] border border-sense-blue/20 bg-white/80 px-3 py-[9px] text-xs text-sense-navy outline-none placeholder:text-[#8a9799] focus:border-sense-blue focus:shadow-[0_0_0_3px_rgba(29,73,144,0.1)]";
-const labelText = "text-[11px] font-semibold text-[#53676a]";
+  "w-full min-h-10 rounded-[9px] border border-sense-blue/20 bg-white/80 px-3 py-[9px] text-xs text-sense-navy outline-none placeholder:text-[#6f7f82] focus:border-sense-blue focus:shadow-[0_0_0_3px_rgba(29,73,144,0.1)]";
+const labelText = "text-[13px] font-semibold text-[#3d5053]";
 
 /** focus: "company" or "keywords", the field to start in. onSaved runs after a successful save. */
 export default function BusinessProfileDialog({ onClose, onSaved, focus = "company", title = "Your business" }) {
@@ -70,7 +70,7 @@ export default function BusinessProfileDialog({ onClose, onSaved, focus = "compa
         <header className="flex items-start justify-between gap-3">
           <div>
             <h2 id={`${id}-title`} className="text-lg font-bold text-sense-blue">{title}</h2>
-            <p className="mt-0.5 text-[11px] leading-[1.5] text-[#5f706e]">
+            <p className="mt-0.5 text-[13px] leading-[1.5] text-[#4b5d60]">
               Sense AI uses this to tailor trends, content and plans to you. You can change it any time in Settings.
             </p>
           </div>
@@ -114,7 +114,7 @@ export default function BusinessProfileDialog({ onClose, onSaved, focus = "compa
         </label>
         <label className="grid gap-1.5">
           <span className={labelText}>
-            Your topics <span className="font-normal text-[#8a9799]">(keywords, separated by commas)</span>
+            Your topics <span className="font-normal text-[#6f7f82]">(keywords, separated by commas)</span>
           </span>
           <input ref={keywordsRef} value={f.keywords} onChange={set("keywords")} placeholder="e.g. coffee, espresso, local" className={field} />
         </label>
@@ -125,10 +125,10 @@ export default function BusinessProfileDialog({ onClose, onSaved, focus = "compa
           </p>
         )}
         <footer className="flex justify-end gap-2 pt-1">
-          <button type="button" onClick={onClose} className="min-h-[40px] cursor-pointer rounded-[20px] border border-sense-blue/25 px-4 text-[11px] font-bold text-sense-blue transition hover:bg-sense-blue/10">
+          <button type="button" onClick={onClose} className="min-h-[40px] cursor-pointer rounded-[20px] border border-sense-blue/25 px-4 text-[13px] font-bold text-sense-blue transition hover:bg-sense-blue/10">
             Cancel
           </button>
-          <button type="submit" disabled={saving} className="min-h-[40px] cursor-pointer rounded-[20px] bg-sense-lime px-6 text-[11px] font-extrabold uppercase text-sense-navy shadow-[0_4px_0_rgba(0,31,62,0.17)] transition hover:translate-y-px disabled:cursor-default disabled:opacity-60">
+          <button type="submit" disabled={saving} className="min-h-[40px] cursor-pointer rounded-[20px] bg-sense-lime px-6 text-[13px] font-extrabold uppercase text-sense-navy shadow-[0_4px_0_rgba(0,31,62,0.17)] transition hover:translate-y-px disabled:cursor-default disabled:opacity-60">
             {saving ? "Saving…" : "Save"}
           </button>
         </footer>

@@ -79,7 +79,7 @@ function Step({ n, title, hint, children }) {
       <h2 className="text-[15px] font-bold text-sense-blue">
         {n}. {title}
       </h2>
-      {hint && <p className="mt-1 text-[11px] text-[#5f706e]">{hint}</p>}
+      {hint && <p className="mt-1 text-[13px] text-[#4b5d60]">{hint}</p>}
       <div className="mt-4">{children}</div>
     </section>
   );
@@ -104,7 +104,7 @@ function Tiles({ options, value, onChange, multiple = false, cols = "sm:grid-col
           }`}
         >
           <strong className="text-[13px] text-sense-blue">{name}</strong>
-          <span className="text-[11px] leading-[1.45] text-[#5f706e]">{description}</span>
+          <span className="text-[13px] leading-[1.45] text-[#4b5d60]">{description}</span>
           {on(name) && <span className="absolute top-3 right-3 text-xs font-bold text-sense-blue">✓</span>}
         </button>
       ))}
@@ -123,7 +123,7 @@ function Chips({ options, value, onChange }) {
             type="button"
             aria-pressed={on}
             onClick={() => onChange(on ? value.filter((v) => v !== o) : [...value, o])}
-            className={`min-h-8 cursor-pointer rounded-2xl border px-3.5 text-[11px] font-semibold transition ${
+            className={`min-h-8 cursor-pointer rounded-2xl border px-3.5 text-[13px] font-semibold transition ${
               on ? "border-sense-blue bg-sense-blue text-paper" : "border-sense-blue/20 bg-white/70 text-sense-blue hover:bg-sense-blue/10"
             }`}
           >
@@ -154,7 +154,7 @@ function SegmentPicker({ value, onChange, suggestions }) {
           placeholder="Add your own segment"
           className="min-h-9 flex-1 rounded-xl border border-sense-blue/15 bg-white/80 px-3 text-xs outline-none focus:ring-2 focus:ring-sense-blue/30"
         />
-        <button type="button" onClick={add} disabled={!draft.trim()} className="cursor-pointer rounded-xl bg-sense-blue px-3.5 text-[11px] font-bold text-paper disabled:opacity-50">
+        <button type="button" onClick={add} disabled={!draft.trim()} className="cursor-pointer rounded-xl bg-sense-blue px-3.5 text-[13px] font-bold text-paper disabled:opacity-50">
           Add
         </button>
       </div>
@@ -171,7 +171,7 @@ function BriefForm({ brief, update, onGenerate, onReset, pending, error, trend, 
       <div className="mb-6 flex flex-col gap-3 border-b border-sense-blue/15 pb-5 sm:flex-row sm:items-start sm:justify-between">
         <div>
           <h2 className="text-lg font-bold text-sense-blue">Set up your campaign</h2>
-          <p className="mt-1 max-w-[680px] text-xs leading-[1.55] text-[#5f706e]">
+          <p className="mt-1 max-w-[680px] text-xs leading-[1.55] text-[#4b5d60]">
             Only steps 3, 4 and 6 are required. Leave anything else blank and Sense AI will suggest it.
             Generating creates an editable draft; nothing is published or spent.
           </p>
@@ -179,7 +179,7 @@ function BriefForm({ brief, update, onGenerate, onReset, pending, error, trend, 
         <div className="flex shrink-0 items-center gap-2">
           <TrendSlot trend={trend} onChange={onTrendChange} />
           {hasPlan && (
-            <button type="button" onClick={onShowPlan} className="min-h-9 cursor-pointer rounded-[18px] bg-sense-blue px-4 text-[11px] font-bold text-paper transition hover:bg-sense-blue/85">
+            <button type="button" onClick={onShowPlan} className="min-h-9 cursor-pointer rounded-[18px] bg-sense-blue px-4 text-[13px] font-bold text-paper transition hover:bg-sense-blue/85">
               View current draft
             </button>
           )}
@@ -266,7 +266,7 @@ function BriefForm({ brief, update, onGenerate, onReset, pending, error, trend, 
             ["Launch", fmtDate(brief.launchDate) || "Flexible"],
           ].map(([k, v]) => (
             <div key={k} className="grid gap-1 rounded-xl border border-sense-blue/10 bg-white/70 p-3">
-              <dt className="text-[10px] font-bold uppercase tracking-wider text-[#5f706e]">{k}</dt>
+              <dt className="text-xs font-bold uppercase tracking-wider text-[#4b5d60]">{k}</dt>
               <dd className="truncate text-xs font-semibold text-sense-navy" title={v}>{v}</dd>
             </div>
           ))}
@@ -282,7 +282,7 @@ function BriefForm({ brief, update, onGenerate, onReset, pending, error, trend, 
         <button
           type="button"
           onClick={onReset}
-          className="min-h-[42px] cursor-pointer rounded-[22px] border border-sense-blue/25 px-5 text-[11px] font-bold text-sense-blue transition hover:bg-sense-blue/10"
+          className="min-h-[42px] cursor-pointer rounded-[22px] border border-sense-blue/25 px-5 text-[13px] font-bold text-sense-blue transition hover:bg-sense-blue/10"
         >
           Clear brief
         </button>
@@ -290,7 +290,7 @@ function BriefForm({ brief, update, onGenerate, onReset, pending, error, trend, 
           type="button"
           onClick={onGenerate}
           disabled={pending}
-          className="inline-flex min-h-[42px] cursor-pointer items-center justify-center gap-2 rounded-[22px] bg-sense-lime px-6 text-[10px] font-extrabold uppercase text-sense-navy shadow-[0_5px_0_rgba(0,31,62,0.17)] transition hover:translate-y-0.5 hover:shadow-[0_3px_0_rgba(0,31,62,0.2)] disabled:cursor-wait disabled:opacity-60"
+          className="inline-flex min-h-[42px] cursor-pointer items-center justify-center gap-2 rounded-[22px] bg-sense-lime px-6 text-xs font-extrabold uppercase text-sense-navy shadow-[0_5px_0_rgba(0,31,62,0.17)] transition hover:translate-y-0.5 hover:shadow-[0_3px_0_rgba(0,31,62,0.2)] disabled:cursor-wait disabled:opacity-60"
         >
           <Icon name="sparkles" size={14} /> {pending ? "Generating…" : "Generate campaign"}
         </button>
@@ -306,12 +306,12 @@ function ResultSection({ n, title, hint, children }) {
     <section className="border-t border-sense-blue/10 pt-6">
       <div className="mb-4 flex flex-wrap items-baseline justify-between gap-2">
         <h3 className="flex items-center gap-2.5 text-[15px] font-bold text-sense-blue">
-          <span className="grid size-7 place-items-center rounded-lg bg-sense-lime text-[11px] font-extrabold text-sense-navy">
+          <span className="grid size-7 place-items-center rounded-lg bg-sense-lime text-[13px] font-extrabold text-sense-navy">
             {String(n).padStart(2, "0")}
           </span>
           {title}
         </h3>
-        {hint && <p className="text-[11px] text-[#5f706e]">{hint}</p>}
+        {hint && <p className="text-[13px] text-[#4b5d60]">{hint}</p>}
       </div>
       {children}
     </section>
@@ -319,7 +319,7 @@ function ResultSection({ n, title, hint, children }) {
 }
 
 const tile = "grid content-start gap-1.5 rounded-xl border border-sense-blue/10 bg-white/70 p-4";
-const tileLabel = "text-[10px] font-bold uppercase tracking-wider text-[#5f706e]";
+const tileLabel = "text-xs font-bold uppercase tracking-wider text-[#4b5d60]";
 
 function CopyPlanButton({ text, className }) {
   const [copied, setCopied] = useState(false);
@@ -357,24 +357,24 @@ function PlanView({ plan, brief, onEdit, onRegenerate, onSave, saved, pending, e
         returnTo: { href: "/content-creation/campaign", label: "Back to your campaign" },
       },
     );
-  const btn = "inline-flex min-h-[38px] cursor-pointer items-center justify-center gap-1.5 rounded-[20px] px-4 text-[11px] font-bold transition disabled:cursor-wait disabled:opacity-60";
+  const btn = "inline-flex min-h-[38px] cursor-pointer items-center justify-center gap-1.5 rounded-[20px] px-4 text-[13px] font-bold transition disabled:cursor-wait disabled:opacity-60";
 
   return (
     <Panel className="gap-6">
       <div className="grid gap-5 lg:grid-cols-[minmax(0,1fr)_260px]">
         <div>
-          <span className="inline-block rounded-full bg-sense-lime px-3 py-1 text-[10px] font-extrabold uppercase">
+          <span className="inline-block rounded-full bg-sense-lime px-3 py-1 text-xs font-extrabold uppercase">
             Draft · Ready to review
           </span>
           <h2 className="mt-3 text-2xl font-bold tracking-[-0.02em] text-sense-blue">{plan.name}</h2>
           <p className="mt-2 text-base font-semibold text-sense-navy">{plan.coreMessage}</p>
-          <p className="mt-2 text-xs leading-[1.6] text-[#41585c]">{plan.summary}</p>
-          {trend && <p className="mt-2 text-[11px] text-[#5f706e]">Built around “{trend.name}”.</p>}
+          <p className="mt-2 text-xs leading-[1.6] text-[#33484c]">{plan.summary}</p>
+          {trend && <p className="mt-2 text-[13px] text-[#4b5d60]">Built around “{trend.name}”.</p>}
         </div>
         <div className="grid content-center gap-1 rounded-2xl bg-sense-blue p-5 text-paper">
-          <span className="text-[10px] font-bold uppercase tracking-wider text-paper/75">Primary success target</span>
+          <span className="text-xs font-bold uppercase tracking-wider text-paper/75">Primary success target</span>
           <strong className="text-xl">{brief.targetValue || plan.measurement[0]?.target || "See measurement"}</strong>
-          <small className="text-[11px] text-paper/80">{brief.targetMetric || plan.measurement[0]?.metric}</small>
+          <small className="text-[13px] text-paper/80">{brief.targetMetric || plan.measurement[0]?.metric}</small>
         </div>
       </div>
 
@@ -403,7 +403,7 @@ function PlanView({ plan, brief, onEdit, onRegenerate, onSave, saved, pending, e
           ].map(([k, v]) => (
             <article key={k} className={tile}>
               <span className={tileLabel}>{k}</span>
-              <p className="text-xs leading-[1.6] text-[#41585c]">{v}</p>
+              <p className="text-xs leading-[1.6] text-[#33484c]">{v}</p>
             </article>
           ))}
         </div>
@@ -414,8 +414,8 @@ function PlanView({ plan, brief, onEdit, onRegenerate, onSave, saved, pending, e
           {plan.channelPlan.map((c) => (
             <article key={c.channel} className={tile}>
               <strong className="text-sm text-sense-blue">{c.channel}</strong>
-              <span className="w-fit rounded-full bg-sense-lime/60 px-2.5 py-0.5 text-[10px] font-bold">{c.cadence}</span>
-              <p className="text-xs leading-[1.55] text-[#41585c]">{c.purpose}</p>
+              <span className="w-fit rounded-full bg-sense-lime/60 px-2.5 py-0.5 text-xs font-bold">{c.cadence}</span>
+              <p className="text-xs leading-[1.55] text-[#33484c]">{c.purpose}</p>
             </article>
           ))}
         </div>
@@ -427,7 +427,7 @@ function PlanView({ plan, brief, onEdit, onRegenerate, onSave, saved, pending, e
             <li key={i} className={tile}>
               <span className={tileLabel}>{t.timing}</span>
               <strong className="text-[13px] text-sense-blue">{t.phase}</strong>
-              <p className="text-xs leading-[1.55] text-[#41585c]">{t.focus}</p>
+              <p className="text-xs leading-[1.55] text-[#33484c]">{t.focus}</p>
             </li>
           ))}
         </ol>
@@ -441,12 +441,12 @@ function PlanView({ plan, brief, onEdit, onRegenerate, onSave, saved, pending, e
                 {s.channel} · {s.format}
               </span>
               <strong className="text-[13px] text-sense-blue">{s.title}</strong>
-              <p className="text-xs leading-[1.55] text-[#41585c]">{s.copy}</p>
+              <p className="text-xs leading-[1.55] text-[#33484c]">{s.copy}</p>
               <div className="mt-1 flex items-center gap-2">
                 <Link
                   href={`/content-creation/${creatorFor(s)}`}
                   onClick={() => handoff(s)}
-                  className="inline-flex min-h-8 items-center gap-1.5 rounded-2xl bg-sense-blue px-3.5 text-[11px] font-bold text-paper transition hover:bg-sense-blue/85"
+                  className="inline-flex min-h-8 items-center gap-1.5 rounded-2xl bg-sense-blue px-3.5 text-[13px] font-bold text-paper transition hover:bg-sense-blue/85"
                 >
                   Create this <Icon name="chevron" size={13} />
                 </Link>
@@ -474,7 +474,7 @@ function PlanView({ plan, brief, onEdit, onRegenerate, onSave, saved, pending, e
         </p>
       )}
       <div className="flex flex-col gap-3 rounded-2xl bg-[#e3eadd] p-4 sm:flex-row sm:items-center sm:justify-between">
-        <p className="flex items-center gap-2 text-[11px] text-[#5f706e]">
+        <p className="flex items-center gap-2 text-[13px] text-[#4b5d60]">
           <Icon name="sparkles" size={15} /> A draft to edit, not a live campaign. Nothing is published or spent.
         </p>
         <div className="flex flex-wrap gap-2">

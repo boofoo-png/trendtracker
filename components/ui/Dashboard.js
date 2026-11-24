@@ -8,7 +8,7 @@ export function Change({ value, className = "" }) {
   if (value == null) return null;
   return (
     <span
-      className={`whitespace-nowrap rounded-[18px] px-2.5 py-[5px] text-[10px] font-bold text-sense-navy ${
+      className={`whitespace-nowrap rounded-[18px] px-2.5 py-[5px] text-xs font-bold text-sense-navy ${
         isNegative(value) ? "bg-[#ff7f7f]" : "bg-sense-lime"
       } ${className}`}
     >
@@ -28,9 +28,9 @@ export function Panel({ as: Tag = "article", className = "", children }) {
   );
 }
 
-export function Eyebrow({ className = "text-[#5f706e]", children }) {
+export function Eyebrow({ className = "text-[#4b5d60]", children }) {
   return (
-    <p className={`mb-[5px] text-[9px] font-bold uppercase tracking-[0.11em] ${className}`}>{children}</p>
+    <p className={`mb-[5px] text-[11px] font-bold uppercase tracking-[0.11em] ${className}`}>{children}</p>
   );
 }
 
@@ -40,7 +40,7 @@ export function PanelHeading({ eyebrow, title, subtitle, aside }) {
       <div className="min-w-0">
         {eyebrow && <Eyebrow>{eyebrow}</Eyebrow>}
         <h3 className="text-[17px] font-bold text-sense-blue">{title}</h3>
-        {subtitle && <p className="mt-1 text-[11px] text-[#5f706e]">{subtitle}</p>}
+        {subtitle && <p className="mt-1 text-[13px] text-[#4b5d60]">{subtitle}</p>}
       </div>
       {aside}
     </div>
@@ -71,7 +71,7 @@ export function Toggle({ label, options, value, onChange }) {
           type="button"
           aria-pressed={value === item}
           onClick={() => onChange(item)}
-          className={`min-w-16 cursor-pointer rounded-[19px] px-3.5 py-2 text-[10px] font-semibold transition-colors ${
+          className={`min-w-16 cursor-pointer rounded-[19px] px-3.5 py-2 text-xs font-semibold transition-colors ${
             value === item ? "bg-sense-blue text-paper" : "text-sense-navy hover:bg-sense-blue/10"
           }`}
         >

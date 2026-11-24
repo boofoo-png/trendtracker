@@ -12,7 +12,7 @@ export function MyContentLink() {
   return (
     <Link
       href="/content-creation/my-content"
-      className="inline-flex min-h-[42px] shrink-0 cursor-pointer items-center justify-center gap-2 rounded-[22px] bg-sense-lime px-[18px] text-[10px] font-extrabold uppercase text-sense-navy shadow-[0_5px_0_rgba(0,31,62,0.17)] transition duration-150 hover:translate-y-0.5 hover:shadow-[0_3px_0_rgba(0,31,62,0.2)]"
+      className="inline-flex min-h-[42px] shrink-0 cursor-pointer items-center justify-center gap-2 rounded-[22px] bg-sense-lime px-[18px] text-xs font-extrabold uppercase text-sense-navy shadow-[0_5px_0_rgba(0,31,62,0.17)] transition duration-150 hover:translate-y-0.5 hover:shadow-[0_3px_0_rgba(0,31,62,0.2)]"
     >
       <Icon name="content" size={16} />
       My Content
@@ -24,7 +24,7 @@ export function BackLink({ href = "/content-creation", children = "Back to Conte
   return (
     <Link
       href={href}
-      className="mb-4 inline-flex items-center gap-1.5 text-[11px] font-bold text-paper/90 transition-colors hover:text-sense-lime"
+      className="mb-4 inline-flex items-center gap-1.5 text-[13px] font-bold text-paper/90 transition-colors hover:text-sense-lime"
     >
       <Icon name="chevron" size={16} className="rotate-180" /> {children}
     </Link>
@@ -73,8 +73,8 @@ export function SelectedTrendBadge({ trend, onClear }) {
         <Icon name="trend" size={14} />
       </span>
       <p className="grid min-w-0 flex-1 gap-px">
-        <small className="text-[9px] font-bold uppercase tracking-[0.06em] text-[#647477]">{sourceOf(trend).label}</small>
-        <strong className="truncate text-[11px]" title={trend.name}>{trend.name}</strong>
+        <small className="text-[11px] font-bold uppercase tracking-[0.06em] text-[#4b5d60]">{sourceOf(trend).label}</small>
+        <strong className="truncate text-[13px]" title={trend.name}>{trend.name}</strong>
       </p>
       {onClear && (
         <button
@@ -92,12 +92,12 @@ export function SelectedTrendBadge({ trend, onClear }) {
 }
 
 const inputClass =
-  "w-full min-h-10 rounded-[9px] border border-sense-blue/20 bg-white/65 px-3 py-[9px] text-xs text-sense-navy outline-none placeholder:text-[#8a9799] focus:border-sense-blue focus:shadow-[0_0_0_3px_rgba(29,73,144,0.1)]";
+  "w-full min-h-10 rounded-[9px] border border-sense-blue/20 bg-white/65 px-3 py-[9px] text-xs text-sense-navy outline-none placeholder:text-[#6f7f82] focus:border-sense-blue focus:shadow-[0_0_0_3px_rgba(29,73,144,0.1)]";
 
 export function Field({ label, children, className = "" }) {
   return (
     <label className={`mb-[13px] grid gap-[7px] ${className}`}>
-      <span className="text-[11px] font-semibold text-[#53676a]">{label}</span>
+      <span className="text-[13px] font-semibold text-[#3d5053]">{label}</span>
       {children}
     </label>
   );
@@ -202,7 +202,7 @@ export function UploadZone({ label = "Upload your file", hint, onText, large = f
       />
       <Icon name="upload" size={large ? 20 : 18} className={status?.loading ? "animate-pulse" : ""} />
       <span className="text-xs font-bold">{label}</span>
-      <small className={`text-[11px] ${status?.error ? "text-coral-400" : "text-[#647477]"}`}>
+      <small className={`text-[13px] ${status?.error ? "text-coral-400" : "text-[#4b5d60]"}`}>
         {status?.text ?? hint}
       </small>
     </label>
@@ -218,7 +218,7 @@ export function ChoiceGrid({ label, options, value, onChange, multiple = false, 
   };
   return (
     <div className="mb-[13px] grid gap-[7px]">
-      <span className="text-[11px] font-semibold text-[#53676a]">{label}</span>
+      <span className="text-[13px] font-semibold text-[#3d5053]">{label}</span>
       <div className="grid grid-cols-2 gap-[7px] sm:grid-cols-4">
         {options.map((o) => {
           const on = selected.includes(o);
@@ -228,10 +228,10 @@ export function ChoiceGrid({ label, options, value, onChange, multiple = false, 
               type="button"
               aria-pressed={on}
               onClick={() => toggle(o)}
-              className={`grid min-h-[62px] cursor-pointer place-items-center content-center gap-1.5 rounded-[9px] border px-1 py-2 text-[10px] font-bold transition-colors ${
+              className={`grid min-h-[62px] cursor-pointer place-items-center content-center gap-1.5 rounded-[9px] border px-1 py-2 text-xs font-bold transition-colors ${
                 on
                   ? "border-[rgba(29,73,144,0.34)] bg-sense-lime/25 text-sense-blue"
-                  : "border-sense-blue/10 bg-white/60 text-[#627477] hover:border-[rgba(29,73,144,0.34)] hover:bg-sense-lime/25 hover:text-sense-blue"
+                  : "border-sense-blue/10 bg-white/60 text-[#4b5d60] hover:border-[rgba(29,73,144,0.34)] hover:bg-sense-lime/25 hover:text-sense-blue"
               }`}
             >
               <Icon name={icon(o)} size={16} />
@@ -250,7 +250,7 @@ export function GenerateButton({ label = "Generate with AI", pending, onClick })
       type="button"
       onClick={onClick}
       disabled={pending}
-      className="mt-auto flex min-h-[42px] cursor-pointer items-center justify-center gap-[7px] rounded-[22px] bg-sense-lime text-[10px] font-extrabold uppercase text-sense-navy shadow-[0_5px_0_rgba(0,31,62,0.17)] transition-colors hover:bg-sense-blue hover:text-paper disabled:cursor-wait disabled:opacity-60"
+      className="mt-auto flex min-h-[42px] cursor-pointer items-center justify-center gap-[7px] rounded-[22px] bg-sense-lime text-xs font-extrabold uppercase text-sense-navy shadow-[0_5px_0_rgba(0,31,62,0.17)] transition-colors hover:bg-sense-blue hover:text-paper disabled:cursor-wait disabled:opacity-60"
     >
       <Icon name="sparkles" size={14} />
       {pending ? "Generating…" : label}
@@ -261,7 +261,7 @@ export function GenerateButton({ label = "Generate with AI", pending, onClick })
 export function Section({ label, children }) {
   return (
     <div className="mb-[17px] grid gap-2">
-      <span className="text-[11px] font-semibold text-[#53676a]">{label}</span>
+      <span className="text-[13px] font-semibold text-[#3d5053]">{label}</span>
       {children}
     </div>
   );
@@ -274,7 +274,7 @@ export function CopyBlock({ lead, paragraphs = [] }) {
     <div className={`${box} grid gap-2 p-[15px] text-xs leading-[1.55]`}>
       {lead && <p className="font-bold text-sense-navy">{lead}</p>}
       {paragraphs.filter(Boolean).map((p, i) => (
-        <p key={i} className="whitespace-pre-line text-[#41585c]">
+        <p key={i} className="whitespace-pre-line text-[#33484c]">
           {p}
         </p>
       ))}
@@ -318,7 +318,7 @@ export function CopyButton({ text, label = "Copy", size = 13, className = "" }) 
         setState((await copyText(text)) ? "copied" : "failed");
         setTimeout(() => setState(null), 1800);
       }}
-      className={`inline-flex shrink-0 cursor-pointer items-center gap-1 rounded-2xl border px-2.5 py-1 text-[10px] font-bold whitespace-nowrap transition-colors ${
+      className={`inline-flex shrink-0 cursor-pointer items-center gap-1 rounded-2xl border px-2.5 py-1 text-xs font-bold whitespace-nowrap transition-colors ${
         copied
           ? "border-[#4e8067] bg-[#4e8067] text-paper"
           : state === "failed"
@@ -341,9 +341,9 @@ export function NumberedList({ items, copyable = false, aside }) {
           key={i}
           className="grid grid-cols-[22px_minmax(0,1fr)_auto] items-center gap-[9px] border-b border-sense-blue/10 py-2 last:border-b-0"
         >
-          <b className="grid size-[19px] place-items-center rounded-[5px] bg-sense-blue/10 text-[10px] text-sense-blue">{i + 1}</b>
-          <p className="text-[11px] leading-[1.45] text-[#41585c]">{item}</p>
-          {copyable ? <CopyButton text={item} /> : aside ? <small className="text-[10px] text-[#788587]">{aside(i)}</small> : <span />}
+          <b className="grid size-[19px] place-items-center rounded-[5px] bg-sense-blue/10 text-xs text-sense-blue">{i + 1}</b>
+          <p className="text-[13px] leading-[1.45] text-[#33484c]">{item}</p>
+          {copyable ? <CopyButton text={item} /> : aside ? <small className="text-xs text-[#4b5d60]">{aside(i)}</small> : <span />}
         </div>
       ))}
     </div>
@@ -356,7 +356,7 @@ export function Tags({ items, hash = false }) {
       {items.map((t) => (
         <span
           key={t}
-          className="rounded-[15px] border border-sense-blue/20 bg-white/60 px-[9px] py-[5px] text-[10px] font-bold text-sense-blue"
+          className="rounded-[15px] border border-sense-blue/20 bg-white/60 px-[9px] py-[5px] text-xs font-bold text-sense-blue"
         >
           {hash ? `#${t.replace(/^#/, "")}` : t}
         </span>
@@ -371,8 +371,8 @@ export function Alternatives({ items }) {
     <div className="grid grid-cols-1 gap-2.5 sm:grid-cols-3">
       {items.map((a, i) => (
         <article key={i} className="relative grid min-w-0 content-start gap-2 rounded-[9px] border border-sense-blue/10 bg-white/65 p-3 pb-8">
-          <span className="text-[10px] font-bold uppercase tracking-wide text-sense-blue">{a.label || `Option ${i + 1}`}</span>
-          <p className="whitespace-pre-line text-[11px] leading-[1.5] text-[#41585c]">{a.text}</p>
+          <span className="text-xs font-bold uppercase tracking-wide text-sense-blue">{a.label || `Option ${i + 1}`}</span>
+          <p className="whitespace-pre-line text-[13px] leading-[1.5] text-[#33484c]">{a.text}</p>
           <span className="absolute right-2 bottom-2">
             <CopyButton text={a.text} size={13} />
           </span>
@@ -392,10 +392,10 @@ export function Tabs({ tabs, active, onChange }) {
           role="tab"
           aria-selected={t === active}
           onClick={() => onChange(t)}
-          className={`relative cursor-pointer text-[11px] font-bold transition-colors ${
+          className={`relative cursor-pointer text-[13px] font-bold transition-colors ${
             t === active
               ? "text-sense-blue after:absolute after:inset-x-0 after:-bottom-[11px] after:h-0.5 after:rounded after:bg-sense-blue"
-              : "text-[#748184] hover:text-sense-blue"
+              : "text-[#4b5d60] hover:text-sense-blue"
           }`}
         >
           {t}
@@ -407,7 +407,7 @@ export function Tabs({ tabs, active, onChange }) {
 
 /** extra: more buttons shown on the left (e.g. Add to calendar). */
 export function ResultActions({ onRegenerate, onSave, onAdapt, extra, saved, saveLabel = "Save", pending }) {
-  const btn = "min-h-[35px] min-w-[90px] flex-1 cursor-pointer rounded-[18px] px-4 text-[10px] font-bold transition-opacity hover:opacity-85 disabled:cursor-wait disabled:opacity-60 sm:flex-none";
+  const btn = "min-h-[35px] min-w-[90px] flex-1 cursor-pointer rounded-[18px] px-4 text-xs font-bold transition-opacity hover:opacity-85 disabled:cursor-wait disabled:opacity-60 sm:flex-none";
   return (
     // Two groups that wrap as pairs: "do more with it" on the left, Regenerate/Save on the right.
     <div className="mt-auto flex flex-wrap items-center justify-between gap-[9px] pt-3.5">

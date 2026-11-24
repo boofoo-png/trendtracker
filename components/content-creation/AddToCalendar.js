@@ -26,8 +26,8 @@ export default function AddToCalendar({ title, text, getSavedId, compact = false
   const [added, setAdded] = useState(null); // ISO date it was added to
 
   const style = compact
-    ? "inline-flex cursor-pointer items-center gap-1 rounded-2xl px-2 py-1 text-[10px] font-bold text-sense-blue transition-colors hover:bg-sense-blue/10"
-    : `inline-flex min-h-[35px] cursor-pointer items-center justify-center gap-1.5 rounded-[18px] border border-sense-blue/25 bg-white/70 px-4 text-[10px] font-bold text-sense-blue transition-opacity hover:opacity-85 ${className}`;
+    ? "inline-flex cursor-pointer items-center gap-1 rounded-2xl px-2 py-1 text-xs font-bold text-sense-blue transition-colors hover:bg-sense-blue/10"
+    : `inline-flex min-h-[35px] cursor-pointer items-center justify-center gap-1.5 rounded-[18px] border border-sense-blue/25 bg-white/70 px-4 text-xs font-bold text-sense-blue transition-opacity hover:opacity-85 ${className}`;
 
   if (added) {
     return (

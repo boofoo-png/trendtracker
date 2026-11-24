@@ -11,7 +11,7 @@ import { listPickerTrends } from "@/app/(dashboard)/content-creation/actions";
 import { SelectedTrendBadge } from "./ui";
 
 const linkBtn =
-  "inline-flex min-h-8 cursor-pointer items-center gap-1.5 rounded-2xl px-3 text-[11px] font-bold whitespace-nowrap transition";
+  "inline-flex min-h-8 cursor-pointer items-center gap-1.5 rounded-2xl px-3 text-[13px] font-bold whitespace-nowrap transition";
 
 function TrendPicker({ onPick, label }) {
   const [open, setOpen] = useState(false);
@@ -62,15 +62,15 @@ function TrendPicker({ onPick, label }) {
           id={listId}
           className="absolute right-0 z-30 mt-2 w-[min(300px,calc(100vw-48px))] overflow-hidden rounded-2xl border border-sense-blue/15 bg-paper text-sense-navy shadow-[0_18px_40px_rgba(0,31,62,0.22)]"
         >
-          <p className="border-b border-sense-blue/10 px-3.5 py-2.5 text-[10px] font-bold uppercase tracking-[0.08em] text-[#647477]">
+          <p className="border-b border-sense-blue/10 px-3.5 py-2.5 text-xs font-bold uppercase tracking-[0.08em] text-[#4b5d60]">
             Your latest trends
           </p>
           {loading && !data ? (
-            <p className="px-3.5 py-4 text-xs text-[#5f706e]">Loading…</p>
+            <p className="px-3.5 py-4 text-xs text-[#4b5d60]">Loading…</p>
           ) : data?.error ? (
             <p role="alert" className="px-3.5 py-4 text-xs text-coral-400">{data.error}</p>
           ) : trends.length === 0 ? (
-            <div className="grid gap-2 px-3.5 py-4 text-xs text-[#5f706e]">
+            <div className="grid gap-2 px-3.5 py-4 text-xs text-[#4b5d60]">
               <p>No trends yet. Run a trend search first, then come back.</p>
               <Link href="/audience-trends" className="font-bold text-sense-blue underline">
                 Go to Audience Trends
@@ -93,12 +93,12 @@ function TrendPicker({ onPick, label }) {
                         {t.starred && <span className="text-[#c28a00]" aria-label="Starred">★ </span>}
                         {t.name}
                       </strong>
-                      <small className="truncate text-[10px] text-[#647477]">
+                      <small className="truncate text-xs text-[#4b5d60]">
                         {t.platform}
                         {t.format ? ` · ${t.format}` : ""}
                       </small>
                     </span>
-                    <span className="shrink-0 rounded-lg bg-sense-blue/10 px-1.5 py-0.5 text-[10px] font-bold text-sense-blue" title="Momentum">
+                    <span className="shrink-0 rounded-lg bg-sense-blue/10 px-1.5 py-0.5 text-xs font-bold text-sense-blue" title="Momentum">
                       {t.momentum}
                     </span>
                   </button>

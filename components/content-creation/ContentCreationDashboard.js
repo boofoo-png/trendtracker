@@ -63,28 +63,28 @@ function SelectedTrend({ trend, onClear }) {
         <Icon name="trend" size={20} />
       </span>
       <div className="grid min-w-0 gap-[3px]">
-        <small className="text-[9px] font-extrabold uppercase tracking-[0.08em] text-sense-lime">
+        <small className="text-[11px] font-extrabold uppercase tracking-[0.08em] text-sense-lime">
           {source.label}
         </small>
         <strong className="text-[15px]">
           {trend.name}
           {trend.audience && <span className="font-medium text-paper/70"> × {trend.audience}</span>}
         </strong>
-        <p className="text-[10px] leading-normal text-paper/80">
+        <p className="text-xs leading-normal text-paper/80">
           {trend.hook ? `${trend.hook} ` : ""}Choose a content type below and Sense AI will build on
           this {source.noun}.
         </p>
       </div>
       <div className="col-start-2 flex items-center gap-2 justify-self-start sm:col-start-auto">
         {(trend.platform || trend.format) && (
-          <span className="whitespace-nowrap rounded-full border border-paper/25 px-2.5 py-[7px] text-[9px] font-bold text-paper/90">
+          <span className="whitespace-nowrap rounded-full border border-paper/25 px-2.5 py-[7px] text-[11px] font-bold text-paper/90">
             {[trend.platform, trend.format].filter(Boolean).join(" · ")}
           </span>
         )}
         <button
           type="button"
           onClick={onClear}
-          className="cursor-pointer whitespace-nowrap rounded-full bg-paper/15 px-3 py-[7px] text-[10px] font-bold text-paper transition hover:bg-paper/25"
+          className="cursor-pointer whitespace-nowrap rounded-full bg-paper/15 px-3 py-[7px] text-xs font-bold text-paper transition hover:bg-paper/25"
         >
           × Clear
         </button>
@@ -158,12 +158,12 @@ export default function ContentCreationDashboard() {
           </span>
           <span className="grid min-w-0 gap-1.5">
             <strong className="text-lg font-extrabold">Campaign</strong>
-            <small className="max-w-[690px] text-[11px] leading-[1.55] text-paper/80">
+            <small className="max-w-[690px] text-[13px] leading-[1.55] text-paper/80">
               Build an editable campaign plan by defining your goal, offer, audience, channels,
               timing, and budget.
             </small>
           </span>
-          <span className="col-span-full inline-flex min-h-[42px] items-center justify-center gap-1.5 justify-self-end whitespace-nowrap rounded-[22px] bg-sense-lime px-[18px] text-[10px] font-extrabold uppercase text-sense-navy shadow-[0_5px_0_rgba(0,31,62,0.17)] sm:col-span-1">
+          <span className="col-span-full inline-flex min-h-[42px] items-center justify-center gap-1.5 justify-self-end whitespace-nowrap rounded-[22px] bg-sense-lime px-[18px] text-xs font-extrabold uppercase text-sense-navy shadow-[0_5px_0_rgba(0,31,62,0.17)] sm:col-span-1">
             Create campaign
             <Icon name="chevron" size={17} className="transition-transform group-hover:translate-x-0.5" />
           </span>

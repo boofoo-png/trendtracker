@@ -35,13 +35,13 @@ function SavedAccounts({ backId }) {
           type="button"
           onClick={() => go(back.userId)}
           disabled={busy !== null}
-          className="w-max cursor-pointer text-[11px] font-semibold text-paper underline disabled:opacity-60"
+          className="w-max cursor-pointer text-[13px] font-semibold text-paper underline disabled:opacity-60"
         >
           ← Cancel, back to {back.company || back.name || back.email}
         </button>
       )}
       {accounts.some((a) => a !== back) && (
-        <p className="text-[11px] tracking-[0.02em] text-paper/80">{back ? "Or continue as" : "Continue as"}</p>
+        <p className="text-[13px] tracking-[0.02em] text-paper/80">{back ? "Or continue as" : "Continue as"}</p>
       )}
       <ul className="grid gap-1.5">
         {accounts.filter((a) => a !== back).map((a) => (
@@ -52,14 +52,14 @@ function SavedAccounts({ backId }) {
               disabled={busy !== null}
               className="flex w-full cursor-pointer items-center gap-3 rounded-[18px] border border-paper/30 bg-paper/10 px-3 py-2 text-left text-paper transition hover:bg-paper/20 disabled:opacity-60"
             >
-              <span className="grid size-8 shrink-0 place-items-center rounded-full bg-paper text-[10px] font-bold text-sense-blue">
+              <span className="grid size-8 shrink-0 place-items-center rounded-full bg-paper text-xs font-bold text-sense-blue">
                 {initials(a.company || a.name || a.email)}
               </span>
               <span className="grid min-w-0 flex-1">
                 <span className="truncate text-xs font-semibold">{a.company || a.name || a.email}</span>
-                <span className="truncate text-[10px] text-paper/75">{a.email}</span>
+                <span className="truncate text-xs text-paper/75">{a.email}</span>
               </span>
-              {busy === a.userId && <span className="text-[10px]">Switching…</span>}
+              {busy === a.userId && <span className="text-xs">Switching…</span>}
             </button>
           </li>
         ))}

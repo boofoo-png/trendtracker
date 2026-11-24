@@ -11,7 +11,7 @@ export default function SegmentedControl({ label, options, value, onChange }) {
           role="radio"
           aria-checked={value === option}
           onClick={() => onChange(option)}
-          className={`cursor-pointer rounded-[19px] px-3.5 py-1.5 text-[11px] font-semibold transition-colors ${
+          className={`cursor-pointer rounded-[19px] px-3.5 py-1.5 text-[13px] font-semibold transition-colors ${
             value === option ? "bg-sense-blue text-paper" : "text-sense-navy hover:bg-sense-blue/10"
           }`}
         >

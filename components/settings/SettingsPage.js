@@ -35,7 +35,7 @@ function Switch({ on, onChange, label }) {
       aria-checked={on}
       aria-label={label}
       onClick={() => onChange(!on)}
-      className={`inline-flex min-h-8 shrink-0 cursor-pointer items-center gap-2 rounded-full px-1.5 pr-3 text-[11px] font-bold transition-colors ${
+      className={`inline-flex min-h-8 shrink-0 cursor-pointer items-center gap-2 rounded-full px-1.5 pr-3 text-[13px] font-bold transition-colors ${
         on ? "bg-sense-blue text-paper" : "bg-[#dce5d1] text-sense-navy"
       }`}
     >
@@ -119,7 +119,7 @@ export default function SettingsPage() {
             <button
               type="button"
               onClick={() => setDraft(null)}
-              className="min-h-[42px] cursor-pointer rounded-[22px] border border-paper/40 px-4 text-[11px] font-bold text-paper transition hover:bg-paper/15"
+              className="min-h-[42px] cursor-pointer rounded-[22px] border border-paper/40 px-4 text-[13px] font-bold text-paper transition hover:bg-paper/15"
             >
               Discard
             </button>
@@ -128,7 +128,7 @@ export default function SettingsPage() {
             type="button"
             onClick={save}
             disabled={!dirty || saving}
-            className="inline-flex min-h-[42px] cursor-pointer items-center gap-2 rounded-[22px] bg-sense-lime px-[18px] text-[10px] font-extrabold uppercase text-sense-navy shadow-[0_5px_0_rgba(0,31,62,0.17)] transition hover:translate-y-0.5 hover:shadow-[0_3px_0_rgba(0,31,62,0.2)] disabled:cursor-default disabled:opacity-70 disabled:hover:translate-y-0"
+            className="inline-flex min-h-[42px] cursor-pointer items-center gap-2 rounded-[22px] bg-sense-lime px-[18px] text-xs font-extrabold uppercase text-sense-navy shadow-[0_5px_0_rgba(0,31,62,0.17)] transition hover:translate-y-0.5 hover:shadow-[0_3px_0_rgba(0,31,62,0.2)] disabled:cursor-default disabled:opacity-70 disabled:hover:translate-y-0"
           >
             {saving ? "Saving…" : justSaved && !dirty ? "✓ Changes saved" : "Save changes"}
           </button>
@@ -155,8 +155,8 @@ export default function SettingsPage() {
               {initials(fullName(settings) || settings.company)}
             </span>
             <strong className="text-sm">{fullName(settings) || "Your name"}</strong>
-            <p className="text-[11px] text-[#5f706e]">{settings.role || "Add your role"}</p>
-            <span className="text-[11px] font-semibold text-sense-blue">{settings.company || "Your company"}</span>
+            <p className="text-[13px] text-[#4b5d60]">{settings.role || "Add your role"}</p>
+            <span className="text-[13px] font-semibold text-sense-blue">{settings.company || "Your company"}</span>
           </div>
           <nav aria-label="Settings sections" className="mt-4 grid gap-1.5">
             {SECTIONS.map(({ id, label, icon }) => (
@@ -231,7 +231,7 @@ export default function SettingsPage() {
               </div>
               <div className="mb-3 flex items-start gap-2.5 rounded-xl bg-sense-lime/40 p-3.5 text-sense-navy">
                 <Icon name="sparkles" size={18} className="mt-0.5 shrink-0" />
-                <p className="text-[11px] leading-[1.5]">
+                <p className="text-[13px] leading-[1.5]">
                   <strong className="block text-xs">Sense AI uses these details</strong>
                   Audience suggestions, hashtags, trend fit, campaign directions, content and posting
                   plans are all written for the business you describe here. Keywords also shape the
@@ -240,7 +240,7 @@ export default function SettingsPage() {
               </div>
               <div className="mt-2 flex items-start gap-2.5 rounded-xl bg-[#e3eadd] p-3.5 text-sense-blue">
                 <Icon name="trend" size={18} className="mt-0.5 shrink-0" />
-                <p className="grid gap-1 text-[11px] leading-[1.5] text-[#5f706e]">
+                <p className="grid gap-1 text-[13px] leading-[1.5] text-[#4b5d60]">
                   <strong className="text-xs text-sense-blue">Trend sources</strong>
                   Audience trends are scraped from public Instagram and TikTok posts. Account
                   connections for publishing aren&apos;t available yet.
@@ -267,7 +267,7 @@ export default function SettingsPage() {
                   >
                     <div>
                       <strong className="text-xs text-sense-blue">{title}</strong>
-                      <p className="mt-0.5 text-[11px] text-[#5f706e]">{detail}</p>
+                      <p className="mt-0.5 text-[13px] text-[#4b5d60]">{detail}</p>
                     </div>
                     <Switch
                       label={title}
@@ -277,19 +277,19 @@ export default function SettingsPage() {
                   </li>
                 ))}
               </ul>
-              <p className="mt-3 text-[11px] text-[#5f706e]">
+              <p className="mt-3 text-[13px] text-[#4b5d60]">
                 These control which alerts appear under the bell in the top bar.
               </p>
             </>
           )}
 
           {dirty && !notice?.error && (
-            <p role="status" className="mt-5 text-[11px] font-semibold text-sense-blue">
+            <p role="status" className="mt-5 text-[13px] font-semibold text-sense-blue">
               You have unsaved changes.
             </p>
           )}
           {notice && (
-            <p role={notice.error ? "alert" : "status"} className={`mt-5 text-[11px] font-semibold ${notice.error ? "text-[#b23b3b]" : "text-sense-blue"}`}>
+            <p role={notice.error ? "alert" : "status"} className={`mt-5 text-[13px] font-semibold ${notice.error ? "text-[#b23b3b]" : "text-sense-blue"}`}>
               {notice.error ?? notice.info}
             </p>
           )}

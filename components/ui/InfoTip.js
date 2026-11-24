@@ -73,7 +73,7 @@ export default function InfoTip({ label, children }) {
             id={id}
             role="tooltip"
             style={{ top: pos.top, left: pos.left, width: pos.width }}
-            className="pointer-events-none fixed z-[60] rounded-xl bg-sense-navy px-3 py-2.5 text-left text-[11px] leading-[1.5] font-normal text-paper shadow-[0_10px_24px_rgba(0,31,62,0.3)]"
+            className="pointer-events-none fixed z-[60] rounded-xl bg-sense-navy px-3 py-2.5 text-left text-[13px] leading-[1.5] font-normal text-paper shadow-[0_10px_24px_rgba(0,31,62,0.3)]"
           >
             {children}
           </span>,

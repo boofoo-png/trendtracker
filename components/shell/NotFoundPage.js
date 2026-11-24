@@ -15,11 +15,11 @@ export default function NotFoundPage() {
       </span>
 
       <div className="grid gap-2">
-        <p className="text-[11px] font-bold uppercase tracking-[0.14em] text-[#5f706e]">Error 404</p>
+        <p className="text-[13px] font-bold uppercase tracking-[0.14em] text-[#4b5d60]">Error 404</p>
         <h1 className="text-[clamp(26px,4vw,40px)] font-semibold tracking-[-0.03em] text-sense-blue">
           This page doesn&apos;t exist
         </h1>
-        <p className="mx-auto max-w-[480px] text-sm leading-[1.6] text-[#41585c]">
+        <p className="mx-auto max-w-[480px] text-sm leading-[1.6] text-[#33484c]">
           Sense AI looked everywhere, but there&apos;s nothing at{" "}
           <code className="rounded-md bg-sense-blue/10 px-1.5 py-0.5 text-[13px] break-all text-sense-blue">{pathname}</code>. The
           link may be old or mistyped.
@@ -28,13 +28,13 @@ export default function NotFoundPage() {
 
       <Link
         href="/overview"
-        className="inline-flex min-h-[44px] items-center gap-2 rounded-[22px] bg-sense-lime px-6 text-[11px] font-extrabold uppercase text-sense-navy shadow-[0_5px_0_rgba(0,31,62,0.17)] transition hover:translate-y-0.5 hover:shadow-[0_3px_0_rgba(0,31,62,0.2)]"
+        className="inline-flex min-h-[44px] items-center gap-2 rounded-[22px] bg-sense-lime px-6 text-[13px] font-extrabold uppercase text-sense-navy shadow-[0_5px_0_rgba(0,31,62,0.17)] transition hover:translate-y-0.5 hover:shadow-[0_3px_0_rgba(0,31,62,0.2)]"
       >
         Back to Overview
       </Link>
 
       <div className="grid w-full gap-3 border-t border-sense-blue/15 pt-6">
-        <p className="text-xs font-semibold text-[#5f706e]">Or jump to</p>
+        <p className="text-xs font-semibold text-[#4b5d60]">Or jump to</p>
         <nav aria-label="Pages" className="flex flex-wrap justify-center gap-2">
           {NAV.filter((item) => item.href !== "/overview").map((item) => (
             <Link
@@ -46,7 +46,7 @@ export default function NotFoundPage() {
             </Link>
           ))}
         </nav>
-        <p className="text-[11px] text-[#5f706e]">You can also use the search bar at the top to find any page.</p>
+        <p className="text-[13px] text-[#4b5d60]">You can also use the search bar at the top to find any page.</p>
       </div>
     </section>
   );

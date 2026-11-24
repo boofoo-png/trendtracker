@@ -63,7 +63,7 @@ function Drawer({ onClose }) {
 
         {/* Close on any link tap, including the page you're already on. */}
         <div className="contents" onClick={(e) => e.target.closest("a, [data-closes-menu]") && onClose()}>
-        <p className="mt-8 text-[11px] font-medium tracking-[0.15px] opacity-75">WORKSPACE</p>
+        <p className="mt-8 text-[13px] font-medium tracking-[0.15px] opacity-75">WORKSPACE</p>
         <nav aria-label="Main" className="mt-3 flex flex-col gap-1.5">
           {NAV.map((item) => (
             <NavItem key={item.label} {...item} />

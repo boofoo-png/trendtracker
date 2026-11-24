@@ -11,8 +11,8 @@ import { lockScroll } from "@/lib/scrollLock";
 const CHANNELS = Object.keys(CHANNEL_CODES);
 
 const field =
-  "w-full min-h-10 rounded-[9px] border border-sense-blue/20 bg-white/80 px-3 py-[9px] text-xs text-sense-navy outline-none placeholder:text-[#8a9799] focus:border-sense-blue focus:shadow-[0_0_0_3px_rgba(29,73,144,0.1)]";
-const labelText = "text-[11px] font-semibold text-[#53676a]";
+  "w-full min-h-10 rounded-[9px] border border-sense-blue/20 bg-white/80 px-3 py-[9px] text-xs text-sense-navy outline-none placeholder:text-[#6f7f82] focus:border-sense-blue focus:shadow-[0_0_0_3px_rgba(29,73,144,0.1)]";
+const labelText = "text-[13px] font-semibold text-[#3d5053]";
 
 const longDate = (iso) =>
   new Date(`${iso}T00:00`).toLocaleDateString("en-US", { weekday: "long", month: "long", day: "numeric" });
@@ -89,7 +89,7 @@ export default function PostEditor({ post, today, onSave, onClose, onDelete, onW
       >
         <header className="flex items-start justify-between gap-3">
           <div>
-            <p className="text-[10px] font-bold uppercase tracking-[0.11em] text-[#5f706e]">{editing ? "Edit post" : "New post"}</p>
+            <p className="text-xs font-bold uppercase tracking-[0.11em] text-[#4b5d60]">{editing ? "Edit post" : "New post"}</p>
             <h2 id={`${id}-heading`} className="text-lg font-bold text-sense-blue">
               {dateMissing ? "Choose a date" : longDate(f.date)}
             </h2>
@@ -110,12 +110,12 @@ export default function PostEditor({ post, today, onSave, onClose, onDelete, onW
             aria-invalid={tried && titleMissing}
             className={`${field} ${tried && titleMissing ? "border-[#b84f4f]" : ""}`}
           />
-          {tried && titleMissing && <span role="alert" className="text-[11px] font-semibold text-[#b84f4f]">Give the post a title.</span>}
+          {tried && titleMissing && <span role="alert" className="text-[13px] font-semibold text-[#b84f4f]">Give the post a title.</span>}
         </label>
 
         <fieldset className="grid gap-1.5">
           <legend className={`${labelText} mb-1.5`}>
-            Channels <span className="font-normal text-[#8a9799]">(pick one or more)</span>
+            Channels <span className="font-normal text-[#6f7f82]">(pick one or more)</span>
           </legend>
           <div className="flex flex-wrap gap-2">
             {CHANNELS.map((c) => (
@@ -133,7 +133,7 @@ export default function PostEditor({ post, today, onSave, onClose, onDelete, onW
               </button>
             ))}
           </div>
-          {tried && noChannel && <span role="alert" className="text-[11px] font-semibold text-[#b84f4f]">Pick at least one channel.</span>}
+          {tried && noChannel && <span role="alert" className="text-[13px] font-semibold text-[#b84f4f]">Pick at least one channel.</span>}
         </fieldset>
 
         <div className="grid grid-cols-2 gap-3 sm:grid-cols-3">
@@ -161,7 +161,7 @@ export default function PostEditor({ post, today, onSave, onClose, onDelete, onW
 
         <label className="grid gap-1.5">
           <span className={labelText}>
-            Caption <span className="font-normal text-[#8a9799]">(optional)</span>
+            Caption <span className="font-normal text-[#6f7f82]">(optional)</span>
           </span>
           <textarea
             value={f.caption}
@@ -184,7 +184,7 @@ export default function PostEditor({ post, today, onSave, onClose, onDelete, onW
           >
             <span>
               <strong className="flex items-center gap-1.5 text-xs text-sense-blue">✦ {f.caption.trim() ? "Rewrite the caption with AI" : "Write the caption with AI"}</strong>
-              <span className="text-[11px] text-[#5f706e]">Saves your changes, then opens Content Creation where Sense AI drafts this post for you.</span>
+              <span className="text-[13px] text-[#4b5d60]">Saves your changes, then opens Content Creation where Sense AI drafts this post for you.</span>
             </span>
             <span aria-hidden="true" className="text-lg text-sense-blue">›</span>
           </button>
@@ -192,19 +192,19 @@ export default function PostEditor({ post, today, onSave, onClose, onDelete, onW
 
         <footer className="flex flex-wrap items-center justify-between gap-2 pt-1">
           {editing && onDelete ? (
-            <button type="button" onClick={onDelete} className="cursor-pointer rounded-[18px] px-3 py-2 text-[11px] font-bold text-[#b84f4f] transition hover:bg-[#ff7f7f]/15">
+            <button type="button" onClick={onDelete} className="cursor-pointer rounded-[18px] px-3 py-2 text-[13px] font-bold text-[#b84f4f] transition hover:bg-[#ff7f7f]/15">
               Delete post
             </button>
           ) : (
             <span />
           )}
           <div className="flex gap-2">
-            <button type="button" onClick={onClose} className="min-h-[40px] cursor-pointer rounded-[20px] border border-sense-blue/25 px-4 text-[11px] font-bold text-sense-blue transition hover:bg-sense-blue/10">
+            <button type="button" onClick={onClose} className="min-h-[40px] cursor-pointer rounded-[20px] border border-sense-blue/25 px-4 text-[13px] font-bold text-sense-blue transition hover:bg-sense-blue/10">
               Cancel
             </button>
             <button
               type="submit"
-              className="min-h-[40px] cursor-pointer rounded-[20px] bg-sense-lime px-6 text-[11px] font-extrabold uppercase text-sense-navy shadow-[0_4px_0_rgba(0,31,62,0.17)] transition hover:translate-y-px"
+              className="min-h-[40px] cursor-pointer rounded-[20px] bg-sense-lime px-6 text-[13px] font-extrabold uppercase text-sense-navy shadow-[0_4px_0_rgba(0,31,62,0.17)] transition hover:translate-y-px"
             >
               Done
             </button>

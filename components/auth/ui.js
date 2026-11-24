@@ -41,7 +41,7 @@ export function AuthField({ label, name, type = "text", required, floating, erro
     <div className={`group grid min-w-0 content-start ${floating ? "gap-1.5" : "gap-2.5"}`}>
       <label
         htmlFor={id}
-        className={`${floating ? "px-3 text-[11px] leading-[1.3]" : "px-[3px] text-sm leading-[1.3]"} tracking-[0.15px] transition-colors ${error ? "" : "text-paper group-focus-within:text-sense-lime"}`}
+        className={`${floating ? "px-3 text-[13px] leading-[1.3]" : "px-[3px] text-sm leading-[1.3]"} tracking-[0.15px] transition-colors ${error ? "" : "text-paper group-focus-within:text-sense-lime"}`}
         style={error ? { color: PLUM } : undefined}
       >
         {label}
@@ -155,7 +155,7 @@ export function AuthLink({ href, children, accent }) {
   return (
     <a
       href={href}
-      className="w-max max-w-full text-[11px] leading-[1.66] tracking-[0.02em] underline"
+      className="w-max max-w-full text-[13px] leading-[1.66] tracking-[0.02em] underline"
       style={{ color: accent ? PLUM : "var(--color-paper)" }}
     >
       {children}
@@ -178,5 +178,5 @@ export function FormMessage({ error, children }) {
 
 /** Small coloured label above a heading (.eyebrow). */
 export function Eyebrow({ children }) {
-  return <p className="mb-[5px] text-[9px] font-bold tracking-[0.11em] text-[#ff7f7f] uppercase">{children}</p>;
+  return <p className="mb-[5px] text-[11px] font-bold tracking-[0.11em] text-[#ff7f7f] uppercase">{children}</p>;
 }
