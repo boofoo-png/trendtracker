@@ -1,14 +1,15 @@
 "use client";
 
 // Profile and settings, based on the Marketing Intelligence Hub Figma Make app.
-// Saved in this browser (localStorage) until accounts exist. The company name
+// Saved to Supabase (profiles + workspaces, see lib/account.js). The company name
 // shows in the top bar; alert toggles control what the bell lists.
 
 import { useEffect, useState } from "react";
 import Icon from "@/components/ui/Icon";
 import { Eyebrow, PageTitle, Panel } from "@/components/ui/Dashboard";
 import Skeleton, { SkeletonPanel } from "@/components/ui/Skeleton";
-import useHydrated from "@/lib/useHydrated";
+import { signOut } from "@/app/actions/auth";
+import ConnectionsSection from "./ConnectionsSection";
 import { Select, TextArea, TextInput } from "@/components/content-creation/ui";
 import { ALERT_TYPES, CUSTOMER_TYPES, INDUSTRIES, SECTION_EVENT, TIMEZONES, initials, useSettings } from "@/lib/settings";
 
@@ -16,7 +17,10 @@ const SECTIONS = [
   { id: "profile", label: "Profile", icon: "audience" },
   { id: "workspace", label: "Workspace", icon: "content" },
   { id: "notifications", label: "Notifications", icon: "bell" },
+  { id: "connections", label: "Connected accounts", icon: "instagram" },
 ];
+
+const fullName = (s) => `${s.firstName ?? ""} ${s.lastName ?? ""}`.trim();
 
 const sectionFromHash = () => {
   const id = typeof window === "undefined" ? "" : window.location.hash.slice(1);
@@ -56,11 +60,12 @@ function SectionHeading({ eyebrow, title, aside }) {
 }
 
 export default function SettingsPage() {
-  const [settings, setSettings] = useSettings();
+  const [settings, setSettings, loaded] = useSettings();
   const [draft, setDraft] = useState(null); // unsaved edits; null = none
   const [section, setSection] = useState("profile");
   const [justSaved, setJustSaved] = useState(false);
-  const hydrated = useHydrated();
+  const [saving, setSaving] = useState(false);
+  const [notice, setNotice] = useState(null); // { error } | { info } after a save
 
   // Follow the URL hash (#workspace, #notifications) and links from the top bar.
   useEffect(() => {
@@ -82,11 +87,19 @@ export default function SettingsPage() {
   };
   const field = (key) => ({ value: values[key], onChange: (v) => update({ [key]: v }) });
 
-  const save = () => {
-    if (!dirty) return;
-    setSettings(draft);
+  const save = async () => {
+    if (!dirty || saving) return;
+    setSaving(true);
+    setNotice(null);
+    const res = await setSettings(draft);
+    setSaving(false);
+    if (res.error) {
+      setNotice({ error: `Couldn't save: ${res.error}` });
+      return; // keep the draft so nothing typed is lost
+    }
     setDraft(null);
     setJustSaved(true);
+    if (res.emailPending) setNotice({ info: "Check your new inbox: the email address changes once you confirm it." });
   };
 
   const go = (id) => {
@@ -99,7 +112,7 @@ export default function SettingsPage() {
       <PageTitle
         eyebrow="Account and workspace"
         title="Profile and settings"
-        description="Manage your personal details, workspace preferences and alerts. Settings are saved in this browser."
+        description="Manage your personal details, workspace preferences and alerts. Saved to your account."
       >
         <div className="flex items-center gap-2">
           {dirty && (
@@ -114,15 +127,15 @@ export default function SettingsPage() {
           <button
             type="button"
             onClick={save}
-            disabled={!dirty}
+            disabled={!dirty || saving}
             className="inline-flex min-h-[42px] cursor-pointer items-center gap-2 rounded-[22px] bg-sense-lime px-[18px] text-[10px] font-extrabold uppercase text-sense-navy shadow-[0_5px_0_rgba(0,31,62,0.17)] transition hover:translate-y-0.5 hover:shadow-[0_3px_0_rgba(0,31,62,0.2)] disabled:cursor-default disabled:opacity-70 disabled:hover:translate-y-0"
           >
-            {justSaved && !dirty ? "✓ Changes saved" : "Save changes"}
+            {saving ? "Saving…" : justSaved && !dirty ? "✓ Changes saved" : "Save changes"}
           </button>
         </div>
       </PageTitle>
 
-      {!hydrated ? (
+      {!loaded ? (
         <div className="grid gap-[18px] lg:grid-cols-[260px_minmax(0,1fr)]">
           <div className="grid justify-items-center gap-2 self-start rounded-[22px] bg-paper/95 p-6">
             <Skeleton className="size-16 rounded-full" />
@@ -139,9 +152,9 @@ export default function SettingsPage() {
         <Panel as="aside" className="self-start">
           <div className="grid justify-items-center gap-1 border-b border-sense-blue/15 pb-5 text-center">
             <span className="mb-2 grid size-16 place-items-center rounded-full bg-sense-blue text-lg font-bold text-paper">
-              {initials(settings.name || settings.company)}
+              {initials(fullName(settings) || settings.company)}
             </span>
-            <strong className="text-sm">{settings.name || "Your name"}</strong>
+            <strong className="text-sm">{fullName(settings) || "Your name"}</strong>
             <p className="text-[11px] text-[#5f706e]">{settings.role || "Add your role"}</p>
             <span className="text-[11px] font-semibold text-sense-blue">{settings.company || "Your company"}</span>
           </div>
@@ -162,6 +175,14 @@ export default function SettingsPage() {
               </button>
             ))}
           </nav>
+          <form action={signOut} className="mt-4 border-t border-sense-blue/15 pt-4">
+            <button
+              type="submit"
+              className="flex min-h-11 w-full cursor-pointer items-center justify-center rounded-xl border border-sense-blue/20 px-3 text-xs font-semibold text-sense-blue transition-colors hover:bg-sense-blue/10"
+            >
+              Sign out
+            </button>
+          </form>
         </Panel>
 
         <Panel>
@@ -172,12 +193,13 @@ export default function SettingsPage() {
                 title="Your profile"
                 aside={
                   <span className="grid size-10 place-items-center rounded-full bg-sense-blue text-xs font-bold text-paper">
-                    {initials(values.name || values.company)}
+                    {initials(fullName(values) || values.company)}
                   </span>
                 }
               />
               <div className="grid gap-x-5 sm:grid-cols-2">
-                <TextInput label="First and last name" placeholder="e.g. Alex Chen" autoComplete="name" {...field("name")} />
+                <TextInput label="First name" placeholder="e.g. Alex" autoComplete="given-name" {...field("firstName")} />
+                <TextInput label="Last name" placeholder="e.g. Chen" autoComplete="family-name" {...field("lastName")} />
                 <TextInput label="Role at company" placeholder="e.g. Marketing Manager" autoComplete="organization-title" {...field("role")} />
                 <TextInput label="Email address" type="email" placeholder="you@company.com" autoComplete="email" {...field("email")} />
                 <TextInput label="Phone number" type="tel" placeholder="604-555-0100" autoComplete="tel" {...field("phone")} />
@@ -227,6 +249,13 @@ export default function SettingsPage() {
             </>
           )}
 
+          {section === "connections" && (
+            <>
+              <SectionHeading eyebrow="Facebook and Instagram" title="Connected accounts" />
+              <ConnectionsSection />
+            </>
+          )}
+
           {section === "notifications" && (
             <>
               <SectionHeading eyebrow="Alert preferences" title="Choose what reaches you" />
@@ -254,9 +283,14 @@ export default function SettingsPage() {
             </>
           )}
 
-          {dirty && (
+          {dirty && !notice?.error && (
             <p role="status" className="mt-5 text-[11px] font-semibold text-sense-blue">
               You have unsaved changes.
+            </p>
+          )}
+          {notice && (
+            <p role={notice.error ? "alert" : "status"} className={`mt-5 text-[11px] font-semibold ${notice.error ? "text-[#b23b3b]" : "text-sense-blue"}`}>
+              {notice.error ?? notice.info}
             </p>
           )}
         </Panel>
