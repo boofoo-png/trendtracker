@@ -92,7 +92,7 @@ export default function AudienceSelector({
     <Card
       eyebrow="Choose an audience"
       title="Whose interests do you want to explore?"
-      aside={<p className="text-[11px] text-ink-500">Filters update the radar and trend list</p>}
+      aside={<p className="text-[11px] text-ink-500">Pick audiences, then press Find trends to search for them</p>}
     >
       {/* Search / add */}
       <div className="flex flex-col gap-2 sm:flex-row">
@@ -194,7 +194,7 @@ export default function AudienceSelector({
           </div>
         ) : savedAudiences.length === 0 ? (
           <p className="rounded-xl border border-dashed border-sense-blue/25 px-4 py-4 text-center text-[11px] text-ink-500">
-            Search above or add your first custom audience. Until then, the tracker shows all live
+            Search above or add your first custom audience. Until then, you&apos;ll see example
             trends.
           </p>
         ) : (
