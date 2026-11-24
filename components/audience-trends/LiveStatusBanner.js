@@ -15,8 +15,17 @@ function timeAgo(ts) {
 const day = (ts) => new Date(ts).toLocaleDateString("en-US", { month: "short", day: "numeric" });
 const sameSet = (a, b) => a.length === b.length && a.every((x) => b.includes(x));
 
-export default function LiveStatusBanner({ isSample, updatedAt, liveAudiences = [], audiences = [], errors, isRunning }) {
-  const status = isRunning
+const startedAgo = (ts) => {
+  const mins = Math.max(0, Math.round((Date.now() - ts) / 60_000));
+  return mins < 1 ? "just now" : `${mins} min ago`;
+};
+
+export default function LiveStatusBanner({ isSample, updatedAt, liveAudiences = [], audiences = [], errors, isRunning: runningHere, backgroundSearch }) {
+  // Running in this visit, or started earlier / elsewhere and still going.
+  const isRunning = runningHere || Boolean(backgroundSearch);
+  const status = backgroundSearch && !runningHere
+    ? `Still searching… started ${startedAgo(backgroundSearch.startedAt)}`
+    : isRunning
     ? "Searching TikTok & Instagram… (can take a few minutes)"
     : isSample
       ? "Sample data"
@@ -31,7 +40,9 @@ export default function LiveStatusBanner({ isSample, updatedAt, liveAudiences = 
         {isSample ? (
           <>
             <p className="text-sm font-semibold">Showing example trends</p>
-            <p className="text-xs text-ink-500">Choose your audiences below and press Find trends to see real ones.</p>
+            {!isRunning && (
+              <p className="text-xs text-ink-500">Choose your audiences below and press Find trends to see real ones.</p>
+            )}
           </>
         ) : (
           <>
@@ -40,6 +51,12 @@ export default function LiveStatusBanner({ isSample, updatedAt, liveAudiences = 
             </p>
             <p className="text-xs text-ink-500">{updatedAt ? `From your search on ${day(updatedAt)}` : "From your last search"}</p>
           </>
+        )}
+        {backgroundSearch && !runningHere && (
+          <p className="mt-1.5 rounded-lg bg-sense-blue/10 px-2.5 py-1.5 text-xs text-sense-navy">
+            A trend search for <strong>{backgroundSearch.audiences?.join(", ") || "your audiences"}</strong> is still running.
+            The new trends will appear here automatically when it’s done. You don’t need to search again.
+          </p>
         )}
         {changed && (
           <p className="mt-1.5 rounded-lg bg-sense-lime/50 px-2.5 py-1.5 text-xs text-sense-navy">

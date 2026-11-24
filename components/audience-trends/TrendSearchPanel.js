@@ -23,6 +23,7 @@ export default function TrendSearchPanel({
   removePlanTag,
   cancelSearch,
   runSearch,
+  backgroundSearch,
 }) {
   const hasSelection = audiences.length > 0;
   const planIsStale = searchPlan && !sameSet(searchPlan.audiences, audiences);
@@ -117,14 +118,22 @@ export default function TrendSearchPanel({
       <button
         type="button"
         onClick={planSearch}
-        disabled={!hasSelection || isPlanning || isRunning}
+        disabled={!hasSelection || isPlanning || isRunning || Boolean(backgroundSearch)}
         className="inline-flex min-h-12 shrink-0 cursor-pointer items-center justify-center gap-2 rounded-[24px] bg-sense-lime px-6 text-sm font-bold text-sense-navy shadow-[0_5px_0_rgba(0,31,62,0.18)] transition hover:-translate-y-px hover:bg-sense-blue hover:text-paper active:translate-y-0.5 active:shadow-[0_2px_0_rgba(0,31,62,0.18)] disabled:cursor-not-allowed disabled:opacity-50 disabled:hover:translate-y-0 disabled:hover:bg-sense-lime disabled:hover:text-sense-navy"
       >
         <span aria-hidden="true">✦</span>
-        {isPlanning ? "Choosing hashtags…" : showingSelected ? "Find trends again" : "Find trends"}
+        {backgroundSearch
+          ? "Search in progress…"
+          : isPlanning
+            ? "Choosing hashtags…"
+            : showingSelected
+              ? "Find trends again"
+              : "Find trends"}
       </button>
       <p className="text-xs leading-[1.5] text-ink-500">
-        {!hasSelection ? (
+        {backgroundSearch ? (
+          "A search is already running. Its results will show up on this page automatically."
+        ) : !hasSelection ? (
           "Select one or more saved audiences first."
         ) : (
           <>

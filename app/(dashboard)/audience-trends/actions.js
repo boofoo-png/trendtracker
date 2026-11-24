@@ -5,7 +5,14 @@
 
 import { scrapeTrends } from "@/lib/apify/getTrends";
 import { EST_COST_PER_POST, MAX_HASHTAGS_PER_SEARCH, RESULTS_PER_HASHTAG } from "@/lib/apify/config";
-import { currentWorkspace, failTrendSearch, finishTrendSearch, startTrendSearch } from "@/lib/trendStore";
+import {
+  currentWorkspace,
+  failTrendSearch,
+  finishTrendSearch,
+  getLatestTrends,
+  getRunningSearch,
+  startTrendSearch,
+} from "@/lib/trendStore";
 import {
   getAudienceFit,
   getAudienceSuggestions,
@@ -67,8 +74,14 @@ export async function runTrendSearch(audiences, hashtags, business) {
     return { trends: [], errors: ["Select an audience and at least one hashtag."] };
   }
 
-  const { userId, workspaceId } = await currentWorkspace();
+  const { supabase, userId, workspaceId } = await currentWorkspace();
   if (!workspaceId) return { trends: [], errors: ["Sign in again to run a trend search."] };
+
+  // One search at a time per workspace, so a second tab or teammate can't pay twice.
+  const running = await getRunningSearch(supabase, workspaceId);
+  if (running) {
+    return { trends: [], running, errors: ["A trend search is already running. Its results will appear here when it finishes."] };
+  }
 
   let searchId = null;
   try {
@@ -122,6 +135,14 @@ export async function runTrendSearch(audiences, hashtags, business) {
     if (searchId) await failTrendSearch(searchId, [err.message]).catch(() => {});
     return { trends: [], errors: [err.message] };
   }
+}
+
+/**
+ * Polled by the page while a search started elsewhere (another visit, tab or teammate)
+ * is still running: the latest results, with `running` set until it finishes.
+ */
+export async function checkTrendSearch() {
+  return getLatestTrends();
 }
 
 /** "✦ Generate campaign direction" button: Gemini writes a direction for one trend. */
