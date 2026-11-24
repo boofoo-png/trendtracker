@@ -8,7 +8,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import Icon from "@/components/ui/Icon";
-import { removeItem } from "@/lib/savedContent";
+import { removeItem, updateItem } from "@/lib/savedContent";
 import { useContentStore } from "@/lib/contentStore";
 import { channelLabel, channelsOf, useCalendar, useToday } from "@/lib/calendar";
 import { saveContentTrend } from "@/lib/contentTrend";
@@ -89,6 +89,69 @@ const CARD_STYLE = {
 const DEFAULT_STYLE = "bg-[linear-gradient(145deg,var(--color-sense-lime),#efffae)] text-sense-navy";
 
 function SavedCard({ item, open, onToggle, onAdapt }) {
+  const [editing, setEditing] = useState(false);
+  const [title, setTitle] = useState(item.title);
+  const [text, setText] = useState(item.text);
+  const changed = title.trim() !== item.title || text !== item.text;
+
+  const startEditing = () => {
+    setTitle(item.title);
+    setText(item.text);
+    setEditing(true);
+  };
+  const saveEdits = () => {
+    updateItem(item.id, { title, text });
+    setEditing(false);
+  };
+  const cancel = () => {
+    if (changed && !window.confirm("Discard your changes?")) return;
+    setEditing(false);
+  };
+
+  const small = "inline-flex cursor-pointer items-center gap-1 rounded-2xl px-2 py-1 text-[10px] font-bold transition-colors";
+
+  if (editing) {
+    return (
+      <article className="min-w-0 overflow-hidden rounded-[18px] border-2 border-sense-blue/40 bg-paper text-sense-navy shadow-[0_5px_0_rgba(0,31,62,0.16),0_15px_25px_rgba(0,31,62,0.1)] sm:col-span-2">
+        <div className="grid gap-3 p-4">
+          <span className="text-[10px] font-extrabold uppercase tracking-[0.08em] text-sense-blue">Editing · {item.type}</span>
+          <label className="grid gap-1 text-[11px] font-semibold text-[#3d5053]">
+            Title
+            <input
+              value={title}
+              maxLength={120}
+              onChange={(e) => setTitle(e.target.value)}
+              className="min-h-10 rounded-[9px] border border-sense-blue/25 bg-white px-3 text-[13px] font-normal text-sense-navy outline-none focus:border-sense-blue"
+            />
+          </label>
+          <label className="grid gap-1 text-[11px] font-semibold text-[#3d5053]">
+            Text
+            <textarea
+              value={text}
+              autoFocus
+              onChange={(e) => setText(e.target.value)}
+              rows={Math.min(16, Math.max(6, text.split("\n").length + 1))}
+              className="rounded-[9px] border border-sense-blue/25 bg-white px-3 py-2.5 text-[13px] leading-[1.55] font-normal text-sense-navy outline-none focus:border-sense-blue"
+            />
+          </label>
+          <div className="flex flex-wrap justify-end gap-2">
+            <button type="button" onClick={cancel} className={`${small} border border-sense-blue/25 px-3.5 py-2 text-[11px] text-sense-blue hover:bg-sense-blue/10`}>
+              Cancel
+            </button>
+            <button
+              type="button"
+              onClick={saveEdits}
+              disabled={!changed || !text.trim()}
+              className={`${small} bg-sense-blue px-3.5 py-2 text-[11px] text-paper hover:bg-sense-blue/85 disabled:cursor-not-allowed disabled:opacity-50`}
+            >
+              Save changes
+            </button>
+          </div>
+        </div>
+      </article>
+    );
+  }
+
   return (
     <article className="min-w-0 overflow-hidden rounded-[18px] border border-paper/70 bg-paper/95 text-sense-navy shadow-[0_5px_0_rgba(0,31,62,0.16),0_15px_25px_rgba(0,31,62,0.1)] transition hover:-translate-y-0.5 hover:shadow-[0_3px_0_rgba(0,31,62,0.19),0_18px_30px_rgba(0,31,62,0.14)]">
       <button
@@ -114,13 +177,16 @@ function SavedCard({ item, open, onToggle, onAdapt }) {
             {new Date(item.createdAt).toLocaleDateString(undefined, { month: "short", day: "numeric", year: "numeric" })}
           </small>
         </div>
-        <div className="flex items-center justify-between gap-1.5">
-          <CopyButton text={item.text} label="Copy text" />
+        <div className="flex flex-wrap items-center justify-between gap-1">
+          <CopyButton text={item.text} label="Copy" />
+          <button type="button" title="Change the title or text" onClick={startEditing} className={`${small} text-sense-blue hover:bg-sense-blue/10`}>
+            <Icon name="edit" size={13} /> Edit
+          </button>
           <button
             type="button"
             title="Turn this into versions for Instagram, Facebook, TikTok or your blog"
             onClick={onAdapt}
-            className="inline-flex cursor-pointer items-center gap-1 rounded-2xl px-2 py-1 text-[10px] font-bold text-sense-blue transition-colors hover:bg-sense-blue/10"
+            className={`${small} text-sense-blue hover:bg-sense-blue/10`}
           >
             <Icon name="repeat" size={13} /> Adapt
           </button>
@@ -128,7 +194,7 @@ function SavedCard({ item, open, onToggle, onAdapt }) {
             type="button"
             title="Delete from My Content"
             onClick={() => window.confirm(`Delete "${item.title}" from My Content?`) && removeItem(item.id)}
-            className="inline-flex cursor-pointer items-center gap-1 rounded-2xl px-2 py-1 text-[10px] font-bold text-[#708083] transition-colors hover:bg-[#ff7f7f]/15 hover:text-[#b84f4f]"
+            className={`${small} text-[#708083] hover:bg-[#ff7f7f]/15 hover:text-[#b84f4f]`}
           >
             <Icon name="trash" size={13} /> Delete
           </button>
