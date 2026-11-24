@@ -947,12 +947,12 @@ export default function RealCompetitors() {
               onSubmit={add}
               className="mt-4 flex flex-wrap items-center gap-2"
             >
-              <label className="flex min-h-10 min-w-0 flex-1 items-center gap-1 rounded-[20px] border border-sense-blue/25 bg-white/80 px-3 focus-within:border-sense-blue sm:max-w-[320px]">
+              <label className="flex min-h-10 min-w-[15rem] max-w-[320px] flex-1 items-center gap-1 rounded-[20px] border border-sense-blue/25 bg-white/80 px-3 focus-within:border-sense-blue">
                 <span className="text-base text-[#6f7f82]">@</span>
                 <input
                   value={handle}
                   onChange={(e) => setHandle(e.target.value)}
-                  placeholder="competitor's Instagram username"
+                  placeholder="their Instagram username"
                   aria-label="Competitor's Instagram username"
                   autoCapitalize="none"
                   autoCorrect="off"
@@ -963,7 +963,7 @@ export default function RealCompetitors() {
               <button
                 type="submit"
                 disabled={adding || !handle.trim()}
-                className="min-h-10 cursor-pointer rounded-[20px] bg-sense-lime px-5 text-[13px] font-extrabold uppercase text-sense-navy shadow-[0_4px_0_rgba(0,31,62,0.17)] transition hover:translate-y-px disabled:cursor-default disabled:opacity-60"
+                className="min-h-10 shrink-0 cursor-pointer rounded-[20px] bg-sense-lime px-5 text-[13px] font-extrabold uppercase text-sense-navy shadow-[0_4px_0_rgba(0,31,62,0.17)] transition hover:translate-y-px disabled:cursor-default disabled:opacity-60"
               >
                 {adding ? "Looking up…" : "Add competitor"}
               </button>
