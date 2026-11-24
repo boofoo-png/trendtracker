@@ -7,11 +7,12 @@ import Card from "@/components/ui/Card";
 import AdviceBadge from "@/components/ui/AdviceBadge";
 import ContentAngleCard from "./ContentAngleCard";
 import CampaignFocusForm from "./CampaignFocusForm";
-import { generateCampaignDirection } from "@/app/(dashboard)/audience-trends/actions";
+import { generateCampaignDirection, getCampaignDirections } from "@/app/(dashboard)/audience-trends/actions";
 import { useBusiness } from "@/lib/settings";
 
 // Gemini runs only when a Generate / Regenerate button is pressed.
-// Results are kept per trend × audience × focus for this session.
+// Results are kept per trend × audience × focus, and saved to the workspace
+// (campaign_directions) so they're still there after a reload or on another device.
 
 const FOCUS_KEY = "trendtracker:campaign-focus";
 const EMPTY_FOCUS = { type: "Product", name: "", details: "" };
@@ -22,6 +23,16 @@ function activeFocus(focus) {
   return { type: focus.type, name: focus.name.trim(), details: focus.details.trim() };
 }
 
+/** Same trend + audiences + focus → same saved direction. */
+function keyFor(trendId, audiences, focus) {
+  const f = activeFocus(focus);
+  const focusKey = f ? `${f.type}:${f.name}:${f.details}` : "brand";
+  return `${trendId}::${audiences.map((a) => a.trim()).sort().join("|")}::${focusKey}`;
+}
+
+const savedDate = (iso) =>
+  new Date(iso).toLocaleDateString("en-US", { month: "short", day: "numeric" });
+
 export default function CampaignDirection({ selectedTrend, audiences, liveAudiences }) {
   const business = useBusiness();
   const [results, setResults] = useState({}); // key → { angle, error, attempt }
@@ -31,12 +42,33 @@ export default function CampaignDirection({ selectedTrend, audiences, liveAudien
   const [focus, setFocus] = useState(EMPTY_FOCUS);
 
   useEffect(() => {
+    let localFocus = null;
     try {
-      const saved = JSON.parse(localStorage.getItem(FOCUS_KEY) ?? "null");
+      localFocus = JSON.parse(localStorage.getItem(FOCUS_KEY) ?? "null");
       // Read after mount so server and client markup match on hydration.
       // eslint-disable-next-line react-hooks/set-state-in-effect
-      if (saved?.type) setFocus({ ...EMPTY_FOCUS, ...saved });
+      if (localFocus?.type) setFocus({ ...EMPTY_FOCUS, ...localFocus });
     } catch {}
+
+    // Directions saved earlier in this workspace (newest first; keep the newest per key).
+    let alive = true;
+    getCampaignDirections()
+      .then(({ directions }) => {
+        if (!alive || !directions?.length) return;
+        const saved = {};
+        for (const d of directions) {
+          const k = keyFor(d.trendKey, d.audiences, { ...EMPTY_FOCUS, ...d.focus });
+          saved[k] ??= { angle: d.angle, attempt: d.attempt, savedAt: d.savedAt };
+        }
+        // Anything generated during this visit wins over what was loaded.
+        setResults((prev) => ({ ...saved, ...prev }));
+        // On a new device (nothing in this browser), bring back the last thing promoted.
+        if (!localFocus?.type && directions[0].focus) setFocus({ ...EMPTY_FOCUS, ...directions[0].focus });
+      })
+      .catch(() => {});
+    return () => {
+      alive = false;
+    };
   }, []);
 
   const updateFocus = (next) => {
@@ -50,8 +82,7 @@ export default function CampaignDirection({ selectedTrend, audiences, liveAudien
 
   const forAudiences = audiences.length ? audiences : (liveAudiences ?? []);
   const sentFocus = activeFocus(focus);
-  const focusKey = sentFocus ? `${sentFocus.type}:${sentFocus.name}:${sentFocus.details}` : "brand";
-  const key = `${selectedTrend.id}::${[...forAudiences].sort().join("|")}::${focusKey}`;
+  const key = keyFor(selectedTrend.id, forAudiences, focus);
   const entry = results[key];
   // The sample trend's hand-written angle only applies to the general-brand case.
   const angle = entry?.angle ?? (sentFocus ? null : selectedTrend.angle) ?? null;
@@ -70,7 +101,7 @@ export default function CampaignDirection({ selectedTrend, audiences, liveAudien
       setResults((prev) => ({
         ...prev,
         [key]: res.angle
-          ? { angle: res.angle, attempt }
+          ? { angle: res.angle, attempt, savedAt: res.savedAt }
           : { ...prev[key], error: res.error ?? "Couldn't generate a direction.", attempt },
       }));
       setPendingKey((k) => (k === key ? null : k));
@@ -207,6 +238,9 @@ export default function CampaignDirection({ selectedTrend, audiences, liveAudien
               >
                 {isPending ? "✦ Writing…" : entry?.angle ? "✦ Regenerate" : "✦ Generate with AI"}
               </button>
+              {entry?.angle && entry.savedAt && !isPending && (
+                <p className="text-xs text-[#4b5d60]">✓ Saved · generated {savedDate(entry.savedAt)}</p>
+              )}
               {entry?.error && (
                 <p role="alert" className="text-xs text-coral-400">
                   {entry.error}

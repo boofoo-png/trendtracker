@@ -172,17 +172,65 @@ export async function generateCampaignDirection(trend, audiences, focus, attempt
       }
     : null;
 
+  const names = cleanAudiences(audiences);
+  const tries = Math.max(0, Math.min(Number(attempt) || 0, 20));
+  let angle;
   try {
-    return {
-      angle: await getCampaignDirection(
-        summary,
-        cleanAudiences(audiences),
-        cleanFocus,
-        Math.max(0, Math.min(Number(attempt) || 0, 20)),
-        businessContext(business),
-      ),
-    };
+    angle = await getCampaignDirection(summary, names, cleanFocus, tries, businessContext(business));
   } catch (err) {
     return { error: err.message };
   }
+
+  // Keep it for this workspace so it's still there after a reload or on another device.
+  // A failed save doesn't hide the answer; it just won't be remembered.
+  let savedAt = null;
+  try {
+    const { supabase, userId, workspaceId } = await currentWorkspace();
+    if (workspaceId) {
+      const { data, error } = await supabase
+        .from("campaign_directions")
+        .insert({
+          workspace_id: workspaceId,
+          trend_key: str(trend.id, 120),
+          audiences: names,
+          focus: cleanFocus ?? { type: "General brand", name: "", details: "" },
+          attempt: tries,
+          result: angle,
+          created_by: userId,
+        })
+        .select("created_at")
+        .single();
+      if (error) console.error("Saving campaign direction failed:", error.message);
+      savedAt = data?.created_at ?? null;
+    }
+  } catch (err) {
+    console.error("Saving campaign direction failed:", err.message);
+  }
+  return { angle, savedAt };
+}
+
+/**
+ * Campaign directions saved in this workspace, newest first (the page keeps the newest
+ * per trend + audiences + focus), so generated ideas survive reloads.
+ */
+export async function getCampaignDirections() {
+  const { supabase, workspaceId } = await currentWorkspace();
+  if (!workspaceId) return { directions: [] };
+  const { data, error } = await supabase
+    .from("campaign_directions")
+    .select("trend_key, audiences, focus, attempt, result, created_at")
+    .eq("workspace_id", workspaceId)
+    .order("created_at", { ascending: false })
+    .limit(300);
+  if (error) return { directions: [], error: error.message };
+  return {
+    directions: data.map((r) => ({
+      trendKey: r.trend_key,
+      audiences: r.audiences ?? [],
+      focus: r.focus,
+      attempt: r.attempt,
+      angle: r.result,
+      savedAt: r.created_at,
+    })),
+  };
 }
