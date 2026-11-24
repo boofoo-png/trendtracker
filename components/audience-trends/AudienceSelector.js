@@ -172,18 +172,18 @@ export default function AudienceSelector({
             setOpen(true);
           }}
           disabled={query.trim().length < 3 || ai.loading}
-          title={query.trim().length < 3 ? "Type at least 3 letters first" : "Ask Sense AI for related audiences"}
+          title={query.trim().length < 3 ? "Type at least 3 letters first" : "Sense AI suggests more specific audiences like the one you typed"}
           className="w-full shrink-0 cursor-pointer rounded-[18px] border border-sense-blue/20 bg-white/70 text-xs font-bold text-sense-blue transition-colors hover:bg-sense-blue/10 disabled:cursor-not-allowed disabled:opacity-50 px-4 py-2.5 sm:w-auto"
         >
-          {ai.loading ? "✦ Thinking…" : "✦ Suggest with AI"}
+          {ai.loading ? "✦ Finding…" : "✦ Find similar audiences"}
         </button>
       </div>
       <p className="mt-1.5 text-xs text-ink-500">
         {query.trim().length === 0
           ? "Type a group of people, like “coffee lovers”, then press Enter or Add."
           : query.trim().length < 3
-            ? "Keep typing: Suggest with AI works after 3 letters."
-            : "Press Enter or Add to save it, or Suggest with AI for related audiences."}
+            ? "Keep typing: Find similar audiences works after 3 letters."
+            : "Press Enter or Add to save it, or Find similar audiences for more ideas like it."}
       </p>
       {ai.error && <p className="mt-1 text-[11px] text-ink-500">{ai.error}</p>}
 

@@ -38,7 +38,7 @@ const cleanTags = (list) =>
     ),
   ].slice(0, MAX_HASHTAGS_PER_SEARCH);
 
-/** "✦ Suggest with AI" button: related audience names. */
+/** "✦ Find similar audiences" button: related audience names. */
 // Each action takes `business`, the profile from Settings → Workspace (lib/business.js).
 
 export async function suggestAudiences(query, business) {
