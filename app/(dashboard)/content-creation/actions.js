@@ -8,6 +8,7 @@ import { CONTENT_KINDS, FIELD_OPTIONS } from "@/lib/contentKinds";
 import { businessContext } from "@/lib/business";
 import { briefProblem, cleanBrief } from "@/lib/campaignBrief";
 import { generateCampaignPlan } from "@/lib/gemini/campaignPlan";
+import { currentWorkspace, getLatestTrends } from "@/lib/trendStore";
 
 const NO_KEY = "AI features are off: add GEMINI_API_KEY to .env.local.";
 const LONG = new Set(["post", "text", "source", "fileText"]);
@@ -80,4 +81,22 @@ export async function generateCampaign(brief, trend, business) {
   } catch (err) {
     return { error: err.message || "Couldn't generate the campaign. Try again." };
   }
+}
+
+/**
+ * "+ Use a trend" picker: the workspace's latest trends (starred first), loaded when
+ * the picker opens. No AI and no scraping, just a read of saved results.
+ */
+export async function listPickerTrends() {
+  const { supabase, userId, workspaceId } = await currentWorkspace();
+  if (!workspaceId) return { trends: [], audiences: [] };
+  const [latest, stars] = await Promise.all([
+    getLatestTrends(),
+    supabase.from("watchlist").select("trend_key").eq("user_id", userId).eq("workspace_id", workspaceId),
+  ]);
+  const starred = new Set((stars.data ?? []).map((r) => r.trend_key));
+  const trends = latest.trends
+    .map((t) => ({ id: t.id, name: t.name, platform: t.platform, format: t.format, momentum: t.momentum, starred: starred.has(t.id) }))
+    .sort((a, b) => Number(b.starred) - Number(a.starred) || b.momentum - a.momentum);
+  return { trends, audiences: latest.audiences ?? [] };
 }

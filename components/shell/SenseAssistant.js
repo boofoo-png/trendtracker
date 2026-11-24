@@ -12,9 +12,10 @@ import Icon from "@/components/ui/Icon";
 import { askSense } from "@/app/actions/assistant";
 import { SENSE_EVENT, STARTER_PROMPTS } from "@/lib/assistant/shared";
 import { saveContentTrend } from "@/lib/contentTrend";
-import { listSaved } from "@/lib/savedContent";
+import { listCalendar, listSaved } from "@/lib/contentStore";
 import { channelLabel, toISODate } from "@/lib/calendar";
 import { useBusiness } from "@/lib/settings";
+import useAudiences from "@/lib/useAudiences";
 
 const readJSON = (key, fallback) => {
   try {
@@ -25,14 +26,13 @@ const readJSON = (key, fallback) => {
 };
 
 /** What only this browser knows, sent along with each question. */
-function browserContext(pathname) {
+function browserContext(pathname, selectedAudiences) {
   const today = toISODate(new Date());
-  const calendar = readJSON("trendtracker:calendar", []);
+  const calendar = listCalendar();
   const campaign = readJSON("trendtracker:campaign", {});
-  const audiences = readJSON("trendtracker:audiences", {});
   return {
     page: pathname,
-    audiences: Array.isArray(audiences.selected) ? audiences.selected : [],
+    audiences: selectedAudiences,
     upcomingPosts: (Array.isArray(calendar) ? calendar : [])
       .filter((p) => p.date >= today)
       .slice(0, 6)
@@ -128,6 +128,7 @@ function Drawer({ onClose, messages, setMessages, initialQuestion }) {
   const pathname = usePathname();
   const router = useRouter();
   const business = useBusiness();
+  const { audiences: selectedAudiences } = useAudiences();
   const [input, setInput] = useState("");
   const [pending, startTransition] = useTransition();
   const inputRef = useRef(null);
@@ -144,7 +145,7 @@ function Drawer({ onClose, messages, setMessages, initialQuestion }) {
       startTransition(async () => {
         const res = await askSense(
           history.map(({ role, text: t }) => ({ role, text: t })),
-          browserContext(pathname),
+          browserContext(pathname, selectedAudiences),
           business,
         ).catch((err) => ({ error: err.message }));
         setMessages((m) => [
@@ -155,7 +156,7 @@ function Drawer({ onClose, messages, setMessages, initialQuestion }) {
         ]);
       });
     },
-    [messages, pending, pathname, business, setMessages],
+    [messages, pending, pathname, business, selectedAudiences, setMessages],
   );
 
   // Escape closes; the page behind doesn't scroll while the drawer is open.

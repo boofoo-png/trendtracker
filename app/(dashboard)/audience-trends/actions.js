@@ -3,9 +3,9 @@
 // Every action here is triggered by an explicit button press in the UI.
 // Nothing runs on page load, typing, or selection.
 
-import { updateTag } from "next/cache";
-import { saveLatestResult, scrapeTrends } from "@/lib/apify/getTrends";
-import { MAX_HASHTAGS_PER_SEARCH, TRENDS_CACHE_TAG } from "@/lib/apify/config";
+import { scrapeTrends } from "@/lib/apify/getTrends";
+import { EST_COST_PER_POST, MAX_HASHTAGS_PER_SEARCH, RESULTS_PER_HASHTAG } from "@/lib/apify/config";
+import { currentWorkspace, failTrendSearch, finishTrendSearch, startTrendSearch } from "@/lib/trendStore";
 import {
   getAudienceFit,
   getAudienceSuggestions,
@@ -67,8 +67,14 @@ export async function runTrendSearch(audiences, hashtags, business) {
     return { trends: [], errors: ["Select an audience and at least one hashtag."] };
   }
 
+  const { userId, workspaceId } = await currentWorkspace();
+  if (!workspaceId) return { trends: [], errors: ["Sign in again to run a trend search."] };
+
+  let searchId = null;
   try {
-    const { trends, updatedAt, errors } = await scrapeTrends(tags, businessKeywords(business));
+    const estCost = tags.length * RESULTS_PER_HASHTAG * Object.values(EST_COST_PER_POST).reduce((a, b) => a + b, 0);
+    searchId = await startTrendSearch({ workspaceId, userId, audiences: names, hashtags: tags, estCost: Number(estCost.toFixed(2)) });
+    const { trends, posts, updatedAt, errors } = await scrapeTrends(tags, businessKeywords(business));
 
     // Score fit for every audience in this search, so switching between them later is free.
     const audienceFit = {};
@@ -105,13 +111,15 @@ export async function runTrendSearch(audiences, hashtags, business) {
     };
 
     if (result.trends.length) {
-      await saveLatestResult({ ...result, errors: [] });
-      updateTag(TRENDS_CACHE_TAG);
+      // Saved to this workspace only; other accounts never see it.
+      await finishTrendSearch(searchId, { workspaceId, posts, trends: result.trends, errors, finishedAt: updatedAt });
     } else {
       result.errors.push("No trends found for these hashtags. Try different ones.");
+      await failTrendSearch(searchId, result.errors);
     }
     return result;
   } catch (err) {
+    if (searchId) await failTrendSearch(searchId, [err.message]).catch(() => {});
     return { trends: [], errors: [err.message] };
   }
 }

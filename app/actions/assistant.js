@@ -2,7 +2,7 @@
 
 // Sense AI assistant: called when the marketer presses Ask (or picks a suggested question).
 
-import { getLatestTrends } from "@/lib/apify/getTrends";
+import { getLatestTrends } from "@/lib/trendStore";
 import { businessContext } from "@/lib/business";
 import { isGeminiConfigured } from "@/lib/gemini/client";
 import { askSenseAI } from "@/lib/gemini/assistant";
