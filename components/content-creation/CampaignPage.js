@@ -485,14 +485,15 @@ function PlanView({ plan, brief, onEdit, onRegenerate, onSave, saved, pending, e
             {pending ? "Generating…" : "Regenerate"}
           </button>
           <CopyPlanButton text={text} className={`${btn} border border-sense-blue/25 text-sense-blue hover:bg-sense-blue/10`} />
-          <button
-            type="button"
-            onClick={onSave}
-            disabled={saved}
-            className={`${btn} ${saved ? "cursor-default bg-[#4e8067] text-paper" : "bg-sense-lime text-sense-navy hover:opacity-85"}`}
-          >
-            {saved ? "✓ Saved to My Content" : "Save to My Content"}
-          </button>
+          {saved ? (
+            <Link href="/content-creation/my-content" className={`${btn} bg-[#4e8067] text-paper hover:opacity-85`}>
+              ✓ Saved · View in My Content →
+            </Link>
+          ) : (
+            <button type="button" onClick={onSave} className={`${btn} bg-sense-lime text-sense-navy hover:opacity-85`}>
+              Save to My Content
+            </button>
+          )}
         </div>
       </div>
     </Panel>

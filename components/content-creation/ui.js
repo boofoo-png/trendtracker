@@ -423,14 +423,19 @@ export function ResultActions({ onRegenerate, onSave, onAdapt, saved, saveLabel 
       <button type="button" onClick={onRegenerate} disabled={pending} className={`${btn} bg-sense-blue text-paper`}>
         {pending ? "Generating…" : "Regenerate"}
       </button>
-      <button
-        type="button"
-        onClick={onSave}
-        disabled={saved}
-        className={`${btn} ${saved ? "cursor-default bg-[#4e8067] text-paper" : "bg-sense-lime text-sense-navy"}`}
-      >
-        {saved ? "Saved ✓" : saveLabel}
-      </button>
+      {saved ? (
+        // Once saved, the button becomes the way to find it.
+        <Link
+          href="/content-creation/my-content"
+          className={`${btn} inline-flex items-center justify-center bg-[#4e8067] text-paper`}
+        >
+          ✓ Saved · View in My Content →
+        </Link>
+      ) : (
+        <button type="button" onClick={onSave} className={`${btn} bg-sense-lime text-sense-navy`}>
+          {saveLabel}
+        </button>
+      )}
     </div>
   );
 }
