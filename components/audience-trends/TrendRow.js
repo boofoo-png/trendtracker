@@ -8,9 +8,11 @@ export default function TrendRow({ trend, selected, expanded, saved, onSelect, o
 
   return (
     <tr
+      // The radar's "See its posts" link scrolls here.
+      id={expanded ? "selected-trend" : undefined}
       onClick={onSelect}
       aria-selected={selected}
-      className={`cursor-pointer border-t border-sense-blue/10 ${selected ? "bg-sense-lime/30" : "hover:bg-white/60"}`}
+      className={`scroll-mt-24 cursor-pointer border-t border-sense-blue/10 ${selected ? "bg-sense-lime/30" : "hover:bg-white/60"}`}
     >
       <td className="px-2 py-3 sm:px-3">
         <button

@@ -43,7 +43,19 @@ const AXES = FIT_ENABLED
 // Keep dots and tooltips inside the plot.
 const clampPct = (v) => Math.min(97, Math.max(3, v));
 
-export default function TrendRadar({ filteredTrends, selectedTrend, setSelectedTrendId }) {
+/** Smooth-scroll to a section further down the page (instant if reduced motion is on). */
+function jumpTo(id) {
+  const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  document.getElementById(id)?.scrollIntoView({ behavior: reduce ? "auto" : "smooth", block: "start" });
+}
+
+export default function TrendRadar({ filteredTrends, selectedTrend, selectedTrendId, setSelectedTrendId }) {
+  // Picking a trend opens it in the list and changes the campaign section, both
+  // further down; this note says so and links there.
+  const picked = selectedTrendId && selectedTrend?.id === selectedTrendId ? selectedTrend : null;
+  const link =
+    "cursor-pointer rounded-full border border-sense-blue/25 bg-white px-3 py-1 text-xs font-bold text-sense-blue transition hover:bg-sense-blue hover:text-paper";
+
   const midY = AXES.yPercent(AXES.yMid);
   const corner = "pointer-events-none absolute text-[10px] font-semibold uppercase tracking-wider text-ink-500/80";
 
@@ -128,6 +140,23 @@ export default function TrendRadar({ filteredTrends, selectedTrend, setSelectedT
             <span>Momentum →</span>
             <span>High</span>
           </div>
+
+          {picked && (
+            <div
+              role="status"
+              className="mt-3 flex flex-wrap items-center gap-x-3 gap-y-2 rounded-xl bg-sense-blue/[0.06] px-3 py-2.5 motion-safe:animate-[fadeIn_0.2s_ease-out]"
+            >
+              <p className="mr-auto text-xs text-sense-navy">
+                <strong>{picked.name}</strong> · {picked.platform} selected
+              </p>
+              <button type="button" onClick={() => jumpTo("selected-trend")} className={link}>
+                See its posts ↓
+              </button>
+              <button type="button" onClick={() => jumpTo("campaign-direction")} className={link}>
+                Get campaign ideas ↓
+              </button>
+            </div>
+          )}
         </div>
       </div>
     </Card>

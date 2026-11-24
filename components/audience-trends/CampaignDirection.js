@@ -98,6 +98,8 @@ export default function CampaignDirection({ selectedTrend, audiences, liveAudien
 
   return (
     <Card
+      id="campaign-direction"
+      className="scroll-mt-24"
       eyebrow="Turn it into campaign direction"
       aside={
         <div className="flex flex-wrap justify-end gap-2">

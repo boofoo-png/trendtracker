@@ -70,7 +70,7 @@ export default function TrendPosts({ trend, isSample }) {
     return (
       <p className="py-4 text-center text-sm text-ink-500">
         {isSample
-          ? "Post previews appear once live data has been scraped. Press Refresh above."
+          ? "Example trends have no posts. Press Find trends above to get real ones with posts."
           : "No posts available for this trend."}
       </p>
     );
