@@ -1,13 +1,11 @@
 "use client";
 
 // One Content Creation screen (Write a new post, Video, Blog, Ad Copy, Improve your
-// writing, Adapt for other platforms). Layout follows the Figma Make app; results
+// writing); "Adapt for other platforms" opens under the result. Layout follows the Figma Make app; results
 // are written by Gemini via the generateContent server action.
 
 import Link from "next/link";
 import { useEffect, useRef, useState, useTransition } from "react";
-import { useRouter } from "next/navigation";
-import { ADAPT_PATH, setAdaptSource, takeAdaptSource } from "@/lib/adaptSource";
 import { clearDraft, loadDraft, saveDraft } from "@/lib/creatorDraft";
 import { useAccount } from "@/lib/account";
 import { generateContent } from "@/app/(dashboard)/content-creation/actions";
@@ -15,9 +13,9 @@ import { CONTENT_KINDS, FIELD_OPTIONS as O } from "@/lib/contentKinds";
 import { clearContentTrend, loadContentTrend, saveContentTrend } from "@/lib/contentTrend";
 import TrendSlot from "./TrendSlot";
 import AddToCalendar from "./AddToCalendar";
+import { AdaptPanel } from "./AdaptPanel";
 import { useBusiness } from "@/lib/settings";
 import { saveItem } from "@/lib/savedContent";
-import { useContentStore } from "@/lib/contentStore";
 import {
   Alternatives,
   ChoiceGrid,
@@ -47,7 +45,6 @@ const DEFAULTS = {
   blog: { tone: "Professional", idea: "" },
   ad: { product: "", adGoal: "Awareness", adFormat: "Image Ad", idea: "" },
   improve: { text: "", writingType: "Social post", intent: "Improve it", instructions: "" },
-  repurpose: { source: "", platforms: ["Instagram", "Blog"], instructions: "" },
 };
 
 const ideaFromTrend = (t) =>
@@ -150,53 +147,9 @@ function Form({ kind, f, set }) {
           />
         </>
       );
-    case "repurpose":
-      return <RepurposeForm f={f} set={set} />;
     default:
       return null;
   }
-}
-
-function RepurposeForm({ f, set }) {
-  const { saved } = useContentStore();
-
-  return (
-    <>
-      <Field label="Select saved content">
-        <select
-          value=""
-          onChange={(e) => {
-            const item = saved.find((i) => i.id === e.target.value);
-            if (item) set("source")(item.text);
-          }}
-          className="min-h-10 w-full cursor-pointer rounded-[9px] border border-sense-blue/20 bg-white/65 px-3 py-[9px] text-xs text-sense-navy outline-none focus:border-sense-blue"
-        >
-          <option value="">{saved.length ? "Choose from My Content" : "No saved content yet"}</option>
-          {saved.map((i) => (
-            <option key={i.id} value={i.id}>
-              {i.type}: {i.title}
-            </option>
-          ))}
-        </select>
-      </Field>
-      <TextArea label="Or paste your content" value={f.source} onChange={set("source")} placeholder="Paste a post, article or any content you want on other platforms." />
-      <ChoiceGrid
-        multiple
-        label="Make versions for"
-        options={O.platforms}
-        value={f.platforms}
-        onChange={set("platforms")}
-        icon={(o) => (o === "Blog" ? "content" : "message")}
-      />
-      <TextArea
-        label="Additional instructions (optional)"
-        value={f.instructions}
-        onChange={set("instructions")}
-        placeholder="Make each version native to its platform."
-        rows={3}
-      />
-    </>
-  );
 }
 
 // ---------- Results ----------
@@ -276,27 +229,6 @@ function Result({ kind, r, f }) {
       );
     case "improve":
       return <ImproveResult r={r} />;
-    case "repurpose": {
-      const versions = r.versions ?? [];
-      const current = versions.find((v) => v.platform === tab) ?? versions[0];
-      if (!current) return <EmptyState>No versions came back. Try regenerating.</EmptyState>;
-      return (
-        <>
-          <Tabs tabs={versions.map((v) => v.platform)} active={current.platform} onChange={setTab} />
-          <Section label={`${current.platform} ${current.platform === "Blog" ? "Draft" : "Caption"}`}>
-            <CopyBlock paragraphs={[current.text]} />
-          </Section>
-          {current.hashtags?.length > 0 && (
-            <Section label="Suggested Hashtags (optional)">
-              <Tags items={current.hashtags} hash />
-            </Section>
-          )}
-          <Section label="Key adjustments">
-            <NumberedList items={current.adjustments ?? []} />
-          </Section>
-        </>
-      );
-    }
     default:
       return null;
   }
@@ -397,11 +329,6 @@ function toSaved(kind, r) {
       if (r.mode === "summarize") return { title: r.summary, text: [r.summary, "", ...lines("Key takeaways", r.takeaways)].join("\n") };
       if (r.mode === "feedback") return { title: `Feedback: ${r.summary}`, text: [r.feedback, "", ...lines("What works", r.strengths), ...lines("What to fix", (r.suggestedActions ?? []).map((a) => `${a.label}: ${a.text}`))].join("\n") };
       return { title: r.improved, text: r.improved };
-    case "repurpose":
-      return {
-        title: r.versions?.[0]?.text,
-        text: (r.versions ?? []).map((v) => [`[${v.platform}]`, v.text, ...tagLine(v.hashtags)].join("\n")).join("\n\n"),
-      };
     default:
       return { title: "", text: "" };
   }
@@ -409,18 +336,11 @@ function toSaved(kind, r) {
 
 // ---------- Page ----------
 
-// Results that make sense to turn into posts for other platforms, and the Back link
-// the Adapt screen shows to return here (the result is still waiting, see creatorDraft).
-const ADAPTABLE = {
-  social: "Back to your post",
-  blog: "Back to your blog post",
-  ad: "Back to your ad",
-  improve: "Back to your writing",
-};
+// Results that make sense to turn into posts for other platforms.
+const ADAPTABLE = new Set(["social", "blog", "ad", "improve"]);
 
 export default function CreatorPage({ kind }) {
   const meta = CONTENT_KINDS[kind];
-  const router = useRouter();
   const business = useBusiness();
   const [fields, setFields] = useState(DEFAULTS[kind]);
   const [trend, setTrend] = useState(null);
@@ -430,21 +350,10 @@ export default function CreatorPage({ kind }) {
   const [savedId, setSavedId] = useState(null);
   const [generatedAt, setGeneratedAt] = useState(null);
   const [restored, setRestored] = useState(false); // result came back from an earlier visit
+  const [adapting, setAdapting] = useState(false); // "Adapt for other platforms" panel open
   const [pending, startTransition] = useTransition();
   const { workspaceId } = useAccount();
   const restoreChecked = useRef(false);
-
-  // Opened from "Adapt for other platforms": start with that content filled in
-  // (a new task, so an earlier draft isn't brought back).
-  useEffect(() => {
-    if (kind !== "repurpose") return;
-    const handoff = takeAdaptSource();
-    if (!handoff) return;
-    restoreChecked.current = true;
-    // eslint-disable-next-line react-hooks/set-state-in-effect
-    setFields((f) => ({ ...f, source: handoff.text }));
-    if (handoff.returnTo?.href) setBack(handoff.returnTo);
-  }, [kind]);
 
   // Bring back the last result on this screen, so leaving the page doesn't lose it.
   useEffect(() => {
@@ -482,6 +391,7 @@ export default function CreatorPage({ kind }) {
     setSavedId(null);
     setGeneratedAt(null);
     setRestored(false);
+    setAdapting(false);
     setError(null);
     setFields(DEFAULTS[kind]);
   };
@@ -528,6 +438,7 @@ export default function CreatorPage({ kind }) {
       if (res.error) return setError(res.error);
       setResult(res.result);
       setSavedId(null);
+      setAdapting(false);
       setGeneratedAt(Date.now());
       setRestored(false);
     });
@@ -599,11 +510,8 @@ export default function CreatorPage({ kind }) {
                 onRegenerate={run}
                 onSave={() => save()}
                 onAdapt={
-                  ADAPTABLE[kind] && !["summarize", "feedback"].includes(result.mode)
-                    ? () => {
-                        setAdaptSource(toSaved(kind, result).text, { href: `/content-creation/${kind}`, label: ADAPTABLE[kind] });
-                        router.push(ADAPT_PATH);
-                      }
+                  ADAPTABLE.has(kind) && !["summarize", "feedback"].includes(result.mode)
+                    ? () => setAdapting((open) => !open)
                     : undefined
                 }
                 extra={
@@ -622,6 +530,10 @@ export default function CreatorPage({ kind }) {
                 pending={pending}
                 saveLabel="Save"
               />
+              {adapting && (
+                // Right under the post: no page change. A new result closes it (key).
+                <AdaptPanel key={generatedAt} source={asText.text} onClose={() => setAdapting(false)} className="mt-4" />
+              )}
             </div>
           ) : (
             <EmptyState />

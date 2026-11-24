@@ -1,7 +1,7 @@
-import CreatorPage from "@/components/content-creation/CreatorPage";
+import { redirect } from "next/navigation";
 
-export const metadata = { title: "Adapt for Other Platforms · SixthSense" };
-
+// "Adapt for other platforms" now opens in place (under a result, or as a pop-up in
+// My Content), so the old page sends people to My Content.
 export default function Page() {
-  return <CreatorPage kind="repurpose" />;
+  redirect("/content-creation/my-content");
 }

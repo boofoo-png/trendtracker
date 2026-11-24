@@ -12,12 +12,12 @@ import { removeItem, updateItem } from "@/lib/savedContent";
 import { useContentStore } from "@/lib/contentStore";
 import { channelLabel, channelsOf, useCalendar, useToday } from "@/lib/calendar";
 import { saveContentTrend } from "@/lib/contentTrend";
-import { ADAPT_PATH, setAdaptSource } from "@/lib/adaptSource";
 import useHydrated from "@/lib/useHydrated";
 import Skeleton from "@/components/ui/Skeleton";
 import { CopyButton, PageHeading } from "./ui";
 import PostEditor from "@/components/ai-management/PostEditor";
 import AddToCalendar from "./AddToCalendar";
+import { AdaptDialog } from "./AdaptPanel";
 
 export const PLANNED = "Planned post";
 
@@ -241,6 +241,7 @@ export default function MyContentPage() {
   const { posts, removePost, updatePost } = useCalendar();
   const today = useToday();
   const [editing, setEditing] = useState(null); // calendar post open in the edit pop-up
+  const [adapting, setAdapting] = useState(null); // saved item open in the Adapt pop-up
   const { saved, loaded } = useContentStore();
   const [query, setQuery] = useState("");
   const [type, setType] = useState("All");
@@ -361,10 +362,7 @@ export default function MyContentPage() {
                 item={item}
                 open={openId === item.id}
                 onToggle={() => setOpenId((id) => (id === item.id ? null : item.id))}
-                onAdapt={() => {
-                  setAdaptSource(item.text, { href: "/content-creation/my-content", label: "Back to My Content" });
-                  router.push(ADAPT_PATH);
-                }}
+                onAdapt={() => setAdapting(item)}
                 scheduled={scheduledFor(item.id)}
                 onEditScheduled={(p) => setEditing(p)}
               />
@@ -387,6 +385,8 @@ export default function MyContentPage() {
           )}
         </div>
       )}
+
+      {adapting && <AdaptDialog source={adapting.text} title={adapting.title} onClose={() => setAdapting(null)} />}
 
       {editing && today && (
         <PostEditor

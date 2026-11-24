@@ -35,7 +35,6 @@ const DESTINATIONS = [
   ["Blog post", "/content-creation/blog", "content", "blog article seo outline"],
   ["Ad copy", "/content-creation/ad", "target", "ad copy advert headline campaign"],
   ["Improve your writing", "/content-creation/improve", "sparkles", "improve edit rewrite polish summarize feedback upload file document post email website copy"],
-  ["Adapt for other platforms", "/content-creation/repurpose", "repeat", "adapt repurpose convert channels platforms instagram facebook tiktok blog"],
   ["My Content", "/content-creation/my-content", "content", "my content saved library"],
   ["Content calendar", "/ai-management", "calendar", "content calendar planner schedule plan posting ai management"],
   ["Reports", "/reports", "trend", "reports insights revenue roas pdf"],
