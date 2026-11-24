@@ -1,8 +1,8 @@
 "use client";
 
 // Based on the top bar in the Marketing Intelligence Hub Figma Make app:
-// a search pill that jumps to any screen, an alerts bell, and the company pill
-// (name comes from Settings → Workspace).
+// a search pill that jumps to any screen, an alerts bell, and the account menu
+// (profile, business details, notifications, sign out).
 
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
@@ -11,7 +11,9 @@ import Icon from "@/components/ui/Icon";
 import { trends } from "@/lib/trends";
 import { channelLabel, fromISODate, upcoming, useCalendar, useToday } from "@/lib/calendar";
 import { ALERT_TYPES, initials, openSettingsSection, useSettings } from "@/lib/settings";
-import BusinessProfileDialog from "@/components/settings/BusinessProfileDialog";
+import { signOut } from "@/app/actions/auth";
+import { addAccount, listSavedAccounts, switchToAccount } from "@/lib/savedAccounts";
+import { useAccount } from "@/lib/account";
 import useStored from "@/lib/useStored";
 import MobileNav from "./MobileNav";
 import Skeleton from "@/components/ui/Skeleton";
@@ -28,12 +30,12 @@ const DESTINATIONS = [
   ["Audience trends", "/audience-trends", "audience", "audience trends hashtags tiktok instagram search radar watchlist"],
   ["Competitors", "/competitors", "target", "competitor benchmark campaigns comparison"],
   ["Content Creation", "/content-creation", "content", "content create write generate"],
-  ["Social post", "/content-creation/social", "message", "social post caption instagram"],
+  ["Write a new post", "/content-creation/social", "message", "social post caption instagram create new write"],
   ["Video", "/content-creation/video", "video", "video script storyboard reel tiktok"],
   ["Blog post", "/content-creation/blog", "content", "blog article seo outline"],
   ["Ad copy", "/content-creation/ad", "target", "ad copy advert headline campaign"],
-  ["Edit posts", "/content-creation/edit", "edit", "edit post refine"],
-  ["Improve copy", "/content-creation/improve", "sparkles", "improve copy tone rewrite"],
+  ["Improve a social post", "/content-creation/edit", "edit", "edit post refine improve social"],
+  ["Polish any text", "/content-creation/improve", "sparkles", "improve copy tone rewrite polish email website"],
   ["Repurpose content", "/content-creation/repurpose", "repeat", "repurpose convert channels"],
   ["Upload a file", "/content-creation/upload", "upload", "upload file document draft"],
   ["My Content", "/content-creation/my-content", "content", "my content saved library"],
@@ -319,11 +321,101 @@ function Alerts() {
   );
 }
 
-function CompanyPill() {
-  const [settings] = useSettings();
-  const hydrated = useHydrated();
-  const [editing, setEditing] = useState(false);
-  if (!hydrated) {
+const MENU_LINKS = [
+  ["profile", "Your profile", "Name, role, email and phone", "audience"],
+  ["workspace", "Business details", "Company, industry and topics", "content"],
+  ["notifications", "Notifications", "Choose which alerts you get", "bell"],
+  ["connections", "Connected accounts", "Facebook and Instagram", "instagram"],
+];
+
+/**
+ * "Accounts" in the account menu (Instagram-style): the account you're using, other
+ * accounts signed in on this browser (tap to switch), and "+ Add account".
+ */
+function AccountSwitcher({ fullName, company }) {
+  const { userId } = useAccount();
+  const [others, setOthers] = useState([]);
+  const [busy, setBusy] = useState(null);
+  const [error, setError] = useState(null);
+  const me = { name: fullName, company };
+
+  useEffect(() => {
+    // Saved accounts live in this browser only; read after the menu opens.
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    setOthers(listSavedAccounts().filter((a) => a.userId !== userId));
+  }, [userId]);
+
+  const row = "flex w-full items-center gap-3 px-4 py-2 text-left transition";
+  const badge = "grid size-8 shrink-0 place-items-center rounded-full text-[10px] font-bold";
+
+  return (
+    <div className="border-b border-sense-blue/10 py-1.5">
+      <p className="px-4 pt-1 pb-1.5 text-[9px] font-bold uppercase tracking-[0.08em] text-[#647477]">Accounts</p>
+      <ul>
+        <li className={`${row} cursor-default`} aria-current="true">
+          <span className={`${badge} bg-sense-blue text-paper`}>{initials(company || fullName)}</span>
+          <span className="grid min-w-0 flex-1">
+            <span className="truncate text-xs font-semibold">{company || fullName || "This account"}</span>
+            <span className="truncate text-[10px] text-[#647477]">{fullName}</span>
+          </span>
+          <Icon name="check" size={15} className="text-sense-blue" />
+        </li>
+        {others.map((a) => (
+          <li key={a.userId}>
+            <button
+              type="button"
+              role="menuitem"
+              disabled={busy !== null}
+              onClick={async () => {
+                setBusy(a.userId);
+                setError(null);
+                const res = await switchToAccount(a.userId, me);
+                if (res?.error) {
+                  setBusy(null);
+                  setError(res.error);
+                }
+              }}
+              className={`${row} cursor-pointer hover:bg-sense-lime/30 disabled:opacity-60`}
+              title={`Switch to ${a.email}`}
+            >
+              <span className={`${badge} bg-sense-blue/10 text-sense-blue`}>{initials(a.company || a.name || a.email)}</span>
+              <span className="grid min-w-0 flex-1">
+                <span className="truncate text-xs font-semibold">{a.company || a.name || a.email}</span>
+                <span className="truncate text-[10px] text-[#647477]">{a.email}</span>
+              </span>
+              {busy === a.userId && <span className="text-[10px] text-[#647477]">Switching…</span>}
+            </button>
+          </li>
+        ))}
+      </ul>
+      <button
+        type="button"
+        role="menuitem"
+        disabled={busy !== null}
+        onClick={() => {
+          setBusy("add");
+          addAccount(me);
+        }}
+        className={`${row} cursor-pointer text-xs font-semibold text-sense-blue hover:bg-sense-lime/30 disabled:opacity-60`}
+      >
+        <span className={`${badge} border border-dashed border-sense-blue/40 text-base leading-none`}>+</span>
+        {busy === "add" ? "Opening sign in…" : "Add account"}
+      </button>
+      {error && <p role="alert" className="px-4 pb-1.5 text-[11px] text-coral-400">{error}</p>}
+    </div>
+  );
+}
+
+/** Account menu: who's signed in, shortcuts into Settings, and Sign out. */
+function AccountMenu() {
+  const [settings, , loaded] = useSettings();
+  const ref = useRef(null);
+  const menuId = useId();
+  const [open, setOpen] = useState(false);
+  const [signingOut, setSigningOut] = useState(false);
+  useDismiss(ref, open, () => setOpen(false));
+
+  if (!loaded) {
     return (
       <span aria-hidden="true" className={`flex h-12 shrink-0 items-center gap-2.5 rounded-full p-1.5 sm:pr-5 ${glass}`}>
         <Skeleton tone="dark" className="size-9 rounded-full" />
@@ -331,24 +423,81 @@ function CompanyPill() {
       </span>
     );
   }
-  const name = settings.company || "Set up your company";
+
+  const fullName = `${settings.firstName ?? ""} ${settings.lastName ?? ""}`.trim();
+  const company = settings.company || "Set up your company";
+  const avatar = initials(fullName || settings.company);
+  const subtitle = [settings.role, settings.company].filter(Boolean).join(" · ");
+
   return (
-    <>
+    <div ref={ref} className="relative">
       <button
         type="button"
-        onClick={() => setEditing(true)}
-        title={`${name} · Edit your business details`}
-        aria-label={`${name}: edit your business details`}
-        // Phones: just the round avatar. Wider screens: avatar and company name.
-        className={`flex h-12 max-w-[260px] shrink-0 cursor-pointer items-center gap-2.5 rounded-full p-1.5 text-xs font-semibold transition hover:bg-[rgba(246,248,237,0.28)] sm:py-1 sm:pr-5 ${glass}`}
+        onClick={() => setOpen((o) => !o)}
+        aria-expanded={open}
+        aria-haspopup="menu"
+        aria-controls={menuId}
+        aria-label={`Account menu for ${fullName || company}`}
+        // Phones: just the round avatar. Wider screens: avatar, company name and a caret.
+        className={`flex h-12 max-w-[260px] shrink-0 cursor-pointer items-center gap-2.5 rounded-full p-1.5 text-xs font-semibold transition hover:bg-[rgba(246,248,237,0.28)] sm:py-1 sm:pr-4 ${glass}`}
       >
         <span className="grid size-9 shrink-0 place-items-center rounded-full bg-[#f6f8ed] text-[11px] font-bold text-[#03525e]">
-          {settings.company ? initials(settings.company) : <Icon name="audience" size={18} />}
+          {fullName || settings.company ? avatar : <Icon name="audience" size={18} />}
         </span>
-        <span className="hidden truncate sm:inline">{name}</span>
+        <span className="hidden truncate sm:inline">{company}</span>
+        <Icon name="chevron" size={14} className={`hidden transition-transform sm:block ${open ? "-rotate-90" : "rotate-90"}`} />
       </button>
-      {editing && <BusinessProfileDialog onClose={() => setEditing(false)} />}
-    </>
+
+      {open && (
+        <div id={menuId} role="menu" aria-label="Account" className={`${popover} w-[min(290px,calc(100vw-32px))]`}>
+          <div className="flex items-center gap-3 border-b border-sense-blue/10 px-4 py-3.5">
+            <span className="grid size-10 shrink-0 place-items-center rounded-full bg-sense-blue text-xs font-bold text-paper">{avatar}</span>
+            <span className="grid min-w-0 gap-px">
+              <strong className="truncate text-sm">{fullName || "Your name"}</strong>
+              {settings.email && <span className="truncate text-[11px] text-[#5f706e]">{settings.email}</span>}
+              {subtitle && <span className="truncate text-[11px] font-semibold text-sense-blue">{subtitle}</span>}
+            </span>
+          </div>
+          <AccountSwitcher fullName={fullName} company={settings.company} />
+          <ul className="py-1.5">
+            {MENU_LINKS.map(([id, label, hint, icon]) => (
+              <li key={id}>
+                <Link
+                  role="menuitem"
+                  href={`/settings#${id}`}
+                  onClick={() => {
+                    setOpen(false);
+                    openSettingsSection(id); // when Settings is already open
+                  }}
+                  className="flex items-center gap-3 px-4 py-2.5 transition hover:bg-sense-lime/30"
+                >
+                  <span className="grid size-8 shrink-0 place-items-center rounded-lg bg-sense-blue/10 text-sense-blue">
+                    <Icon name={icon} size={16} />
+                  </span>
+                  <span className="grid min-w-0 gap-px">
+                    <strong className="text-xs">{label}</strong>
+                    <span className="truncate text-[11px] text-[#5f706e]">{hint}</span>
+                  </span>
+                </Link>
+              </li>
+            ))}
+          </ul>
+          <form action={signOut} onSubmit={() => setSigningOut(true)} className="border-t border-sense-blue/10 p-1.5">
+            <button
+              type="submit"
+              role="menuitem"
+              disabled={signingOut}
+              className="flex w-full cursor-pointer items-center gap-3 rounded-xl px-2.5 py-2.5 text-left text-xs font-bold text-[#b84f4f] transition hover:bg-[#ff7f7f]/15 disabled:opacity-60"
+            >
+              <span className="grid size-8 shrink-0 place-items-center">
+                <Icon name="logout" size={17} />
+              </span>
+              {signingOut ? "Signing out…" : "Sign out"}
+            </button>
+          </form>
+        </div>
+      )}
+    </div>
   );
 }
 
@@ -360,7 +509,7 @@ export default function TopBar() {
       {/* Remount on navigation so open dropdowns close. */}
       <Search key={`s-${pathname}`} />
       <Alerts key={`a-${pathname}`} />
-      <CompanyPill />
+      <AccountMenu key={`m-${pathname}`} />
     </header>
   );
 }

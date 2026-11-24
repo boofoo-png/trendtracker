@@ -12,8 +12,8 @@ const field =
   "w-full min-h-10 rounded-[9px] border border-sense-blue/20 bg-white/80 px-3 py-[9px] text-xs text-sense-navy outline-none placeholder:text-[#8a9799] focus:border-sense-blue focus:shadow-[0_0_0_3px_rgba(29,73,144,0.1)]";
 const labelText = "text-[11px] font-semibold text-[#53676a]";
 
-/** focus: "company" or "keywords", the field to start in. */
-export default function BusinessProfileDialog({ onClose, focus = "company", title = "Your business" }) {
+/** focus: "company" or "keywords", the field to start in. onSaved runs after a successful save. */
+export default function BusinessProfileDialog({ onClose, onSaved, focus = "company", title = "Your business" }) {
   const id = useId();
   const [settings, setSettings] = useSettings();
   const [f, setF] = useState(() => ({
@@ -44,9 +44,16 @@ export default function BusinessProfileDialog({ onClose, focus = "company", titl
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  const save = (e) => {
+  const [saving, setSaving] = useState(false);
+  const [error, setError] = useState(null);
+  const save = async (e) => {
     e.preventDefault();
-    setSettings({ ...settings, ...f });
+    setSaving(true);
+    setError(null);
+    const res = await setSettings({ ...settings, ...f });
+    setSaving(false);
+    if (res?.error) return setError(`Couldn’t save: ${res.error}`);
+    onSaved?.();
     onClose();
   };
 
@@ -112,12 +119,17 @@ export default function BusinessProfileDialog({ onClose, focus = "company", titl
           <input ref={keywordsRef} value={f.keywords} onChange={set("keywords")} placeholder="e.g. coffee, espresso, local" className={field} />
         </label>
 
+        {error && (
+          <p role="alert" className="rounded-lg bg-coral-400/10 px-3 py-2 text-xs text-coral-400">
+            {error}
+          </p>
+        )}
         <footer className="flex justify-end gap-2 pt-1">
           <button type="button" onClick={onClose} className="min-h-[40px] cursor-pointer rounded-[20px] border border-sense-blue/25 px-4 text-[11px] font-bold text-sense-blue transition hover:bg-sense-blue/10">
             Cancel
           </button>
-          <button type="submit" className="min-h-[40px] cursor-pointer rounded-[20px] bg-sense-lime px-6 text-[11px] font-extrabold uppercase text-sense-navy shadow-[0_4px_0_rgba(0,31,62,0.17)] transition hover:translate-y-px">
-            Save
+          <button type="submit" disabled={saving} className="min-h-[40px] cursor-pointer rounded-[20px] bg-sense-lime px-6 text-[11px] font-extrabold uppercase text-sense-navy shadow-[0_4px_0_rgba(0,31,62,0.17)] transition hover:translate-y-px disabled:cursor-default disabled:opacity-60">
+            {saving ? "Saving…" : "Save"}
           </button>
         </footer>
       </form>
