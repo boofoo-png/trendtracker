@@ -4,6 +4,11 @@
 //   1. "Find trends"      → Gemini proposes hashtags (free, nothing scraped)
 //   2. "Run trend search" → Apify scrapes them (costs credits) + Gemini scores fit
 
+// The Apify cost is for the developer, not customers: shown only when running
+// locally (`npm run dev`). Every search's estimate is also saved in Supabase
+// (trend_searches.est_cost_usd).
+const SHOW_COST = process.env.NODE_ENV === "development";
+
 const sameSet = (a, b) => a.length === b.length && a.every((x) => b.includes(x));
 
 export default function TrendSearchPanel({
@@ -63,9 +68,13 @@ export default function TrendSearchPanel({
               ))}
             </ul>
             <p className="mt-3 text-[11px] text-ink-500">
-              TikTok + Instagram · up to {tags.length * postsPerTag} posts · est. ~${cost} of
-              Apify credit · takes 1–5 min
+              Searches TikTok + Instagram · up to {tags.length * postsPerTag} posts · takes 1–5 min
             </p>
+            {SHOW_COST && (
+              <p className="mt-1 w-max rounded-md border border-dashed border-sense-blue/30 px-2 py-0.5 text-[11px] text-ink-500">
+                Dev only: est. ~${cost} of Apify credit
+              </p>
+            )}
           </>
         ) : (
           !searchPlan.error && (
@@ -86,7 +95,7 @@ export default function TrendSearchPanel({
             disabled={isRunning || tags.length === 0}
             className="cursor-pointer rounded-[18px] bg-sense-blue text-xs font-bold text-paper transition-colors hover:bg-sense-blue/85 disabled:cursor-not-allowed disabled:opacity-50 px-4 py-2"
           >
-            {isRunning ? "Searching… (1–5 min)" : `Run trend search · ~$${cost}`}
+            {isRunning ? "Searching… (1–5 min)" : "Run trend search"}
           </button>
           <button
             type="button"
@@ -122,7 +131,7 @@ export default function TrendSearchPanel({
             For <strong className="font-semibold text-sense-navy">{audiences.join(", ")}</strong>.{" "}
             {showingSelected
               ? "The trends below are already for this selection. Run again to update them."
-              : "You'll review the hashtags and estimated cost before anything runs."}
+              : "You'll review the hashtags before anything runs."}
           </>
         )}
       </p>
