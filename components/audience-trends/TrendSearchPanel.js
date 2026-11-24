@@ -103,23 +103,28 @@ export default function TrendSearchPanel({
 
   // Step 1: start
   return (
-    <div className="mt-4 flex flex-wrap items-center gap-3">
+    // A short, bold label so it reads as a button; the audience names go in the text beside it.
+    <div className="mt-5 flex flex-col gap-3 sm:flex-row sm:items-center sm:gap-4">
       <button
         type="button"
         onClick={planSearch}
         disabled={!hasSelection || isPlanning || isRunning}
-        className="cursor-pointer rounded-[18px] bg-sense-blue text-xs font-bold text-paper transition-colors hover:bg-sense-blue/85 disabled:cursor-not-allowed disabled:opacity-50 px-4 py-2"
+        className="inline-flex min-h-12 shrink-0 cursor-pointer items-center justify-center gap-2 rounded-[24px] bg-sense-lime px-6 text-sm font-bold text-sense-navy shadow-[0_5px_0_rgba(0,31,62,0.18)] transition hover:-translate-y-px hover:bg-sense-blue hover:text-paper active:translate-y-0.5 active:shadow-[0_2px_0_rgba(0,31,62,0.18)] disabled:cursor-not-allowed disabled:opacity-50 disabled:hover:translate-y-0 disabled:hover:bg-sense-lime disabled:hover:text-sense-navy"
       >
-        {isPlanning
-          ? "✦ Choosing hashtags…"
-          : `Find trends for ${hasSelection ? audiences.join(", ") : "selected audiences"}`}
+        <span aria-hidden="true">✦</span>
+        {isPlanning ? "Choosing hashtags…" : showingSelected ? "Find trends again" : "Find trends"}
       </button>
-      <p className="text-[11px] text-ink-500">
-        {!hasSelection
-          ? "Select one or more saved audiences first."
-          : showingSelected
-            ? "The trends below are already for this selection. Run again to update them."
-            : "You'll review the hashtags and estimated cost before anything runs."}
+      <p className="text-xs leading-[1.5] text-ink-500">
+        {!hasSelection ? (
+          "Select one or more saved audiences first."
+        ) : (
+          <>
+            For <strong className="font-semibold text-sense-navy">{audiences.join(", ")}</strong>.{" "}
+            {showingSelected
+              ? "The trends below are already for this selection. Run again to update them."
+              : "You'll review the hashtags and estimated cost before anything runs."}
+          </>
+        )}
       </p>
     </div>
   );

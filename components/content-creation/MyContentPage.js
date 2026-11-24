@@ -8,7 +8,8 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import Icon from "@/components/ui/Icon";
-import { listSaved, onSavedChange, removeItem } from "@/lib/savedContent";
+import { removeItem } from "@/lib/savedContent";
+import { useContentStore } from "@/lib/contentStore";
 import { channelLabel, channelsOf, useCalendar, useToday } from "@/lib/calendar";
 import { saveContentTrend } from "@/lib/contentTrend";
 import useHydrated from "@/lib/useHydrated";
@@ -134,20 +135,13 @@ export default function MyContentPage() {
   const { posts, removePost, updatePost } = useCalendar();
   const today = useToday();
   const [editing, setEditing] = useState(null); // calendar post open in the edit pop-up
-  const [loaded, setLoaded] = useState(null); // null until read from this browser
+  const { saved, loaded } = useContentStore();
   const [query, setQuery] = useState("");
   const [type, setType] = useState("All");
   const [openId, setOpenId] = useState(null);
 
-  useEffect(() => {
-    // localStorage is only available after mount.
-    // eslint-disable-next-line react-hooks/set-state-in-effect
-    setLoaded(listSaved());
-    return onSavedChange(setLoaded);
-  }, []);
-
   const planned = posts.map((p) => ({ ...p, type: PLANNED, text: p.caption ?? "", planned: true }));
-  const items = [...(loaded ?? []), ...planned].sort((a, b) => (b.createdAt ?? 0) - (a.createdAt ?? 0));
+  const items = [...saved, ...planned].sort((a, b) => (b.createdAt ?? 0) - (a.createdAt ?? 0));
   const ready = loaded && hydrated;
   const count = (t) => (t === "All" ? items.length : items.filter((i) => i.type === t).length);
   const types = ["All", ...new Set(items.map((i) => i.type))];

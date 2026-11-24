@@ -2,15 +2,12 @@
 
 import { useId, useState, useTransition } from "react";
 import Card from "@/components/ui/Card";
-import SegmentedControl from "@/components/ui/SegmentedControl";
 import { suggestAudiences } from "@/app/(dashboard)/audience-trends/actions";
 import { EST_COST_PER_POST, RESULTS_PER_HASHTAG } from "@/lib/apify/config";
 import TrendSearchPanel from "./TrendSearchPanel";
 import Skeleton from "@/components/ui/Skeleton";
 import { useBusiness } from "@/lib/settings";
 import { presetAudiences } from "@/lib/presetAudiences";
-
-const SOURCES = ["All platforms", "Instagram", "TikTok"];
 
 const norm = (s) => s.trim().toLowerCase();
 
@@ -45,8 +42,6 @@ export default function AudienceSelector({
   addAudience,
   removeAudience,
   toggleAudience,
-  source,
-  setSource,
   ...search
 }) {
   const listboxId = useId();
@@ -233,7 +228,7 @@ export default function AudienceSelector({
           </ul>
         )}
 
-        <p className="mt-2 text-[11px] text-ink-500">Audiences are saved in this browser.</p>
+        <p className="mt-2 text-[11px] text-ink-500">Audiences are saved to your workspace.</p>
       </div>
 
       <TrendSearchPanel
@@ -242,16 +237,6 @@ export default function AudienceSelector({
         postsPerTag={RESULTS_PER_HASHTAG * Object.keys(EST_COST_PER_POST).length}
         {...search}
       />
-
-      {/* Filters */}
-      <div className="mt-4 flex flex-wrap items-center gap-x-6 gap-y-3 border-t border-sense-blue/10 pt-4">
-        <div className="flex items-center gap-3">
-          <span className="text-[10px] font-semibold uppercase tracking-wider text-ink-500">
-            Source
-          </span>
-          <SegmentedControl label="Source" options={SOURCES} value={source} onChange={setSource} />
-        </div>
-      </div>
     </Card>
   );
 }

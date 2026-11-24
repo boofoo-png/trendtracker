@@ -5,7 +5,7 @@
 // analytics and reports sources are connected.
 
 import Link from "next/link";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import Icon from "@/components/ui/Icon";
 import { Change, Eyebrow, PageTitle, SampleNote, isNegative } from "@/components/ui/Dashboard";
 import PeriodPicker from "@/components/ui/PeriodPicker";
@@ -112,6 +112,12 @@ function CompetitorActivities({ competitors }) {
 function TopicInterest({ interest, rangeLabel }) {
   const { keywords } = useBusiness();
   const [editingTopics, setEditingTopics] = useState(false);
+  const [justSaved, setJustSaved] = useState(false);
+  useEffect(() => {
+    if (!justSaved) return;
+    const t = setTimeout(() => setJustSaved(false), 8000);
+    return () => clearTimeout(t);
+  }, [justSaved]);
   const topics = keywords.slice(0, 3);
   const n = Number.parseFloat(interest.change);
   const direction = Math.abs(n) < 1 ? "about the same as" : n > 0 ? "up from" : "down from";
@@ -126,7 +132,13 @@ function TopicInterest({ interest, rangeLabel }) {
       <div className="mt-6">
         <Sparkline values={interest.spark} label={`Posts about your topics over ${rangeLabel}, ${interest.change} vs before`} />
       </div>
-      <p className="mt-3 text-[11px] leading-[1.5] text-[#41585c]">
+      <span
+        className="mt-3 inline-flex w-max rounded-lg bg-sense-blue/10 px-1.5 py-0.5 text-[9px] font-bold uppercase tracking-[0.06em] text-sense-blue"
+        title="These numbers are placeholders until post tracking is connected. Your topics are still saved and used by Sense AI."
+      >
+        Sample data
+      </span>
+      <p className="mt-1.5 text-[11px] leading-[1.5] text-[#41585c]">
         <strong className="text-sense-navy">{interest.posts.toLocaleString("en-US")} posts</strong> about{" "}
         {topics.length ? joinWords(topics) : "your topics"} in {rangeLabel}, {direction}{" "}
         {interest.prevPosts.toLocaleString("en-US")} before.
@@ -138,7 +150,19 @@ function TopicInterest({ interest, rangeLabel }) {
       >
         {topics.length ? "Change your topics" : "Choose your topics"} <Icon name="chevron" size={14} />
       </button>
-      {editingTopics && <BusinessProfileDialog title="Your topics" focus="keywords" onClose={() => setEditingTopics(false)} />}
+      {justSaved && (
+        <p role="status" className="mt-2 rounded-lg bg-sense-lime/60 px-2.5 py-1.5 text-[10px] leading-[1.45] font-semibold text-sense-navy">
+          ✓ Topics saved. Sense AI now uses them when it suggests hashtags, writes content and plans campaigns.
+        </p>
+      )}
+      {editingTopics && (
+        <BusinessProfileDialog
+          title="Your topics"
+          focus="keywords"
+          onClose={() => setEditingTopics(false)}
+          onSaved={() => setJustSaved(true)}
+        />
+      )}
     </Card>
   );
 }

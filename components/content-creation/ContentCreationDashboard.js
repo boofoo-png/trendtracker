@@ -13,8 +13,8 @@ const CREATE_OPTIONS = [
   {
     icon: "message",
     id: "social",
-    title: "Social Post",
-    description: "Generate social media posts with AI-driven captions and visual recommendations.",
+    title: "Write a new post",
+    description: "Start from scratch. AI writes the caption and suggests visuals for your social post.",
   },
   {
     icon: "video",
@@ -40,14 +40,14 @@ const EDIT_OPTIONS = [
   {
     icon: "edit",
     id: "edit",
-    title: "Edit Posts",
-    description: "Refine existing posts with AI suggestions for clarity and engagement.",
+    title: "Improve a social post",
+    description: "Paste a post you’ve written. Get a stronger caption, alternatives, and hashtags.",
   },
   {
     icon: "sparkles",
     id: "improve",
-    title: "Improve Copy",
-    description: "Refine your writing, tone, and messaging with AI-driven suggestions.",
+    title: "Polish any text",
+    description: "Emails, website copy, ads. Sharpen the tone and wording of anything you’ve written.",
   },
   {
     icon: "repeat",

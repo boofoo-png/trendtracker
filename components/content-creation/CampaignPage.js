@@ -18,6 +18,7 @@ import {
   cleanBrief,
 } from "@/lib/campaignBrief";
 import { clearContentTrend, loadContentTrend, saveContentTrend } from "@/lib/contentTrend";
+import TrendSlot from "./TrendSlot";
 import { presetAudiences } from "@/lib/presetAudiences";
 import { saveItem } from "@/lib/savedContent";
 import { useBusiness } from "@/lib/settings";
@@ -30,7 +31,6 @@ import {
   LoadingState,
   PageHeading,
   Panel,
-  SelectedTrendBadge,
   TextArea,
   TextInput,
 } from "./ui";
@@ -162,7 +162,7 @@ function SegmentPicker({ value, onChange, suggestions }) {
   );
 }
 
-function BriefForm({ brief, update, onGenerate, onReset, pending, error, trend, onClearTrend, hasPlan, onShowPlan }) {
+function BriefForm({ brief, update, onGenerate, onReset, pending, error, trend, onTrendChange, hasPlan, onShowPlan }) {
   const { industry } = useBusiness();
   const set = (key) => ({ value: brief[key], onChange: (v) => update({ [key]: v }) });
 
@@ -177,7 +177,7 @@ function BriefForm({ brief, update, onGenerate, onReset, pending, error, trend, 
           </p>
         </div>
         <div className="flex shrink-0 items-center gap-2">
-          {trend && <SelectedTrendBadge trend={trend} onClear={onClearTrend} />}
+          <TrendSlot trend={trend} onChange={onTrendChange} />
           {hasPlan && (
             <button type="button" onClick={onShowPlan} className="min-h-9 cursor-pointer rounded-[18px] bg-sense-blue px-4 text-[11px] font-bold text-paper transition hover:bg-sense-blue/85">
               View current draft
@@ -555,7 +555,7 @@ export default function CampaignPage() {
       trend: trend?.name ?? null,
     });
     if (entry) setState((s) => ({ ...s, savedId: entry.id }));
-    else setError("Couldn't save: your browser blocked local storage.");
+    else setError("Couldn't save: your account is still loading. Try again in a moment.");
   };
 
   const showPlan = plan && !editing;
@@ -598,9 +598,15 @@ export default function CampaignPage() {
           pending={pending}
           error={error}
           trend={trend}
-          onClearTrend={() => {
-            clearContentTrend();
-            setTrend(null);
+          onTrendChange={(next) => {
+            if (!next) {
+              clearContentTrend();
+              setTrend(null);
+              return;
+            }
+            const entry = { ...next, source: next.source ?? "trend", returnTo: next.returnTo ?? trend?.returnTo ?? null };
+            saveContentTrend(entry, { source: entry.source, path: "/content-creation/campaign", returnTo: entry.returnTo });
+            setTrend(entry);
           }}
           hasPlan={Boolean(plan)}
           onShowPlan={() => setEditing(false)}

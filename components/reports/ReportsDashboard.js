@@ -145,10 +145,7 @@ function CampaignPanel({ data }) {
   const { campaign, score } = data;
   return (
     <Panel className="xl:col-span-5">
-      <div className="flex items-center justify-between">
-        <h3 className="text-[15px] font-bold text-sense-blue">Top Campaigns</h3>
-        <Icon name="trend" size={16} className="text-sense-blue" />
-      </div>
+      <h3 className="text-[15px] font-bold text-sense-blue">Top Campaigns</h3>
       <div className="mt-4 grid gap-4 sm:grid-cols-[minmax(0,1fr)_auto]">
         <div aria-hidden="true" className="flex h-[120px] items-end gap-2">
           {campaign.bars.map((h, i) => (

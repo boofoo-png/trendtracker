@@ -33,3 +33,9 @@ body {
   background-attachment: fixed;
   font-family: var(--font-sans), system-ui, sans-serif;
 }
+
+/* Competitor comparison: numbers fade in when you switch campaigns. */
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(4px); }
+  to { opacity: 1; transform: none; }
+}

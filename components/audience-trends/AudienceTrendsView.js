@@ -3,6 +3,7 @@
 import useTrendFilters from "@/lib/useTrendFilters";
 import LiveStatusBanner from "./LiveStatusBanner";
 import AudienceSelector from "./AudienceSelector";
+import ResultsFilter from "./ResultsFilter";
 import TrendRadar from "./TrendRadar";
 import Watchlist from "./Watchlist";
 import HowToRead from "./HowToRead";
@@ -16,6 +17,7 @@ export default function AudienceTrendsView({ initial }) {
     <>
       <LiveStatusBanner {...state} />
       <AudienceSelector {...state} />
+      <ResultsFilter {...state} />
       <div className="grid gap-4 xl:grid-cols-[1fr_336px]">
         <TrendRadar {...state} />
         <div className="flex flex-col gap-4">

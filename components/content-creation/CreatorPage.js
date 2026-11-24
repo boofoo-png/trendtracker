@@ -1,15 +1,17 @@
 "use client";
 
-// One Content Creation screen (Social Post, Video, Blog, Ad Copy, Edit Posts,
-// Improve Copy, Repurpose, Upload). Layout follows the Figma Make app; results
+// One Content Creation screen (Write a new post, Video, Blog, Ad Copy, Improve a
+// social post, Polish any text, Repurpose, Upload). Layout follows the Figma Make app; results
 // are written by Gemini via the generateContent server action.
 
 import { useEffect, useState, useTransition } from "react";
 import { generateContent } from "@/app/(dashboard)/content-creation/actions";
 import { CONTENT_KINDS, FIELD_OPTIONS as O } from "@/lib/contentKinds";
-import { clearContentTrend, loadContentTrend } from "@/lib/contentTrend";
+import { clearContentTrend, loadContentTrend, saveContentTrend } from "@/lib/contentTrend";
+import TrendSlot from "./TrendSlot";
 import { useBusiness } from "@/lib/settings";
-import { listSaved, saveItem } from "@/lib/savedContent";
+import { saveItem } from "@/lib/savedContent";
+import { useContentStore } from "@/lib/contentStore";
 import {
   Alternatives,
   ChoiceGrid,
@@ -25,7 +27,6 @@ import {
   ResultActions,
   Section,
   Select,
-  SelectedTrendBadge,
   Tabs,
   Tags,
   TextArea,
@@ -184,12 +185,7 @@ function Form({ kind, f, set }) {
 }
 
 function RepurposeForm({ f, set }) {
-  const [saved, setSaved] = useState([]);
-  useEffect(() => {
-    // localStorage is only available after mount.
-    // eslint-disable-next-line react-hooks/set-state-in-effect
-    setSaved(listSaved());
-  }, []);
+  const { saved } = useContentStore();
 
   return (
     <>
@@ -463,6 +459,25 @@ export default function CreatorPage({ kind }) {
 
   const set = (key) => (value) => setFields((f) => ({ ...f, [key]: value }));
 
+  // Remove, undo or pick a trend. The idea is filled in from the trend unless the
+  // user has written their own.
+  const changeTrend = (next) => {
+    const path = `/content-creation/${kind}`;
+    if (!next) {
+      clearContentTrend();
+      setTrend(null);
+      return;
+    }
+    const entry = { ...next, source: next.source ?? "trend", returnTo: next.returnTo ?? trend?.returnTo ?? null };
+    saveContentTrend(entry, { source: entry.source, path, returnTo: entry.returnTo });
+    setFields((f) => ({
+      ...f,
+      ...("idea" in f && (!f.idea || (trend && f.idea === ideaFromTrend(trend))) ? { idea: ideaFromTrend(entry) } : {}),
+      ...(kind === "video" && O.platform.includes(entry.platform) ? { platform: entry.platform } : {}),
+    }));
+    setTrend(entry);
+  };
+
   const run = () => {
     setError(null);
     startTransition(async () => {
@@ -483,7 +498,7 @@ export default function CreatorPage({ kind }) {
       trend: trend?.name ?? null,
     });
     if (entry) setSavedId(entry.id);
-    else setError("Couldn't save: your browser blocked local storage.");
+    else setError("Couldn't save: your account is still loading. Try again in a moment.");
   };
 
   return (
@@ -494,15 +509,7 @@ export default function CreatorPage({ kind }) {
         <Panel>
           <PanelLabel
             aside={
-              trend && (
-                <SelectedTrendBadge
-                  trend={trend}
-                  onClear={() => {
-                    clearContentTrend();
-                    setTrend(null);
-                  }}
-                />
-              )
+              <TrendSlot trend={trend} onChange={changeTrend} />
             }
           >{meta.inputLabel}</PanelLabel>
           <Form kind={kind} f={fields} set={set} />

@@ -213,8 +213,11 @@ export default function RevenueChart({ revenue }) {
         <span className="sm:hidden">Tap the chart for exact figures</span>
       </div>
 
-      {/* The same numbers for screen readers. */}
-      <table id={tableId} className="sr-only">
+      {/* The same numbers for screen readers. Hidden on a wrapper, not the table itself:
+          browsers draw a <caption> outside the table's box, so sr-only on the table
+          left "Revenue by week" showing on the page. */}
+      <div className="sr-only">
+      <table id={tableId}>
         <caption>Revenue by {revenue.compare}</caption>
         <thead>
           <tr>
@@ -235,6 +238,7 @@ export default function RevenueChart({ revenue }) {
           ))}
         </tbody>
       </table>
+      </div>
     </div>
   );
 }
