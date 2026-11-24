@@ -8,7 +8,7 @@ import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { useEffect, useId, useRef, useState } from "react";
 import Icon from "@/components/ui/Icon";
-import { trends } from "@/lib/trends";
+import { getSavedFacts } from "@/app/actions/performance";
 import { channelLabel, fromISODate, upcoming, useCalendar, useToday } from "@/lib/calendar";
 import { ALERT_TYPES, initials, openSettingsSection, useSettings } from "@/lib/settings";
 import { signOut } from "@/app/actions/auth";
@@ -43,7 +43,6 @@ const DESTINATIONS = [
   ["Alert settings", "/settings#notifications", "bell", "notifications alerts preferences"],
 ].map(([label, href, icon, keywords]) => ({ label, href, icon, keywords: `${label} ${keywords}`.toLowerCase() }));
 
-const TOP_TREND = [...trends].sort((a, b) => b.change - a.change)[0];
 const NO_READ = [];
 
 /** Close when clicking outside `ref` or pressing Escape. */
@@ -154,33 +153,60 @@ function Search() {
   );
 }
 
+/**
+ * Notifications built from real, saved data (no made-up campaigns): a competitor posting
+ * much more often than you, the strongest trend from your latest search, your report,
+ * and your next calendar post. Each alert's id changes when its facts change, so it
+ * shows as new again.
+ */
 function useAlerts() {
   const [settings] = useSettings();
   const { posts } = useCalendar();
   const next = upcoming(posts, useToday())[0];
+  const [facts, setFacts] = useState(null);
+  useEffect(() => {
+    let alive = true;
+    getSavedFacts()
+      .then((f) => alive && setFacts(f))
+      .catch(() => {});
+    return () => {
+      alive = false;
+    };
+  }, []);
+
+  const me = facts?.me;
+  // The competitor who out-posts you the most (at least 1.5× as often).
+  const busiest = me
+    ? [...(facts.competitors ?? [])]
+        .filter((c) => c.postsPerWeek != null && c.postsPerWeek >= Math.max(1, (me.postsPerWeek ?? 0) * 1.5))
+        .sort((a, b) => b.postsPerWeek - a.postsPerWeek)[0]
+    : null;
+  const topTrend = facts?.trends?.find((t) => t.advice === "Act now") ?? null;
+  const week = (ts) => (ts ? new Date(ts).toISOString().slice(0, 10) : "");
+
   const all = [
-    {
-      id: "competitor-guestsupply-launch",
+    busiest && {
+      id: `competitor-${busiest.handle}-${busiest.postsPerWeek}`,
       type: "competitor",
       icon: "target",
-      title: "GuestSupply launched a product campaign",
-      body: "Their engagement is 1.8 pts ahead of yours. See the benchmark.",
+      title: `@${busiest.handle} posts ${busiest.postsPerWeek.toFixed(1)}× a week`,
+      body: `You post ${(me.postsPerWeek ?? 0).toFixed(1)}× a week. See how you compare.`,
       href: "/competitors",
     },
-    {
-      id: `trend-${TOP_TREND.id}`,
+    topTrend && {
+      id: `trend-${topTrend.id}-${week(facts.trendsUpdatedAt)}`,
       type: "trends",
       icon: "trend",
-      title: `“${TOP_TREND.name}” is up ${TOP_TREND.change}%`,
-      body: `Gaining momentum on ${TOP_TREND.platform}. Open Audience trends.`,
+      title: `${topTrend.name} is worth acting on`,
+      body: `Momentum ${topTrend.momentum} on ${topTrend.platform}, from your latest trend search.`,
       href: "/audience-trends",
     },
-    {
-      id: "report-weekly",
+    facts?.connected && {
+      id: "report-instagram",
       type: "reports",
       icon: "content",
-      title: "Your weekly report is ready",
-      body: "Revenue, ROAS and channel performance for the last 7 days.",
+      title: "Your Instagram report is ready",
+      body: "Followers, reach, your best posts and how you compare with competitors.",
       href: "/reports",
     },
     next
@@ -200,7 +226,7 @@ function useAlerts() {
           body: "Let Sense AI draft a two-week posting plan.",
           href: "/ai-management",
         },
-  ];
+  ].filter(Boolean);
   return all.filter((a) => settings.alerts[a.type]);
 }
 

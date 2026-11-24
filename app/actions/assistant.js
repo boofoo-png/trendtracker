@@ -6,8 +6,7 @@ import { getLatestTrends } from "@/lib/trendStore";
 import { businessContext } from "@/lib/business";
 import { isGeminiConfigured } from "@/lib/gemini/client";
 import { askSenseAI } from "@/lib/gemini/assistant";
-import { sampleSummary } from "@/lib/assistant/sampleData";
-import { startOfToday } from "@/lib/calendarDates";
+import { getSavedFacts } from "@/app/actions/performance";
 import { SENSE_ROUTES } from "@/lib/assistant/shared";
 
 const clip = (v, n) => String(v ?? "").replace(/\s+/g, " ").trim().slice(0, n);
@@ -38,6 +37,39 @@ async function trendSummary() {
   } catch {
     return "TRENDS: Trend data couldn't be loaded right now.";
   }
+}
+
+/** Real numbers from the connected Instagram and tracked competitors (saved; no live calls). */
+async function accountSummary() {
+  const lines = [
+    "NOT CONNECTED: no ad spend, revenue, sales, website or email data. Never quote or invent figures for these.",
+  ];
+  try {
+    const f = await getSavedFacts();
+    const fmt = (v, d = 1) => (v == null ? "unknown" : Number(v).toFixed(d));
+    if (!f.connected) {
+      lines.unshift("INSTAGRAM: not connected yet (Settings → Connected accounts). There are no real performance numbers yet.");
+      return lines.join("\n");
+    }
+    lines.unshift(
+      f.me
+        ? `YOUR INSTAGRAM (@${f.me.username}, real): ${f.me.followers} followers; ${fmt(f.me.postsPerWeek)} posts a week; ` +
+            `about ${f.me.avgLikes ?? "?"} likes and ${f.me.avgComments ?? "?"} comments per post; engagement ${fmt(f.me.engagementRate, 2)}%; mostly posts ${f.me.topFormat ?? "?"}s.`
+        : "YOUR INSTAGRAM: connected, numbers not loaded yet (they appear after opening Competitors, Overview or Reports).",
+    );
+    lines.splice(
+      1,
+      0,
+      f.competitors.length
+        ? `TRACKED COMPETITORS (real, Instagram):\n${f.competitors
+            .map((c) => `- @${c.handle}: ${c.followers} followers, ${fmt(c.postsPerWeek)} posts/week, engagement ${fmt(c.engagementRate, 2)}%, mostly ${c.topFormat ?? "?"}s`)
+            .join("\n")}`
+        : "TRACKED COMPETITORS: none yet (Competitors page).",
+    );
+  } catch {
+    lines.unshift("ACCOUNT DATA: couldn't be loaded right now.");
+  }
+  return lines.join("\n");
 }
 
 function browserSummary(c) {
@@ -72,7 +104,7 @@ export async function askSense(messages, client, business) {
     `Today is ${new Date().toDateString()}.`,
     browserSummary(client),
     await trendSummary(),
-    sampleSummary(startOfToday()),
+    await accountSummary(),
   ].join("\n\n");
 
   try {

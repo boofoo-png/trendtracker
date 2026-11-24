@@ -81,7 +81,3 @@ export function Toggle({ label, options, value, onChange }) {
     </div>
   );
 }
-
-export function SampleNote({ children = "Sample figures. These will show live numbers once your data sources are connected." }) {
-  return <p className="mt-6 text-[11px] text-paper/70">{children}</p>;
-}

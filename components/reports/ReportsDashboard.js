@@ -1,233 +1,335 @@
 "use client";
 
-// Insights / Reports, laid out like the Marketing Intelligence Hub Figma Make app.
-// Figures are sample data (lib/sample) for the chosen date range until ad and analytics
-// accounts are connected.
+// Reports: a real Instagram performance report from the connected account (see
+// app/actions/performance.js): headline numbers, recent posts, top posts, when you
+// post, and how you compare with your tracked competitors. "Download PDF" prints it.
+// Replaces the sample ad-spend/revenue report (no ad or sales source is connected).
 
-import { useMemo, useState } from "react";
+import Link from "next/link";
+import { useEffect, useState } from "react";
 import Icon from "@/components/ui/Icon";
-import { PageTitle, Panel, SampleNote } from "@/components/ui/Dashboard";
-import PeriodPicker from "@/components/ui/PeriodPicker";
+import { PageTitle, Panel } from "@/components/ui/Dashboard";
 import { SkeletonPanel } from "@/components/ui/Skeleton";
-import { rangeLabel, resolvePeriod } from "@/lib/periods";
-import { reportFor } from "@/lib/sample/reports";
-import { useToday } from "@/lib/calendar";
-import usePeriod from "@/lib/usePeriod";
-import RevenueChart from "./RevenueChart";
+import { getPerformance } from "@/app/actions/performance";
+import { useSettings } from "@/lib/settings";
+import { TIMEZONE_ZONES } from "@/lib/account";
+import { DAYS, DAY_NAMES, SLOTS, bestOf, postingPattern } from "@/lib/postingPattern";
 
-const METRICS = ["Revenue", "Conversions"];
-const SORTS = ["Top countries", "Lowest countries"];
+const WINDOWS = [7, 30]; // Instagram insights go back at most 30 days
+const compact = new Intl.NumberFormat("en", { notation: "compact", maximumFractionDigits: 1 });
+const n = (v) => (v == null ? "—" : compact.format(v));
+const pct = (v) => (v == null ? "—" : `${v.toFixed(1)}%`);
+const shortDate = (iso) => new Date(iso).toLocaleDateString("en-US", { month: "short", day: "numeric" });
+const engagementOf = (p) => (p.likes == null ? null : p.likes + p.comments);
 
-const isNegative = (change) => change.startsWith("-");
-const money = (n) => `$${n.toLocaleString("en-US")}`;
-
-function Kpi({ label, value, change, compareTo, icon }) {
+function Kpi({ label, value, note }) {
   return (
-    <article className="flex min-h-[123px] min-w-0 flex-col items-start rounded-[20px] border border-paper/75 bg-paper/95 p-3.5 text-sense-navy shadow-[0_5px_0_rgba(0,31,62,0.16),0_16px_28px_rgba(0,31,62,0.09)]">
-      <div className="flex w-full items-center justify-between text-sense-blue">
-        <span className="text-[11px] font-bold">{label}</span>
-        <Icon name={icon} size={14} className={icon === "chevron" ? "-rotate-45" : ""} />
-      </div>
-      <strong className="mt-3.5 text-[clamp(19px,2vw,26px)] leading-none font-medium tracking-[-0.04em] text-[#10292f]">
+    <article className="flex min-h-[112px] min-w-0 flex-col rounded-[20px] border border-paper/75 bg-paper/95 p-4 text-sense-navy shadow-[0_5px_0_rgba(0,31,62,0.16),0_16px_28px_rgba(0,31,62,0.09)]">
+      <span className="text-[13px] font-bold text-sense-blue">{label}</span>
+      <strong className="mt-2.5 text-[clamp(22px,2.2vw,28px)] leading-none font-medium tracking-[-0.03em] text-[#10292f] tabular-nums">
         {value}
       </strong>
-      <small className={`mt-[7px] text-[10px] font-semibold ${isNegative(change) ? "text-[#b84f4f]" : "text-[#4e8665]"}`}>
-        {change}
-      </small>
-      <p className="mt-auto text-[10px] leading-[1.4] text-[#6a787a]">vs the {compareTo}</p>
+      <p className="mt-auto pt-2 text-xs leading-[1.4] text-[#4b5d60]">{note}</p>
     </article>
   );
 }
 
-function InsightsPanel({ data, chartKey }) {
-  const [full, setFull] = useState(false);
+function PanelTitle({ children, aside }) {
+  return (
+    <div className="mb-4 flex items-start justify-between gap-3">
+      <h3 className="text-[15px] font-bold text-sense-blue">{children}</h3>
+      {aside}
+    </div>
+  );
+}
+
+/** Plain-English takeaways from your recent posts (rules, not AI). */
+function takeaways(me, pattern) {
+  const out = [];
+  const formats = (me.formats ?? []).filter((f) => f.avgEngagement != null && (f.rated ?? f.count) >= 2);
+  if (formats.length > 1) {
+    const [best, ...rest] = [...formats].sort((a, b) => b.avgEngagement - a.avgEngagement);
+    const others = rest.reduce((a, f) => a + f.avgEngagement, 0) / rest.length;
+    if (others > 0 && best.avgEngagement / others >= 1.2) {
+      out.push(`Your ${best.format.toLowerCase()}s get ${(best.avgEngagement / others).toFixed(1)}× the likes and comments of your other posts.`);
+    }
+  }
+  const bestDay = bestOf(pattern.days);
+  if (bestDay) out.push(`${DAY_NAMES[bestDay[0]]} are your best day: about ${n(bestDay[1].avg)} likes and comments per post.`);
+  const bestSlot = bestOf(pattern.slots);
+  if (bestSlot) out.push(`Posts in the ${SLOTS.find(([k]) => k === bestSlot[0])[1].toLowerCase()} do best for you.`);
+  if (me.postsPerWeek < 2) out.push(`You post about ${me.postsPerWeek.toFixed(1)} times a week. Posting more often usually grows reach.`);
+  return out.slice(0, 4);
+}
+
+function RecentPosts({ me, pattern }) {
+  const posts = [...(me.posts ?? [])].reverse(); // oldest → newest
+  const max = Math.max(1, ...posts.map((p) => engagementOf(p) ?? 0));
+  const tips = takeaways(me, pattern);
   return (
     <Panel className="xl:col-span-7">
-      <div className="flex items-center gap-2">
-        <span className="grid size-[30px] place-items-center rounded-[9px] bg-sense-lime text-sense-navy">
-          <Icon name="sparkles" size={16} />
-        </span>
-        <h3 className="text-[15px] font-bold text-sense-blue">AI Insights Summary</h3>
-      </div>
-      <div className="mt-2.5 grid gap-[17px] md:grid-cols-[minmax(250px,1.15fr)_minmax(190px,0.85fr)]">
-        <RevenueChart key={chartKey} revenue={data.revenue} />
-        <div className="flex flex-col">
-          <h4 className="text-xs font-bold text-sense-blue">Insights</h4>
-          <p className="mt-[7px] text-[11px] leading-[1.6] text-[#536669]">{data.insight}</p>
-          <ul className="mt-2 grid gap-1 text-[11px] text-[#536669]">
-            <li><strong className="text-sense-blue">Top performer:</strong> {data.topPerformer}</li>
-            <li><strong className="text-sense-blue">Underperforming:</strong> {data.underperforming}</li>
-          </ul>
-          {full && (
-            <p className="mt-2 text-[11px] leading-[1.6] text-[#536669]">
-              <strong className="text-sense-blue">AI suggestion:</strong> {data.suggestion}
-            </p>
-          )}
-          <button
-            type="button"
-            aria-expanded={full}
-            onClick={() => setFull((v) => !v)}
-            className="mt-auto self-start rounded-[16px] bg-sense-blue px-3.5 py-2 text-[11px] font-bold text-paper transition hover:bg-sense-blue/85 max-md:mt-3"
-          >
-            {full ? "Show less" : "View full insight"}
-          </button>
+      <PanelTitle>Your recent posts</PanelTitle>
+      {posts.length === 0 ? (
+        <p className="text-[13px] text-[#4b5d60]">No posts yet.</p>
+      ) : (
+        <div className="grid gap-5 md:grid-cols-[minmax(0,1.2fr)_minmax(0,0.8fr)]">
+          <div>
+            <div
+              role="img"
+              aria-label={`Likes and comments on your last ${posts.length} posts`}
+              className="flex h-[170px] items-end gap-[3px] border-b border-sense-blue/15"
+            >
+              {posts.map((p) => {
+                const e = engagementOf(p);
+                return (
+                  <i
+                    key={p.id}
+                    title={`${shortDate(p.time)}: ${e == null ? "likes hidden" : `${n(e)} likes + comments`} (${p.format})`}
+                    className={`min-h-1 flex-1 rounded-t-[3px] ${e == null ? "bg-sense-blue/15" : "bg-[#1d4990]"}`}
+                    style={{ height: `${e == null ? 4 : (e / max) * 100}%` }}
+                  />
+                );
+              })}
+            </div>
+            <div className="mt-1.5 flex justify-between text-xs text-[#4b5d60]">
+              <span>{shortDate(posts[0].time)}</span>
+              <span>Likes + comments per post</span>
+              <span>{shortDate(posts.at(-1).time)}</span>
+            </div>
+          </div>
+          <div>
+            <h4 className="text-[13px] font-bold text-sense-blue">What stands out</h4>
+            {tips.length ? (
+              <ul className="mt-2 grid gap-1.5 text-[13px] leading-[1.5] text-[#3d5053]">
+                {tips.map((t) => (
+                  <li key={t}>• {t}</li>
+                ))}
+              </ul>
+            ) : (
+              <p className="mt-2 text-[13px] text-[#4b5d60]">Post a few more times to see patterns here.</p>
+            )}
+          </div>
         </div>
-      </div>
+      )}
     </Panel>
   );
 }
 
-/** Small pill that cycles through its options on click. */
-function CycleButton({ options, value, onChange, label }) {
-  const next = options[(options.indexOf(value) + 1) % options.length];
-  return (
-    <button
-      type="button"
-      onClick={() => onChange(next)}
-      title={`${label}: switch to ${next}`}
-      className="inline-flex items-center gap-1 rounded-[14px] border border-sense-blue/15 bg-white/70 px-2.5 py-1.5 text-[10px] font-bold text-sense-blue transition hover:bg-sense-lime"
-    >
-      {value} <Icon name="repeat" size={12} />
-    </button>
-  );
-}
-
-function CountryPanel({ data, days }) {
-  const [metric, setMetric] = useState(METRICS[0]);
-  const [sort, setSort] = useState(SORTS[0]);
-  const rows = [...data.countries].sort((a, b) =>
-    sort === SORTS[0] ? b[metric] - a[metric] : a[metric] - b[metric],
-  );
-  const max = Math.max(...data.countries.map((c) => c[metric]));
-  const total = data.countries.reduce((sum, c) => sum + c[metric], 0);
-  const show = (n) => (metric === "Revenue" ? money(n) : n.toLocaleString("en-US"));
-
-  return (
-    <Panel className="xl:col-span-7">
-      <div className="flex flex-wrap items-start justify-between gap-3">
-        <h3 className="text-[15px] font-bold text-sense-blue">Performance by Country</h3>
-        <div className="flex gap-2">
-          <CycleButton label="Metric" options={METRICS} value={metric} onChange={setMetric} />
-          <CycleButton label="Sort" options={SORTS} value={sort} onChange={setSort} />
-        </div>
-      </div>
-      <div className="mt-4 grid gap-5 sm:grid-cols-[150px_minmax(0,1fr)]">
-        <dl className="grid content-start gap-1 text-[10px] text-[#647477]">
-          <dt>{sort === SORTS[0] ? "Top performing" : "Lowest performing"}</dt>
-          <dd className="mb-2 text-xl font-medium text-sense-navy">{show(rows[0][metric])}</dd>
-          <dt>Total across countries</dt>
-          <dd className="mb-2 text-xl font-medium text-sense-navy">{show(total)}</dd>
-          <dt>Period</dt>
-          <dd className="text-xl font-medium text-sense-navy">{days} days</dd>
-        </dl>
-        <ul className="grid content-start gap-3">
-          {rows.map((c) => (
-            <li key={c.name} className="grid gap-1">
-              <div className="flex justify-between text-[11px]">
-                <span className="font-semibold text-sense-blue">{c.name}</span>
-                <span className="text-sense-navy">{show(c[metric])}</span>
-              </div>
-              <div className="h-2.5 overflow-hidden rounded-full bg-[#dce5d1]">
-                <div
-                  className="h-full rounded-full bg-sense-blue transition-[width] duration-300"
-                  style={{ width: `${(c[metric] / max) * 100}%` }}
-                />
-              </div>
-            </li>
-          ))}
-        </ul>
-      </div>
-    </Panel>
-  );
-}
-
-function CampaignPanel({ data }) {
-  const { campaign, score } = data;
+function TopPosts({ me }) {
+  const top = [...(me.posts ?? [])]
+    .filter((p) => engagementOf(p) != null)
+    .sort((a, b) => engagementOf(b) - engagementOf(a))
+    .slice(0, 5);
   return (
     <Panel className="xl:col-span-5">
-      <h3 className="text-[15px] font-bold text-sense-blue">Top Campaigns</h3>
-      <div className="mt-4 grid gap-4 sm:grid-cols-[minmax(0,1fr)_auto]">
-        <div aria-hidden="true" className="flex h-[120px] items-end gap-2">
-          {campaign.bars.map((h, i) => (
-            <i
-              key={i}
-              className={`flex-1 rounded-t-[5px] rounded-b-[2px] transition-[height] duration-300 ${i === 1 ? "bg-sense-lime" : "bg-sense-blue"}`}
-              style={{ height: `${h}%` }}
-            />
+      <PanelTitle>Your top posts</PanelTitle>
+      {top.length === 0 ? (
+        <p className="text-[13px] text-[#4b5d60]">Likes are hidden on your recent posts, so there&apos;s nothing to rank.</p>
+      ) : (
+        <ol className="grid gap-2">
+          {top.map((p, i) => (
+            <li key={p.id}>
+              <a href={p.url} target="_blank" rel="noopener noreferrer" className="flex items-center gap-3 rounded-xl p-1.5 hover:bg-sense-blue/5">
+                <span className="w-4 text-center text-xs font-bold text-[#4b5d60]">{i + 1}</span>
+                <span className="block size-12 shrink-0 overflow-hidden rounded-lg bg-sense-blue/10">
+                  {p.image && (
+                    // eslint-disable-next-line @next/next/no-img-element -- Instagram CDN
+                    <img src={p.image} alt="" referrerPolicy="no-referrer" className="size-full object-cover" />
+                  )}
+                </span>
+                <span className="min-w-0 flex-1">
+                  <span className="block truncate text-[13px] text-sense-navy">{p.caption || "(no caption)"}</span>
+                  <span className="text-xs text-[#4b5d60]">
+                    {shortDate(p.time)} · {p.format} · ♥ {n(p.likes)} · 💬 {n(p.comments)}
+                  </span>
+                </span>
+              </a>
+            </li>
           ))}
-        </div>
-        <dl className="grid content-start gap-1.5 text-[11px] text-[#647477]">
-          {[
-            ["Campaign", campaign.name],
-            ["Spend", campaign.spend],
-            ["Revenue", campaign.revenue],
-            ["Conversions", campaign.conversions],
-            ["ROAS", campaign.roas],
-          ].map(([k, v]) => (
-            <div key={k} className="flex justify-between gap-4">
-              <dt>{k}</dt>
-              <dd className="font-bold text-sense-navy">{v}</dd>
-            </div>
-          ))}
-        </dl>
+        </ol>
+      )}
+    </Panel>
+  );
+}
+
+function WhenYouPost({ pattern }) {
+  const { days } = pattern;
+  const max = Math.max(1, ...Object.values(days).map((d) => d.count));
+  const best = bestOf(days)?.[0];
+  return (
+    <Panel className="xl:col-span-5">
+      <PanelTitle>When you post</PanelTitle>
+      <div className="grid grid-cols-7 items-end gap-2" role="img" aria-label={`Posts by weekday: ${DAYS.map((d) => `${d} ${days[d].count}`).join(", ")}`}>
+        {DAYS.map((d) => (
+          <div key={d} className="grid justify-items-center gap-1">
+            <span className="text-xs text-[#4b5d60] tabular-nums">{days[d].count || ""}</span>
+            <span className="flex h-24 w-full items-end overflow-hidden rounded-md bg-sense-blue/5">
+              <span className={`w-full rounded-md ${best === d ? "bg-sense-lime" : "bg-sense-blue/70"}`} style={{ height: `${(days[d].count / max) * 100}%` }} />
+            </span>
+            <span className={`text-xs ${best === d ? "font-bold text-sense-navy" : "text-[#4b5d60]"}`}>{best === d ? `★ ${d}` : d}</span>
+          </div>
+        ))}
       </div>
-      <div className="mt-4 flex items-center gap-4 rounded-[14px] bg-[#e3eadd] p-3.5">
-        <div className="grid shrink-0 justify-items-center">
-          <strong className="text-2xl font-semibold text-sense-blue">{score.value}%</strong>
-          <span className="text-[10px] text-[#647477]">Performance score</span>
+      <p className="mt-3 text-xs text-[#4b5d60]">Bars: how many of your recent posts went out each day. ★ = most likes and comments per post.</p>
+    </Panel>
+  );
+}
+
+function VsCompetitors({ me, competitors }) {
+  const rows = [{ handle: me.username, ...me, you: true }, ...competitors];
+  const cols = [
+    ["Followers", (r) => n(r.followers)],
+    ["Posts / week", (r) => (r.postsPerWeek == null ? "—" : r.postsPerWeek.toFixed(1))],
+    ["Avg likes", (r) => n(r.avgLikes)],
+    ["Engagement", (r) => pct(r.engagementRate)],
+  ];
+  return (
+    <Panel className="xl:col-span-7">
+      <PanelTitle aside={<Link href="/competitors" className="text-xs font-bold text-sense-blue hover:underline print:hidden">Manage competitors →</Link>}>
+        You vs your competitors
+      </PanelTitle>
+      {competitors.length === 0 ? (
+        <p className="text-[13px] text-[#4b5d60]">
+          You&apos;re not tracking any competitors yet.{" "}
+          <Link href="/competitors" className="font-bold text-sense-blue underline">Track one</Link> to compare here.
+        </p>
+      ) : (
+        <div className="overflow-x-auto">
+          <table className="w-full min-w-[460px] text-[13px]">
+            <thead>
+              <tr className="text-left text-xs text-[#4b5d60]">
+                <th scope="col" className="pb-2 font-semibold">Account</th>
+                {cols.map(([label]) => (
+                  <th key={label} scope="col" className="pb-2 text-right font-semibold">{label}</th>
+                ))}
+              </tr>
+            </thead>
+            <tbody>
+              {rows.map((r) => (
+                <tr key={r.handle} className={`border-t border-sense-blue/10 ${r.you ? "bg-sense-blue/5" : ""}`}>
+                  <th scope="row" className="py-2 text-left font-normal">
+                    <strong>@{r.handle}</strong> {r.you && <span className="text-xs text-[#4b5d60]">(you)</span>}
+                  </th>
+                  {cols.map(([label, fmt]) => (
+                    <td key={label} className="py-2 text-right tabular-nums">{fmt(r)}</td>
+                  ))}
+                </tr>
+              ))}
+            </tbody>
+          </table>
         </div>
-        <p className="text-[11px] leading-[1.5] text-[#536669]">{score.note}</p>
-      </div>
+      )}
     </Panel>
   );
 }
 
 export default function ReportsDashboard() {
-  const today = useToday(); // null until the browser takes over (dates depend on "today")
-  const [period, setPeriod] = usePeriod();
-  const range = today ? resolvePeriod(period, today) : null;
-  const key = range?.key;
-  // eslint-disable-next-line react-hooks/exhaustive-deps -- the range key captures everything that matters
-  const data = useMemo(() => (range ? reportFor(range) : null), [key]);
-  const icons = ["chevron", "chevron", "trend", "chevron", "chevron", "chevron"];
+  const [settings] = useSettings();
+  const timeZone = TIMEZONE_ZONES[settings.timezone] ?? undefined;
+  const [days, setDays] = useState(30);
+  const [data, setData] = useState(null);
+
+  useEffect(() => {
+    let alive = true;
+    getPerformance({ days })
+      .then((d) => alive && setData(d))
+      .catch((err) => alive && setData({ connected: false, error: err.message }));
+    return () => {
+      alive = false;
+    };
+  }, [days]);
+
+  const me = data?.me;
+  const i = data?.insights;
+  const pattern = postingPattern(me?.posts ?? [], timeZone);
 
   return (
     <div className="w-full">
       <PageTitle
-        title="Insights / Reports"
-        description={range ? `Showing ${rangeLabel(range.from, range.to)}, compared with the ${range.compareLabel}.` : "\u00a0"}
+        eyebrow="Insights / Reports"
+        title="Instagram report"
+        description={
+          data?.connected
+            ? `How @${data.instagram.username} is doing, from Instagram. Reach, views and interactions cover the last ${days} days.`
+            : data
+              ? "Connect Instagram to get your report."
+              : " "
+        }
       >
-        <div className="flex flex-wrap items-center gap-3">
-          <button
-            type="button"
-            onClick={() => window.print()}
-            className="inline-flex min-h-[34px] cursor-pointer items-center gap-[7px] rounded-[17px] border border-paper/40 px-3.5 text-[11px] font-semibold text-paper transition hover:bg-paper/15 print:hidden"
-          >
-            <Icon name="upload" size={14} className="rotate-180" /> Download PDF
-          </button>
-          {today && <PeriodPicker value={period} onChange={setPeriod} today={today} />}
-        </div>
+        {data?.connected && (
+          <div className="flex flex-wrap items-center gap-3 print:hidden">
+            <div role="group" aria-label="Report period" className="flex rounded-full border border-paper/40 bg-paper/10 p-1">
+              {WINDOWS.map((w) => (
+                <button
+                  key={w}
+                  type="button"
+                  aria-pressed={days === w}
+                  onClick={() => setDays(w)}
+                  className={`cursor-pointer rounded-full px-3.5 py-1.5 text-xs font-bold transition ${days === w ? "bg-paper text-sense-navy" : "text-paper hover:bg-paper/15"}`}
+                >
+                  {w} days
+                </button>
+              ))}
+            </div>
+            <button
+              type="button"
+              onClick={() => window.print()}
+              className="inline-flex min-h-[34px] cursor-pointer items-center gap-[7px] rounded-[17px] border border-paper/40 px-3.5 text-xs font-semibold text-paper transition hover:bg-paper/15"
+            >
+              <Icon name="upload" size={14} className="rotate-180" /> Download PDF
+            </button>
+          </div>
+        )}
       </PageTitle>
 
       {!data ? (
-        <div role="status" aria-label="Loading reports" className="grid gap-[18px] xl:grid-cols-12">
+        <div role="status" aria-label="Loading report" className="grid gap-[18px] xl:grid-cols-12">
           <SkeletonPanel lines={3} className="xl:col-span-5" />
           <SkeletonPanel lines={4} className="xl:col-span-7" />
         </div>
+      ) : !data.connected ? (
+        <Panel>
+          <div className="flex flex-col items-start gap-3 py-6">
+            <h3 className="text-[17px] font-bold text-sense-blue">Your report needs your Instagram</h3>
+            <p className="max-w-xl text-[13px] leading-[1.6] text-[#3d5053]">
+              Connect your Instagram business account and this page becomes a live report: followers, reach, views and
+              interactions, your best posts and days, and how you compare with competitors. You can download it as a PDF.
+            </p>
+            <Link href="/settings#connections" className="inline-flex items-center gap-1 rounded-2xl bg-sense-blue px-4 py-2 text-xs font-bold text-paper hover:bg-sense-blue/85">
+              Connect Instagram <Icon name="chevron" size={13} />
+            </Link>
+          </div>
+        </Panel>
       ) : (
         <div className="grid gap-[18px] xl:grid-cols-12">
-          <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 xl:col-span-5">
-            {data.kpis.map(([label, value, change], i) => (
-              <Kpi key={label} label={label} value={value} change={change} compareTo={data.compareTo} icon={icons[i]} />
-            ))}
+          <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 xl:col-span-12 xl:grid-cols-6">
+            <Kpi label="Followers" value={n(me?.followers)} note={data.facebook ? `+ ${n(data.facebook.followers)} on Facebook` : "on Instagram"} />
+            <Kpi label="Reach" value={n(i?.reach)} note={`accounts that saw your posts, last ${days} days`} />
+            <Kpi label="Views" value={n(i?.views)} note={`times your content was seen, last ${days} days`} />
+            <Kpi label="Interactions" value={n(i?.total_interactions)} note={`likes, comments, saves and shares, last ${days} days`} />
+            <Kpi label="Engagement rate" value={pct(me?.engagementRate)} note="likes + comments per post vs followers" />
+            <Kpi label="Posts per week" value={me?.postsPerWeek == null ? "—" : me.postsPerWeek.toFixed(1)} note="over the last 30 days" />
           </div>
-          <InsightsPanel key={key} data={data} chartKey={key} />
-          <CountryPanel data={data} days={range.days} />
-          <CampaignPanel data={data} />
+          {data.insightsError && (
+            <p className="text-xs text-paper xl:col-span-12">Instagram didn&apos;t return reach and views: {data.insightsError}</p>
+          )}
+          {me ? (
+            <>
+              <RecentPosts me={me} pattern={pattern} />
+              <TopPosts me={me} />
+              <WhenYouPost pattern={pattern} />
+              <VsCompetitors me={me} competitors={data.competitors} />
+            </>
+          ) : (
+            <Panel className="xl:col-span-12">
+              <p className="text-[13px] text-[#4b5d60]">Your posts couldn&apos;t load{data.meError ? `: ${data.meError}` : ""}. Try again in a little while.</p>
+            </Panel>
+          )}
+          <p className="text-xs text-paper/85 xl:col-span-12">
+            From Instagram for @{data.instagram.username}. Likes and comments are from your last {me?.sampleSize ?? 0} posts.
+          </p>
         </div>
       )}
-
-      <SampleNote />
     </div>
   );
 }

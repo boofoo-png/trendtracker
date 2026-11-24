@@ -3,7 +3,7 @@
 // Sense AI assistant drawer, based on the Figma Make "Sense AI" panel. Opens from the
 // sidebar's help button or the top bar search (openSense in lib/assistant/shared.js).
 // Answers come from Gemini using the workspace: business profile, latest trends,
-// calendar, saved content, campaign draft and the (labelled) sample figures.
+// calendar, saved content, campaign draft, and real Instagram and competitor numbers.
 
 import { lockScroll } from "@/lib/scrollLock";
 import { usePathname, useRouter } from "next/navigation";
@@ -311,7 +311,7 @@ function Drawer({ onClose, messages, setMessages, initialQuestion }) {
             </button>
           </form>
           <p className="mt-2 text-[10px] text-paper/75">
-            Uses your trends, calendar, saved content and settings. Sample figures are labelled as such.
+            Uses your Instagram numbers, competitors, trends, calendar, saved content and settings.
           </p>
         </footer>
       </aside>

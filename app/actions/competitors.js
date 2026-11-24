@@ -6,8 +6,8 @@
 // background; "Refresh" fetches everything again.
 
 import { currentWorkspace } from "@/lib/trendStore";
-import { getConnection, saveSelfSnapshot } from "@/lib/meta";
-import { cleanHandle, discover, lookupAccount } from "@/lib/competitors";
+import { getConnection } from "@/lib/meta";
+import { cleanHandle, discover, lookupAccount, ownStats } from "@/lib/competitors";
 
 const FRESH_MS = 6 * 60 * 60 * 1000;
 const MAX_COMPETITORS = 10;
@@ -19,23 +19,6 @@ async function context() {
   if (!workspaceId) return { error: "Not signed in." };
   const conn = await getConnection(workspaceId);
   return { supabase, workspaceId, conn, account: lookupAccount(conn) };
-}
-
-/** Your own numbers: the saved copy if it's fresh (and for the same account), else Instagram. */
-async function mine({ workspaceId, conn, account }, { refresh, savedOnly }) {
-  const saved =
-    conn?.self_snapshot?.username === account.username
-      ? conn.self_snapshot
-      : null;
-  const stale = !saved || isStale(conn.self_snapshot_at);
-  if (savedOnly || (!refresh && !stale)) return { value: saved, stale };
-  try {
-    const value = await discover(account, account.username);
-    await saveSelfSnapshot(workspaceId, value);
-    return { value, stale: false };
-  } catch (err) {
-    return { value: saved, error: err.message, stale: false };
-  }
 }
 
 /**
@@ -91,7 +74,7 @@ export async function getCompetitors({
         }
       }),
     ),
-    mine(ctx, { refresh, savedOnly }),
+    ownStats(ctx, { refresh, savedOnly }),
   ]);
 
   const stale =
