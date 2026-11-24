@@ -4,6 +4,7 @@
 // social post, Polish any text, Repurpose, Upload). Layout follows the Figma Make app; results
 // are written by Gemini via the generateContent server action.
 
+import Link from "next/link";
 import { useEffect, useState, useTransition } from "react";
 import { generateContent } from "@/app/(dashboard)/content-creation/actions";
 import { CONTENT_KINDS, FIELD_OPTIONS as O } from "@/lib/contentKinds";
@@ -61,13 +62,15 @@ function Form({ kind, f, set }) {
 
   switch (kind) {
     case "social":
+      // Starts from scratch; an existing post belongs in "Improve a social post".
       return (
         <>
-          <UploadZone
-            label="Upload your post"
-            hint={`An existing draft (optional) · ${UPLOAD_HINT}`}
-            onText={(text) => set("idea")(text)}
-          />
+          <p className="mb-[18px] rounded-[10px] bg-sense-blue/5 px-3 py-2.5 text-xs text-[#3d5053]">
+            Already have a post written?{" "}
+            <Link href="/content-creation/edit" className="font-bold text-sense-blue underline">
+              Improve it instead →
+            </Link>
+          </p>
           <Select label="Content Goal" value={f.goal} options={O.goal} onChange={set("goal")} />
           <Select label="Tone of voice" value={f.tone} options={O.tone} onChange={set("tone")} />
           {idea()}
