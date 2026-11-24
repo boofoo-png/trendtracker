@@ -121,15 +121,15 @@ function TopPosts({ me }) {
     .sort((a, b) => engagementOf(b) - engagementOf(a))
     .slice(0, 5);
   return (
-    <Panel className="xl:col-span-5">
+    <Panel className="min-w-0 xl:col-span-5">
       <PanelTitle>Your top posts</PanelTitle>
       {top.length === 0 ? (
         <p className="text-[13px] text-[#4b5d60]">Likes are hidden on your recent posts, so there&apos;s nothing to rank.</p>
       ) : (
-        <ol className="grid gap-2">
+        <ol className="grid min-w-0 grid-cols-1 gap-2">
           {top.map((p, i) => (
-            <li key={p.id}>
-              <a href={p.url} target="_blank" rel="noopener noreferrer" className="flex items-center gap-3 rounded-xl p-1.5 hover:bg-sense-blue/5">
+            <li key={p.id} className="min-w-0">
+              <a href={p.url} target="_blank" rel="noopener noreferrer" className="flex min-w-0 items-center gap-3 rounded-xl p-1.5 hover:bg-sense-blue/5">
                 <span className="w-4 text-center text-xs font-bold text-[#4b5d60]">{i + 1}</span>
                 <span className="block size-12 shrink-0 overflow-hidden rounded-lg bg-sense-blue/10">
                   {p.image && (
@@ -137,7 +137,7 @@ function TopPosts({ me }) {
                     <img src={p.image} alt="" referrerPolicy="no-referrer" className="size-full object-cover" />
                   )}
                 </span>
-                <span className="min-w-0 flex-1">
+                <span className="block min-w-0 flex-1">
                   <span className="block truncate text-[13px] text-sense-navy">{p.caption || "(no caption)"}</span>
                   <span className="text-xs text-[#4b5d60]">
                     {shortDate(p.time)} · {p.format} · ♥ {n(p.likes)} · 💬 {n(p.comments)}
@@ -283,7 +283,7 @@ export default function ReportsDashboard() {
       </PageTitle>
 
       {!data ? (
-        <div role="status" aria-label="Loading report" className="grid gap-[18px] xl:grid-cols-12">
+        <div role="status" aria-label="Loading report" className="grid grid-cols-1 gap-[18px] xl:grid-cols-12">
           <SkeletonPanel lines={3} className="xl:col-span-5" />
           <SkeletonPanel lines={4} className="xl:col-span-7" />
         </div>
@@ -301,7 +301,7 @@ export default function ReportsDashboard() {
           </div>
         </Panel>
       ) : (
-        <div className="grid gap-[18px] xl:grid-cols-12">
+        <div className="grid grid-cols-1 gap-[18px] xl:grid-cols-12">
           <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 xl:col-span-12 xl:grid-cols-6">
             <Kpi label="Followers" value={n(me?.followers)} note={data.facebook ? `+ ${n(data.facebook.followers)} on Facebook` : "on Instagram"} />
             <Kpi label="Reach" value={n(i?.reach)} note={`accounts that saw your posts, last ${days} days`} />
