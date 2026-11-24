@@ -30,10 +30,10 @@ export default function TrendTable({
     <Card
       eyebrow="Live trend list"
       title={`Ranked signals for ${audienceLabel}`}
-      aside={<p className="text-xs text-ink-500">{matchCount} matching trends</p>}
+      aside={<p className="text-xs text-[#4b5d60]">{matchCount} matching trends</p>}
     >
       {matchCount === 0 ? (
-        <p className="py-8 text-center text-sm text-ink-500">No trends match these filters.</p>
+        <p className="py-8 text-center text-sm text-[#4b5d60]">No trends match these filters.</p>
       ) : (
         // Fallback: scrolls sideways if the columns can't fit (the table is sized to fit a phone).
         <div className="-mx-2 overflow-x-auto px-2">
@@ -44,7 +44,7 @@ export default function TrendTable({
                 <th
                   key={i}
                   scope="col"
-                  className={`px-2 pb-2 text-left sm:px-3 text-[10px] font-semibold uppercase tracking-wider text-ink-500 ${c.className ?? ""}`}
+                  className={`px-2 pb-2 text-left sm:px-3 text-xs font-semibold uppercase tracking-wider text-[#4b5d60] ${c.className ?? ""}`}
                 >
                   {c.label}
                 </th>
@@ -66,7 +66,7 @@ export default function TrendTable({
                     onToggleSave={() => toggleWatch(trend.id)}
                   />
                   {expanded && (
-                    <tr className="bg-lime-400/10">
+                    <tr className="bg-sense-blue/[0.05]">
                       <td colSpan={COLUMNS.length} className="px-3 pb-4">
                         <TrendPosts trend={trend} isSample={isSample} />
                       </td>

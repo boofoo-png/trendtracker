@@ -12,7 +12,7 @@ export default function TrendRow({ trend, selected, expanded, saved, onSelect, o
       id={expanded ? "selected-trend" : undefined}
       onClick={onSelect}
       aria-selected={selected}
-      className={`scroll-mt-24 cursor-pointer border-t border-sense-blue/10 ${selected ? "bg-sense-lime/30" : "hover:bg-white/60"}`}
+      className={`scroll-mt-24 cursor-pointer border-t border-sense-blue/10 ${selected ? "bg-sense-blue/10 shadow-[inset_4px_0_0_var(--color-sense-navy)]" : "hover:bg-white/60"}`}
     >
       <td className="px-2 py-3 sm:px-3">
         <button
@@ -24,25 +24,25 @@ export default function TrendRow({ trend, selected, expanded, saved, onSelect, o
           aria-expanded={expanded}
           className="text-left text-sm font-semibold [overflow-wrap:anywhere]"
         >
-          <span aria-hidden="true" className="mr-1 hidden w-3 text-ink-500 sm:inline-block">
+          <span aria-hidden="true" className="mr-1 hidden w-3 text-[#4b5d60] sm:inline-block">
             {expanded ? "▾" : "▸"}
           </span>
           {trend.name}
         </button>
-        <p className="text-[11px] text-ink-500">{meta}</p>
+        <p className="text-[13px] text-[#4b5d60]">{meta}</p>
       </td>
-      <td className="hidden px-2 py-3 sm:px-3 text-ink-500 md:table-cell">
+      <td className="hidden px-2 py-3 sm:px-3 text-[#4b5d60] md:table-cell">
         <Sparkline data={trend.history} />
       </td>
       <td className="px-2 py-3 sm:px-3">
         <p className="text-sm font-semibold">{trend.momentum}</p>
-        <p className="text-[10px] text-ink-500">{changeLabel}</p>
+        <p className="text-xs text-[#4b5d60]">{changeLabel}</p>
       </td>
       {FIT_ENABLED && (
         <td className="px-2 py-3 sm:px-3">
           <p className="text-sm font-semibold">{trend.fit}</p>
           {trend.fitReasons && (
-            <details className="text-[10px] text-ink-500" onClick={(e) => e.stopPropagation()}>
+            <details className="text-xs text-[#4b5d60]" onClick={(e) => e.stopPropagation()}>
               <summary className="cursor-pointer">✦ Why</summary>
               <ul className="mt-1 max-w-56 space-y-1">
                 {trend.fitReasons.map((r) => (

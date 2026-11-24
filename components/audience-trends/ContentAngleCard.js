@@ -9,7 +9,7 @@ export default function ContentAngleCard({ angle, loading = false }) {
         aria-hidden="true"
         className="pointer-events-none absolute -right-10 -top-10 size-56 rounded-full bg-lime-400/15 blur-3xl"
       />
-      <p className="relative text-[11px] font-semibold uppercase tracking-wider text-lime-400">
+      <p className="relative text-[13px] font-semibold uppercase tracking-wider text-lime-400">
         ✦ AI content angle
       </p>
       <div className="relative">

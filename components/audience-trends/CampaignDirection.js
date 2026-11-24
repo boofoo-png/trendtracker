@@ -135,7 +135,7 @@ export default function CampaignDirection({ selectedTrend, audiences, liveAudien
         <h2 className="mt-2 text-xl font-bold text-sense-blue">
           {selectedTrend.name} × {audienceLabel}
         </h2>
-        <p className="mt-1 text-[11px] text-ink-500">
+        <p className="mt-1 text-[13px] text-[#4b5d60]">
           {selectedTrend.platform} · {selectedTrend.format} · momentum {selectedTrend.momentum}
           {" "}({selectedTrend.change >= 0 ? "+" : ""}
           {selectedTrend.change}%)
@@ -153,7 +153,7 @@ export default function CampaignDirection({ selectedTrend, audiences, liveAudien
 
       {!angle && !isPending ? (
         <div className="flex flex-col items-center gap-3 rounded-xl border border-dashed border-sense-blue/25 px-4 py-10 text-center">
-          <p className="max-w-md text-sm text-ink-500">
+          <p className="max-w-md text-sm text-[#4b5d60]">
             {sentFocus
               ? `Get a content angle that promotes ${sentFocus.name} through this trend.`
               : "Get a content angle, a recommended approach and do/avoid guidance for this trend. Add a product, event or offer above to make it specific."}
@@ -176,26 +176,26 @@ export default function CampaignDirection({ selectedTrend, audiences, liveAudien
           <ContentAngleCard angle={angle} loading={isPending} />
 
           <div aria-busy={isPending} className={isPending ? "opacity-50" : ""}>
-            <p className="text-[10px] font-semibold uppercase tracking-wider text-ink-500">
+            <p className="text-xs font-semibold uppercase tracking-wider text-[#4b5d60]">
               Recommended approach
             </p>
             <h3 className="mt-1 text-lg font-bold">{angle?.headline ?? "…"}</h3>
-            <p className="mt-1 text-xs text-ink-500">{angle?.summary}</p>
+            <p className="mt-1 text-xs text-[#4b5d60]">{angle?.summary}</p>
 
             <div className="mt-4 grid gap-3 sm:grid-cols-2">
               <div className="rounded-xl border-l-4 border-sense-lime bg-white/70 p-3">
-                <p className="text-[10px] font-semibold uppercase">Do</p>
-                <p className="mt-1 text-xs text-ink-500">{angle?.do}</p>
+                <p className="text-xs font-semibold uppercase">Do</p>
+                <p className="mt-1 text-xs text-[#4b5d60]">{angle?.do}</p>
               </div>
               <div className="rounded-xl border-l-4 border-coral-400 bg-white/70 p-3">
-                <p className="text-[10px] font-semibold uppercase">Avoid</p>
-                <p className="mt-1 text-xs text-ink-500">{angle?.avoid}</p>
+                <p className="text-xs font-semibold uppercase">Avoid</p>
+                <p className="mt-1 text-xs text-[#4b5d60]">{angle?.avoid}</p>
               </div>
             </div>
 
             <p className="mt-4 text-xs">
               <strong>Why this advice:</strong>{" "}
-              <span className="text-ink-500">{angle?.why}</span>
+              <span className="text-[#4b5d60]">{angle?.why}</span>
             </p>
 
             <div className="mt-4 flex flex-wrap items-center gap-3">

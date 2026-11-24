@@ -45,14 +45,14 @@ export default function TrendSearchPanel({
 
         {tags.length > 0 ? (
           <>
-            <p className="mt-1 text-xs text-ink-500">
+            <p className="mt-1 text-xs text-[#4b5d60]">
               Sense AI suggests these hashtags. Remove any you don&apos;t want, then confirm.
             </p>
             <ul className="mt-3 flex flex-wrap gap-2">
               {tags.map((h) => (
                 <li
                   key={h.tag}
-                  className="flex items-center rounded-full bg-sense-lime/60 text-xs font-semibold"
+                  className="flex items-center rounded-full border border-sense-blue/25 bg-white text-xs font-semibold text-sense-navy"
                   title={h.audience ? `For ${h.audience}` : undefined}
                 >
                   <span className="py-1 pl-3 pr-1">#{h.tag}</span>
@@ -68,18 +68,18 @@ export default function TrendSearchPanel({
                 </li>
               ))}
             </ul>
-            <p className="mt-3 text-[11px] text-ink-500">
+            <p className="mt-3 text-[13px] text-[#4b5d60]">
               Searches TikTok + Instagram · up to {tags.length * postsPerTag} posts · takes 1–5 min
             </p>
             {SHOW_COST && (
-              <p className="mt-1 w-max rounded-md border border-dashed border-sense-blue/30 px-2 py-0.5 text-[11px] text-ink-500">
+              <p className="mt-1 w-max rounded-md border border-dashed border-sense-blue/30 px-2 py-0.5 text-[13px] text-[#4b5d60]">
                 Dev only: est. ~${cost} of Apify credit
               </p>
             )}
           </>
         ) : (
           !searchPlan.error && (
-            <p className="mt-1 text-xs text-ink-500">All hashtags removed. Nothing to search.</p>
+            <p className="mt-1 text-xs text-[#4b5d60]">All hashtags removed. Nothing to search.</p>
           )
         )}
 
@@ -130,7 +130,7 @@ export default function TrendSearchPanel({
               ? "Find trends again"
               : "Find trends"}
       </button>
-      <p className="text-xs leading-[1.5] text-ink-500">
+      <p className="text-xs leading-[1.5] text-[#4b5d60]">
         {backgroundSearch ? (
           "A search is already running. Its results will show up on this page automatically."
         ) : !hasSelection ? (

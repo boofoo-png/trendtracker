@@ -93,13 +93,13 @@ export default function AudienceSelector({
     <Card
       eyebrow="Choose an audience"
       title="Whose interests do you want to explore?"
-      aside={<p className="text-[11px] text-ink-500">Pick audiences, then press Find trends to search for them</p>}
+      aside={<p className="text-[13px] text-[#4b5d60]">Pick audiences, then press Find trends to search for them</p>}
     >
       {/* Search / add */}
       {/* Phones: [field][+ Add] on one line (so the suggestion list never covers Add), AI below. */}
       <div className="flex flex-wrap gap-2 sm:flex-nowrap">
         <div className="relative min-w-0 flex-1">
-          <span aria-hidden="true" className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-ink-500">
+          <span aria-hidden="true" className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-[#4b5d60]">
             ⌕
           </span>
           <input
@@ -121,7 +121,7 @@ export default function AudienceSelector({
             onFocus={() => setOpen(true)}
             onBlur={() => setTimeout(() => setOpen(false), 150)}
             onKeyDown={onKeyDown}
-            className="w-full rounded-[9px] border border-sense-blue/20 bg-white/65 text-sense-navy outline-none placeholder:text-[#8a9799] focus:border-sense-blue focus:shadow-[0_0_0_3px_rgba(29,73,144,0.1)] py-2.5 pl-9 pr-3 text-sm"
+            className="w-full rounded-[9px] border border-sense-blue/20 bg-white/65 text-sense-navy outline-none placeholder:text-[#6f7f82] focus:border-sense-blue focus:shadow-[0_0_0_3px_rgba(29,73,144,0.1)] py-2.5 pl-9 pr-3 text-sm"
           />
 
           {showList && (
@@ -141,14 +141,14 @@ export default function AudienceSelector({
                     add(opt.label);
                   }}
                   onMouseEnter={() => setActive(i)}
-                  className={`flex cursor-pointer items-center justify-between px-3 py-2 ${i === active ? "bg-sense-lime/50" : ""}`}
+                  className={`flex cursor-pointer items-center justify-between px-3 py-2 ${i === active ? "bg-sense-blue/10" : ""}`}
                 >
                   <span>{opt.label}</span>
-                  {opt.ai && <span className="text-[10px] text-ink-500">✦ Sense AI</span>}
+                  {opt.ai && <span className="text-xs text-[#4b5d60]">✦ Sense AI</span>}
                 </li>
               ))}
               {ai.loading && (
-                <li role="presentation" className="px-3 py-2 text-xs text-ink-500">
+                <li role="presentation" className="px-3 py-2 text-xs text-[#4b5d60]">
                   ✦ Finding related audiences…
                 </li>
               )}
@@ -178,21 +178,21 @@ export default function AudienceSelector({
           {ai.loading ? "✦ Finding…" : "✦ Find similar audiences"}
         </button>
       </div>
-      <p className="mt-1.5 text-xs text-ink-500">
+      <p className="mt-1.5 text-xs text-[#4b5d60]">
         {query.trim().length === 0
           ? "Type a group of people, like “coffee lovers”, then press Enter or Add."
           : query.trim().length < 3
             ? "Keep typing: Find similar audiences works after 3 letters."
             : "Press Enter or Add to save it, or Find similar audiences for more ideas like it."}
       </p>
-      {ai.error && <p className="mt-1 text-[11px] text-ink-500">{ai.error}</p>}
+      {ai.error && <p className="mt-1 text-[13px] text-[#4b5d60]">{ai.error}</p>}
 
       {/* Saved audiences */}
       <div className="mt-4">
         <div className="mb-2 flex flex-wrap items-baseline justify-between gap-x-3 gap-y-1">
           <p className="text-xs">
             <span className="font-semibold uppercase tracking-wider">Saved to your profile</span>{" "}
-            <span className="text-ink-500">Tap an audience to select it for your search.</span>
+            <span className="text-[#4b5d60]">Tap an audience to select it for your search.</span>
           </p>
           {savedAudiences.length > 0 && (
             <p aria-live="polite" className="text-xs font-semibold text-sense-blue">
@@ -208,7 +208,7 @@ export default function AudienceSelector({
             ))}
           </div>
         ) : savedAudiences.length === 0 ? (
-          <p className="rounded-xl border border-dashed border-sense-blue/25 px-4 py-4 text-center text-[11px] text-ink-500">
+          <p className="rounded-xl border border-dashed border-sense-blue/25 px-4 py-4 text-center text-[13px] text-[#4b5d60]">
             Search above or add your first custom audience. Until then, you&apos;ll see example
             trends.
           </p>
@@ -236,7 +236,7 @@ export default function AudienceSelector({
                   >
                     <span
                       aria-hidden="true"
-                      className={`grid size-[18px] place-items-center rounded-full border-2 text-[11px] leading-none ${
+                      className={`grid size-[18px] place-items-center rounded-full border-2 text-[13px] leading-none ${
                         isSelected ? "border-paper bg-paper text-sense-blue" : "border-sense-blue/40"
                       }`}
                     >
@@ -263,7 +263,7 @@ export default function AudienceSelector({
           </ul>
         )}
 
-        <p className="mt-2 text-[11px] text-ink-500">Audiences are saved to your workspace.</p>
+        <p className="mt-2 text-[13px] text-[#4b5d60]">Audiences are saved to your workspace.</p>
       </div>
 
       <TrendSearchPanel

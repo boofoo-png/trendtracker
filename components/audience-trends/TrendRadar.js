@@ -57,18 +57,18 @@ export default function TrendRadar({ filteredTrends, selectedTrend, selectedTren
     "cursor-pointer rounded-full border border-sense-blue/25 bg-white px-3 py-1 text-xs font-bold text-sense-blue transition hover:bg-sense-blue hover:text-paper";
 
   const midY = AXES.yPercent(AXES.yMid);
-  const corner = "pointer-events-none absolute text-[10px] font-semibold uppercase tracking-wider text-ink-500/80";
+  const corner = "pointer-events-none absolute text-xs font-semibold uppercase tracking-wider text-[#4b5d60]/80";
 
   return (
     <Card
       eyebrow="Trend radar"
       title={AXES.title}
-      aside={<p className="text-[11px] text-ink-500">Select a dot or row to investigate</p>}
+      aside={<p className="text-[13px] text-[#4b5d60]">Select a dot or row to investigate</p>}
     >
       <div className="flex gap-2">
         {/* y-axis label */}
         <div className="flex w-4 items-center justify-center">
-          <span className="-rotate-90 whitespace-nowrap text-[10px] font-semibold uppercase tracking-wider text-ink-500">
+          <span className="-rotate-90 whitespace-nowrap text-xs font-semibold uppercase tracking-wider text-[#4b5d60]">
             {AXES.yLabel} →
           </span>
         </div>
@@ -94,7 +94,7 @@ export default function TrendRadar({ filteredTrends, selectedTrend, selectedTren
             <span aria-hidden="true" className={`${corner} bottom-2 right-3`}>{AXES.quadrants.bottomRight}</span>
 
             {filteredTrends.length === 0 && (
-              <p className="absolute inset-0 flex items-center justify-center text-sm text-ink-500">
+              <p className="absolute inset-0 flex items-center justify-center text-sm text-[#4b5d60]">
                 No trends match these filters.
               </p>
             )}
@@ -123,7 +123,7 @@ export default function TrendRadar({ filteredTrends, selectedTrend, selectedTren
                   />
                   <span
                     aria-hidden="true"
-                    className={`pointer-events-none absolute left-1/2 -translate-x-1/2 whitespace-nowrap rounded-md bg-sense-navy px-2 py-1 text-[10px] font-semibold text-paper ${
+                    className={`pointer-events-none absolute left-1/2 -translate-x-1/2 whitespace-nowrap rounded-md bg-sense-navy px-2 py-1 text-xs font-semibold text-paper ${
                       tooltipBelow ? "top-full mt-1.5" : "bottom-full mb-1.5"
                     } ${selected ? "block" : "hidden group-hover:block group-focus-visible:block"}`}
                   >
@@ -135,7 +135,7 @@ export default function TrendRadar({ filteredTrends, selectedTrend, selectedTren
           </div>
 
           {/* x-axis label */}
-          <div className="mt-2 flex justify-between text-[10px] font-semibold uppercase tracking-wider text-ink-500">
+          <div className="mt-2 flex justify-between text-xs font-semibold uppercase tracking-wider text-[#4b5d60]">
             <span>Low</span>
             <span>Momentum →</span>
             <span>High</span>

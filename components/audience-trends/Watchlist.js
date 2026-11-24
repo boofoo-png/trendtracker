@@ -14,7 +14,7 @@ export default function Watchlist({ watchedTrends, watchlistLoaded, selectedTren
       aside={
         <span
           aria-label={`${count} saved`}
-          className="flex size-6 items-center justify-center rounded-full bg-sense-lime text-[11px] font-bold"
+          className="flex size-6 items-center justify-center rounded-full bg-sense-blue/10 text-[13px] font-bold text-sense-blue"
         >
           {watchlistLoaded ? count : "·"}
         </span>
@@ -26,7 +26,7 @@ export default function Watchlist({ watchedTrends, watchlistLoaded, selectedTren
           <Skeleton className="h-11 w-full rounded-xl" />
         </div>
       ) : count === 0 ? (
-        <p className="text-[11px] text-ink-500">
+        <p className="text-[13px] text-[#4b5d60]">
           Tap <span aria-hidden="true" className="text-sm text-sense-blue">☆</span>
           <span className="sr-only">the star</span> on any trend in the list below to save it here.
         </p>
@@ -37,9 +37,9 @@ export default function Watchlist({ watchedTrends, watchlistLoaded, selectedTren
             return (
               <li
                 key={trend.id}
-                className={`flex items-center gap-2 rounded-xl px-3 py-2 ${selected ? "bg-sense-lime/40" : "border border-sense-blue/10 bg-white/70"}`}
+                className={`flex items-center gap-2 rounded-xl px-3 py-2 ${selected ? "border border-sense-blue/40 bg-sense-blue/10" : "border border-sense-blue/10 bg-white/70"}`}
               >
-                <span aria-hidden="true" className="text-ink-500">↗</span>
+                <span aria-hidden="true" className="text-[#4b5d60]">↗</span>
                 <button
                   type="button"
                   onClick={() => setSelectedTrendId(trend.id)}
@@ -47,8 +47,8 @@ export default function Watchlist({ watchedTrends, watchlistLoaded, selectedTren
                   title={trend.hiddenByFilters ? "Hidden by the current source filter" : undefined}
                   className="min-w-0 flex-1 text-left disabled:cursor-not-allowed"
                 >
-                  <span className="block truncate text-xs font-medium">{trend.name}</span>
-                  <span className="block text-[10px] text-ink-500">
+                  <span className="block text-[13px] font-medium [overflow-wrap:anywhere]">{trend.name}</span>
+                  <span className="block text-xs text-[#4b5d60]">
                     {trend.platform} · momentum {trend.momentum}
                     {trend.hiddenByFilters && " · hidden by filters"}
                   </span>
@@ -58,7 +58,7 @@ export default function Watchlist({ watchedTrends, watchlistLoaded, selectedTren
                   type="button"
                   onClick={() => toggleWatch(trend.id)}
                   aria-label={`Remove ${trend.name} from watchlist`}
-                  className="text-sm text-ink-500 opacity-60 hover:opacity-100"
+                  className="text-sm text-[#4b5d60] opacity-60 hover:opacity-100"
                 >
                   ×
                 </button>

@@ -28,7 +28,7 @@ function PostPreview({ post }) {
           />
           {/* Some owners turn off embedding, or delete the post after it was scraped. */}
           {post.url && (
-            <p className="text-[10px] leading-[1.4] text-ink-500">
+            <p className="text-xs leading-[1.4] text-[#4b5d60]">
               Not showing? Some posts can only be viewed on {post.platform}.{" "}
               <a href={post.url} target="_blank" rel="noopener noreferrer" className="font-semibold text-sense-blue underline">
                 Open it there ↗
@@ -45,10 +45,10 @@ function PostPreview({ post }) {
         >
           <span aria-hidden="true" className="text-3xl">▶</span>
           <span className="text-xs font-semibold">Play preview</span>
-          <span className="line-clamp-4 text-[11px] text-paper/75">{post.text}</span>
+          <span className="line-clamp-4 text-[13px] text-paper/75">{post.text}</span>
         </button>
       )}
-      <div className="flex items-center justify-between gap-2 text-[11px] text-ink-500">
+      <div className="flex items-center justify-between gap-2 text-[13px] text-[#4b5d60]">
         <span>
           {post.platform} · {post.format}
           {stats.length > 0 && ` · ${stats.join(" · ")}`}
@@ -68,7 +68,7 @@ export default function TrendPosts({ trend, isSample }) {
 
   if (posts.length === 0) {
     return (
-      <p className="py-4 text-center text-sm text-ink-500">
+      <p className="py-4 text-center text-sm text-[#4b5d60]">
         {isSample
           ? "Example trends have no posts. Press Find trends above to get real ones with posts."
           : "No posts available for this trend."}
@@ -114,8 +114,8 @@ function PostCarousel({ trend, posts }) {
     // w-0 + min-w-full: fills the table cell without widening the table to fit every card.
     <div className="w-0 min-w-full pt-2">
       <div className="mb-3 flex items-baseline justify-between gap-3">
-        <p className="text-[10px] font-semibold uppercase tracking-wider text-ink-500">Top posts driving {trend.name}</p>
-        <p className="shrink-0 text-[11px] text-ink-500">
+        <p className="text-xs font-semibold uppercase tracking-wider text-[#4b5d60]">Top posts driving {trend.name}</p>
+        <p className="shrink-0 text-[13px] text-[#4b5d60]">
           {posts.length} {posts.length === 1 ? "post" : "posts"}
           {!edges.end && " · scroll for more →"}
         </p>

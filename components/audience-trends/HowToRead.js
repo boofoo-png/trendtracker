@@ -4,7 +4,7 @@ import { FIT_ENABLED } from "@/lib/features";
 export default function HowToRead() {
   return (
     <Card eyebrow="How to read this">
-      <dl className="space-y-2 text-[11px] leading-relaxed text-ink-500">
+      <dl className="space-y-2 text-[13px] leading-relaxed text-[#4b5d60]">
         <div>
           <dt className="inline font-semibold text-teal-900">Momentum</dt>{" "}
           <dd className="inline">

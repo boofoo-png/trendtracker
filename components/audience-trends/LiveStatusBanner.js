@@ -41,7 +41,7 @@ export default function LiveStatusBanner({ isSample, updatedAt, liveAudiences = 
           <>
             <p className="text-sm font-semibold">Showing example trends</p>
             {!isRunning && (
-              <p className="text-xs text-ink-500">Choose your audiences below and press Find trends to see real ones.</p>
+              <p className="text-xs text-[#4b5d60]">Choose your audiences below and press Find trends to see real ones.</p>
             )}
           </>
         ) : (
@@ -49,7 +49,7 @@ export default function LiveStatusBanner({ isSample, updatedAt, liveAudiences = 
             <p className="text-sm">
               <span className="font-semibold">Showing trends for:</span> {liveAudiences.length ? liveAudiences.join(", ") : "your last search"}
             </p>
-            <p className="text-xs text-ink-500">{updatedAt ? `From your search on ${day(updatedAt)}` : "From your last search"}</p>
+            <p className="text-xs text-[#4b5d60]">{updatedAt ? `From your search on ${day(updatedAt)}` : "From your last search"}</p>
           </>
         )}
         {backgroundSearch && !runningHere && (
@@ -59,7 +59,7 @@ export default function LiveStatusBanner({ isSample, updatedAt, liveAudiences = 
           </p>
         )}
         {changed && (
-          <p className="mt-1.5 rounded-lg bg-sense-lime/50 px-2.5 py-1.5 text-xs text-sense-navy">
+          <p className="mt-1.5 rounded-lg bg-sense-blue/10 px-2.5 py-1.5 text-xs text-sense-navy">
             Your selected audiences have changed. Press <strong>Find trends</strong> to update these results.
           </p>
         )}
@@ -69,7 +69,7 @@ export default function LiveStatusBanner({ isSample, updatedAt, liveAudiences = 
           </p>
         )}
       </div>
-      <span aria-live="polite" className="rounded-full bg-sense-lime px-3 py-1 text-[11px] font-bold">
+      <span aria-live="polite" className="rounded-full bg-sense-blue/10 px-3 py-1 text-[13px] font-bold text-sense-blue">
         {isRunning && <span aria-hidden="true" className="mr-1 inline-block animate-pulse">●</span>}
         {status}
       </span>
