@@ -17,6 +17,7 @@ import useHydrated from "@/lib/useHydrated";
 import Skeleton from "@/components/ui/Skeleton";
 import { CopyButton, PageHeading } from "./ui";
 import PostEditor from "@/components/ai-management/PostEditor";
+import AddToCalendar from "./AddToCalendar";
 
 export const PLANNED = "Planned post";
 
@@ -190,6 +191,7 @@ function SavedCard({ item, open, onToggle, onAdapt }) {
           >
             <Icon name="repeat" size={13} /> Adapt
           </button>
+          <AddToCalendar compact title={item.title} text={item.text} />
           <button
             type="button"
             title="Delete from My Content"
@@ -339,7 +341,7 @@ export default function MyContentPage() {
           <p className="text-[11px] text-paper/80">
             {items.length
               ? "Try another word or filter."
-              : "Generate something in Content Creation and press Save, or plan posts in AI Management."}
+              : "Generate something in Content Creation and press Save, or plan posts in your Content Calendar."}
           </p>
           {!items.length && (
             <Link href="/content-creation" className="mt-2 text-[11px] font-bold text-sense-lime underline-offset-2 hover:underline">

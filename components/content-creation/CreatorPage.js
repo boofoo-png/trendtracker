@@ -14,6 +14,7 @@ import { generateContent } from "@/app/(dashboard)/content-creation/actions";
 import { CONTENT_KINDS, FIELD_OPTIONS as O } from "@/lib/contentKinds";
 import { clearContentTrend, loadContentTrend, saveContentTrend } from "@/lib/contentTrend";
 import TrendSlot from "./TrendSlot";
+import AddToCalendar from "./AddToCalendar";
 import { useBusiness } from "@/lib/settings";
 import { saveItem } from "@/lib/savedContent";
 import { useContentStore } from "@/lib/contentStore";
@@ -545,6 +546,9 @@ export default function CreatorPage({ kind }) {
     else setError("Couldn't save: your account is still loading. Try again in a moment.");
   };
 
+  // The result as plain text (what Save, Adapt and Add to calendar use).
+  const asText = result ? toSaved(kind, result) : null;
+
   return (
     <div className="w-full">
       <PageHeading title={meta.title} description={meta.description} back={back} />
@@ -598,6 +602,12 @@ export default function CreatorPage({ kind }) {
                         router.push(ADAPT_PATH);
                       }
                     : undefined
+                }
+                extra={
+                  // Anything you could post; not summaries or feedback.
+                  !["summarize", "feedback"].includes(result.mode) && (
+                    <AddToCalendar key={generatedAt} title={asText.title ?? meta.card} text={asText.text} />
+                  )
                 }
                 saved={Boolean(savedId)}
                 pending={pending}

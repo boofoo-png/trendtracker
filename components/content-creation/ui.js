@@ -405,37 +405,44 @@ export function Tabs({ tabs, active, onChange }) {
   );
 }
 
-export function ResultActions({ onRegenerate, onSave, onAdapt, saved, saveLabel = "Save", pending }) {
+/** extra: more buttons shown on the left (e.g. Add to calendar). */
+export function ResultActions({ onRegenerate, onSave, onAdapt, extra, saved, saveLabel = "Save", pending }) {
   const btn = "min-h-[35px] min-w-[90px] flex-1 cursor-pointer rounded-[18px] px-4 text-[10px] font-bold transition-opacity hover:opacity-85 disabled:cursor-wait disabled:opacity-60 sm:flex-none";
   return (
-    <div className="mt-auto flex flex-wrap justify-end gap-[9px] pt-3.5">
-      {onAdapt && (
-        <button
-          type="button"
-          onClick={onAdapt}
-          disabled={pending}
-          title="Turn this into versions for Instagram, Facebook, TikTok or your blog"
-          className={`${btn} mr-auto inline-flex items-center justify-center gap-1.5 border border-sense-blue/25 bg-white/70 text-sense-blue`}
-        >
-          <Icon name="repeat" size={13} /> Adapt for other platforms
+    // Two groups that wrap as pairs: "do more with it" on the left, Regenerate/Save on the right.
+    <div className="mt-auto flex flex-wrap items-center justify-between gap-[9px] pt-3.5">
+      <div className="flex flex-wrap gap-[9px]">
+        {onAdapt && (
+          <button
+            type="button"
+            onClick={onAdapt}
+            disabled={pending}
+            title="Turn this into versions for Instagram, Facebook, TikTok or your blog"
+            className={`${btn} inline-flex items-center justify-center gap-1.5 border border-sense-blue/25 bg-white/70 text-sense-blue`}
+          >
+            <Icon name="repeat" size={13} /> Adapt for other platforms
+          </button>
+        )}
+        {extra}
+      </div>
+      <div className="ml-auto flex flex-wrap justify-end gap-[9px]">
+        <button type="button" onClick={onRegenerate} disabled={pending} className={`${btn} bg-sense-blue text-paper`}>
+          {pending ? "Generating…" : "Regenerate"}
         </button>
-      )}
-      <button type="button" onClick={onRegenerate} disabled={pending} className={`${btn} bg-sense-blue text-paper`}>
-        {pending ? "Generating…" : "Regenerate"}
-      </button>
-      {saved ? (
-        // Once saved, the button becomes the way to find it.
-        <Link
-          href="/content-creation/my-content"
-          className={`${btn} inline-flex items-center justify-center bg-[#4e8067] text-paper`}
-        >
-          ✓ Saved · View in My Content →
-        </Link>
-      ) : (
-        <button type="button" onClick={onSave} className={`${btn} bg-sense-lime text-sense-navy`}>
-          {saveLabel}
-        </button>
-      )}
+        {saved ? (
+          // Once saved, the button becomes the way to find it.
+          <Link
+            href="/content-creation/my-content"
+            className={`${btn} inline-flex items-center justify-center bg-[#4e8067] text-paper`}
+          >
+            ✓ Saved · View in My Content →
+          </Link>
+        ) : (
+          <button type="button" onClick={onSave} className={`${btn} bg-sense-lime text-sense-navy`}>
+            {saveLabel}
+          </button>
+        )}
+      </div>
     </div>
   );
 }

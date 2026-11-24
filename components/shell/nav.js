@@ -4,7 +4,7 @@ export const NAV = [
   { label: "Audience", icon: "/sidebar/audience.svg", href: "/audience-trends" },
   { label: "Competitors", icon: "/sidebar/competitors.svg", iconSize: 15, href: "/competitors" },
   { label: "Content Creation", icon: "/sidebar/content.svg", href: "/content-creation" },
-  { label: "AI Management", icon: "/sidebar/ai.svg", href: "/ai-management" },
+  { label: "Content Calendar", icon: "/sidebar/calendar.svg", href: "/ai-management" }, // was "AI Management"
   { label: "Reports", icon: "/sidebar/reports.svg", href: "/reports" },
 ];
 

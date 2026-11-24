@@ -37,7 +37,7 @@ const DESTINATIONS = [
   ["Improve your writing", "/content-creation/improve", "sparkles", "improve edit rewrite polish summarize feedback upload file document post email website copy"],
   ["Adapt for other platforms", "/content-creation/repurpose", "repeat", "adapt repurpose convert channels platforms instagram facebook tiktok blog"],
   ["My Content", "/content-creation/my-content", "content", "my content saved library"],
-  ["AI Management", "/ai-management", "calendar", "ai management planner calendar schedule plan"],
+  ["Content calendar", "/ai-management", "calendar", "content calendar planner schedule plan posting ai management"],
   ["Reports", "/reports", "trend", "reports insights revenue roas pdf"],
   ["Settings", "/settings", "edit", "settings profile workspace company account"],
   ["Alert settings", "/settings#notifications", "bell", "notifications alerts preferences"],

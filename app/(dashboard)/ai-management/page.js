@@ -1,7 +1,7 @@
 import AIManagementPage from "@/components/ai-management/AIManagementPage";
 
 export const metadata = {
-  title: "AI Management · SixthSense",
+  title: "Content Calendar · SixthSense",
 };
 
 export default function AIManagement() {
