@@ -325,7 +325,7 @@ export default function MyContentPage() {
                 open={openId === item.id}
                 onToggle={() => setOpenId((id) => (id === item.id ? null : item.id))}
                 onAdapt={() => {
-                  setAdaptSource(item.text);
+                  setAdaptSource(item.text, { href: "/content-creation/my-content", label: "Back to My Content" });
                   router.push(ADAPT_PATH);
                 }}
               />

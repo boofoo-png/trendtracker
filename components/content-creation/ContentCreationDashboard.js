@@ -7,7 +7,7 @@ import Link from "next/link";
 import { useEffect, useState } from "react";
 import Icon from "@/components/ui/Icon";
 import { clearContentTrend, forwardContentTrend, loadContentTrend, sourceOf } from "@/lib/contentTrend";
-import { MyContentLink } from "./ui";
+import { BackLink, MyContentLink } from "./ui";
 
 const CREATE_OPTIONS = [
   {
@@ -128,6 +128,7 @@ export default function ContentCreationDashboard() {
     <div className="w-full">
       <header className="flex flex-col items-stretch justify-between gap-6 text-paper sm:flex-row sm:items-start">
         <div className="min-w-0">
+          {trend?.returnTo?.href && <BackLink href={trend.returnTo.href}>{trend.returnTo.label}</BackLink>}
           <h1 className="text-[clamp(27px,3vw,38px)] font-medium tracking-[-0.035em]">Content Creation</h1>
           <p className="mt-2 max-w-[700px] text-[13px] leading-[1.6] text-paper/85">
             Create, re-purpose and edit content with the help of AI.

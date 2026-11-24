@@ -408,8 +408,14 @@ function toSaved(kind, r) {
 
 // ---------- Page ----------
 
-// Results that make sense to turn into posts for other platforms.
-const ADAPTABLE = new Set(["social", "blog", "ad", "improve"]);
+// Results that make sense to turn into posts for other platforms, and the Back link
+// the Adapt screen shows to return here (the result is still waiting, see creatorDraft).
+const ADAPTABLE = {
+  social: "Back to your post",
+  blog: "Back to your blog post",
+  ad: "Back to your ad",
+  improve: "Back to your writing",
+};
 
 export default function CreatorPage({ kind }) {
   const meta = CONTENT_KINDS[kind];
@@ -431,11 +437,12 @@ export default function CreatorPage({ kind }) {
   // (a new task, so an earlier draft isn't brought back).
   useEffect(() => {
     if (kind !== "repurpose") return;
-    const text = takeAdaptSource();
-    if (!text) return;
+    const handoff = takeAdaptSource();
+    if (!handoff) return;
     restoreChecked.current = true;
     // eslint-disable-next-line react-hooks/set-state-in-effect
-    setFields((f) => ({ ...f, source: text }));
+    setFields((f) => ({ ...f, source: handoff.text }));
+    if (handoff.returnTo?.href) setBack(handoff.returnTo);
   }, [kind]);
 
   // Bring back the last result on this screen, so leaving the page doesn't lose it.
@@ -585,9 +592,9 @@ export default function CreatorPage({ kind }) {
                 onRegenerate={run}
                 onSave={save}
                 onAdapt={
-                  ADAPTABLE.has(kind) && !["summarize", "feedback"].includes(result.mode)
+                  ADAPTABLE[kind] && !["summarize", "feedback"].includes(result.mode)
                     ? () => {
-                        setAdaptSource(toSaved(kind, result).text);
+                        setAdaptSource(toSaved(kind, result).text, { href: `/content-creation/${kind}`, label: ADAPTABLE[kind] });
                         router.push(ADAPT_PATH);
                       }
                     : undefined

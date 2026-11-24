@@ -10,7 +10,7 @@ import { usePathname, useRouter } from "next/navigation";
 import { useCallback, useEffect, useRef, useState, useTransition } from "react";
 import Icon from "@/components/ui/Icon";
 import { askSense } from "@/app/actions/assistant";
-import { SENSE_EVENT, STARTER_PROMPTS } from "@/lib/assistant/shared";
+import { SENSE_EVENT, STARTER_PROMPTS, SENSE_ROUTES } from "@/lib/assistant/shared";
 import { saveContentTrend } from "@/lib/contentTrend";
 import { listCalendar, listSaved } from "@/lib/contentStore";
 import { channelLabel, toISODate } from "@/lib/calendar";
@@ -187,7 +187,12 @@ function Drawer({ onClose, messages, setMessages, initialQuestion }) {
     if (action.kind === "create") {
       saveContentTrend(
         { name: action.ideaTitle, audience: "", platform: "", format: "", hook: action.ideaBrief },
-        { source: "assistant", path: action.target },
+        {
+          source: "assistant",
+          path: action.target,
+          // Back link on the creator returns to the page the assistant was opened on.
+          returnTo: SENSE_ROUTES[pathname] && pathname !== action.target ? { href: pathname, label: `Back to ${SENSE_ROUTES[pathname]}` } : null,
+        },
       );
     }
     onClose();

@@ -725,7 +725,7 @@ function Detail({ me, item, onRemove }) {
                       format: featured.format,
                       hook: featured.caption.slice(0, 160),
                     },
-                    { source: "competitor", path: "/content-creation" },
+                    { source: "competitor", path: "/content-creation", returnTo: { href: "/competitors", label: "Back to Competitors" } },
                   )
                 }
                 className="inline-flex items-center gap-1 rounded-2xl bg-sense-blue px-3 py-1.5 text-[13px] font-bold text-paper hover:bg-sense-blue/85"

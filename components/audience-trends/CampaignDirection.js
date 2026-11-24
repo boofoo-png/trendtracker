@@ -152,7 +152,7 @@ export default function CampaignDirection({ selectedTrend, audiences, liveAudien
                 platform: selectedTrend.platform,
                 format: selectedTrend.format,
                 hook: angle?.headline ?? "",
-              }, { source: "trend", path: "/content-creation" })
+              }, { source: "trend", path: "/content-creation", returnTo: { href: "/audience-trends", label: "Back to Audience" } })
             }
             className="cursor-pointer rounded-[18px] bg-sense-blue text-xs font-bold text-paper transition-colors hover:bg-sense-blue/85 disabled:cursor-not-allowed disabled:opacity-50 px-4 py-2"
           >
