@@ -89,7 +89,8 @@ const CARD_STYLE = {
 };
 const DEFAULT_STYLE = "bg-[linear-gradient(145deg,var(--color-sense-lime),#efffae)] text-sense-navy";
 
-function SavedCard({ item, open, onToggle, onAdapt }) {
+/** scheduled: calendar posts made from this item (shown as tags; click to change). */
+function SavedCard({ item, open, onToggle, onAdapt, scheduled = [], onEditScheduled }) {
   const [editing, setEditing] = useState(false);
   const [title, setTitle] = useState(item.title);
   const [text, setText] = useState(item.text);
@@ -169,7 +170,29 @@ function SavedCard({ item, open, onToggle, onAdapt }) {
           {item.text}
         </p>
       )}
-      <div className="grid gap-2.5 px-3.5 pt-3 pb-3.5">
+      <div className="grid min-w-0 grid-cols-1 gap-2.5 px-3.5 pt-3 pb-3.5">
+        {scheduled.length > 0 && (
+          <ul className="grid min-w-0 gap-1">
+            {scheduled.map((p) => (
+              <li key={p.id} className="min-w-0">
+                <button
+                  type="button"
+                  onClick={() => onEditScheduled(p)}
+                  title="Change the date, time or platforms"
+                  className="flex w-full min-w-0 cursor-pointer items-center gap-1.5 rounded-lg bg-sense-blue/10 px-2 py-1.5 text-left text-[11px] font-bold text-sense-blue transition-colors hover:bg-sense-blue/15"
+                >
+                  <Icon name="calendar" size={13} />
+                  <span className="min-w-0 flex-1 truncate" title={`${plannedWhen(p)} · ${channelLabel(p)}`}>
+                    <span className="sr-only">Scheduled for </span>
+                    {plannedWhen(p)}
+                  </span>
+                  <Icon name="edit" size={12} className="opacity-60" />
+                  <span className="sr-only">(change)</span>
+                </button>
+              </li>
+            ))}
+          </ul>
+        )}
         <div className="flex items-baseline justify-between gap-2">
           <span className="truncate text-[9px] font-extrabold uppercase text-sense-blue">
             {item.trend ? `Trend: ${item.trend}` : "No trend"}
@@ -191,11 +214,17 @@ function SavedCard({ item, open, onToggle, onAdapt }) {
           >
             <Icon name="repeat" size={13} /> Adapt
           </button>
-          <AddToCalendar compact title={item.title} text={item.text} />
+          <AddToCalendar compact title={item.title} text={item.text} getSavedId={() => item.id} />
           <button
             type="button"
             title="Delete from My Content"
-            onClick={() => window.confirm(`Delete "${item.title}" from My Content?`) && removeItem(item.id)}
+            onClick={() =>
+              window.confirm(
+                scheduled.length
+                  ? `Delete "${item.title}" from My Content? It stays on your calendar.`
+                  : `Delete "${item.title}" from My Content?`,
+              ) && removeItem(item.id)
+            }
             className={`${small} text-[#708083] hover:bg-[#ff7f7f]/15 hover:text-[#b84f4f]`}
           >
             <Icon name="trash" size={13} /> Delete
@@ -217,7 +246,13 @@ export default function MyContentPage() {
   const [type, setType] = useState("All");
   const [openId, setOpenId] = useState(null);
 
-  const planned = posts.map((p) => ({ ...p, type: PLANNED, text: p.caption ?? "", planned: true }));
+  // A post scheduled from a saved item is shown on that item's card (as a "Scheduled"
+  // tag), not as a second card. Only calendar posts on their own get a card.
+  const savedIds = new Set(saved.map((i) => i.id));
+  const scheduledFor = (id) => posts.filter((p) => p.savedId === id);
+  const planned = posts
+    .filter((p) => !(p.savedId && savedIds.has(p.savedId)))
+    .map((p) => ({ ...p, type: PLANNED, text: p.caption ?? "", planned: true }));
   const items = [...saved, ...planned].sort((a, b) => (b.createdAt ?? 0) - (a.createdAt ?? 0));
   const ready = loaded && hydrated;
   const count = (t) => (t === "All" ? items.length : items.filter((i) => i.type === t).length);
@@ -330,6 +365,8 @@ export default function MyContentPage() {
                   setAdaptSource(item.text, { href: "/content-creation/my-content", label: "Back to My Content" });
                   router.push(ADAPT_PATH);
                 }}
+                scheduled={scheduledFor(item.id)}
+                onEditScheduled={(p) => setEditing(p)}
               />
             ),
           )}

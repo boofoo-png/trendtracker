@@ -533,7 +533,9 @@ export default function CreatorPage({ kind }) {
     });
   };
 
+  /** Saves the result to My Content (once); returns its id, or null if it couldn't. */
   const save = () => {
+    if (savedId) return savedId;
     const { title, text } = toSaved(kind, result);
     const entry = saveItem({
       kind,
@@ -544,6 +546,7 @@ export default function CreatorPage({ kind }) {
     });
     if (entry) setSavedId(entry.id);
     else setError("Couldn't save: your account is still loading. Try again in a moment.");
+    return entry?.id ?? null;
   };
 
   // The result as plain text (what Save, Adapt and Add to calendar use).
@@ -594,7 +597,7 @@ export default function CreatorPage({ kind }) {
               <Result kind={kind} r={result} f={fields} />
               <ResultActions
                 onRegenerate={run}
-                onSave={save}
+                onSave={() => save()}
                 onAdapt={
                   ADAPTABLE[kind] && !["summarize", "feedback"].includes(result.mode)
                     ? () => {
@@ -606,7 +609,13 @@ export default function CreatorPage({ kind }) {
                 extra={
                   // Anything you could post; not summaries or feedback.
                   !["summarize", "feedback"].includes(result.mode) && (
-                    <AddToCalendar key={generatedAt} title={asText.title ?? meta.card} text={asText.text} />
+                    <AddToCalendar
+                      key={generatedAt}
+                      title={asText.title ?? meta.card}
+                      text={asText.text}
+                      // Scheduling keeps it: it's saved to My Content too, linked to the calendar post.
+                      getSavedId={save}
+                    />
                   )
                 }
                 saved={Boolean(savedId)}

@@ -14,8 +14,12 @@ const CALENDAR = "/ai-management";
 const shortDate = (iso) =>
   new Date(`${iso}T00:00`).toLocaleDateString("en-US", { weekday: "short", month: "short", day: "numeric" });
 
-/** title, text: what to schedule. compact: the small My Content style. */
-export default function AddToCalendar({ title, text, compact = false, className = "" }) {
+/**
+ * title, text: what to schedule. compact: the small My Content style.
+ * getSavedId(): the My Content item this is (saving it first if needed), so the
+ * calendar post is linked to it: one post, shown once in My Content, edits in sync.
+ */
+export default function AddToCalendar({ title, text, getSavedId, compact = false, className = "" }) {
   const today = useToday();
   const { addPosts } = useCalendar();
   const [open, setOpen] = useState(false);
@@ -51,8 +55,10 @@ export default function AddToCalendar({ title, text, compact = false, className 
           today={today}
           onClose={() => setOpen(false)}
           onSave={(fields) => {
-            addPosts([fields]);
-            setAdded(fields.date);
+            const savedId = getSavedId?.() ?? null;
+            addPosts([{ ...fields, savedId }]);
+            // In My Content the card's own "Scheduled" tag shows it; elsewhere, say so here.
+            if (!compact) setAdded(fields.date);
             setOpen(false);
           }}
         />
