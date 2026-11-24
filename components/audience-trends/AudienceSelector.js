@@ -68,6 +68,7 @@ export default function AudienceSelector({
     addAudience(label);
     setQuery("");
     setActive(-1);
+    setOpen(false); // otherwise the list covers the chip that was just added
   };
 
   const onKeyDown = (e) => {
@@ -179,12 +180,17 @@ export default function AudienceSelector({
 
       {/* Saved audiences */}
       <div className="mt-4">
-        <p className="mb-2 text-[10px] font-semibold uppercase tracking-wider">
-          Saved to your profile{" "}
-          <span className="font-normal normal-case tracking-normal text-ink-500">
-            Select one or more audiences to compare their trends.
-          </span>
-        </p>
+        <div className="mb-2 flex flex-wrap items-baseline justify-between gap-x-3 gap-y-1">
+          <p className="text-xs">
+            <span className="font-semibold uppercase tracking-wider">Saved to your profile</span>{" "}
+            <span className="text-ink-500">Tap an audience to select it for your search.</span>
+          </p>
+          {savedAudiences.length > 0 && (
+            <p aria-live="polite" className="text-xs font-semibold text-sense-blue">
+              {selectedAudiences.length} of {savedAudiences.length} selected
+            </p>
+          )}
+        </div>
 
         {!audiencesLoaded ? (
           <div role="status" aria-label="Loading saved audiences" className="flex flex-wrap gap-2">
@@ -201,24 +207,44 @@ export default function AudienceSelector({
           <ul className="flex flex-wrap gap-2">
             {savedAudiences.map((name) => {
               const isSelected = selectedAudiences.includes(name);
+              // Looks like a checkbox chip: ○ / ✓ shows it can be picked; the × (behind a
+              // divider) is a separate "delete" button.
               return (
                 <li
                   key={name}
-                  className={`flex items-center rounded-full text-xs font-semibold transition-colors ${isSelected ? "bg-sense-blue text-paper" : "border border-sense-blue/20 bg-white/70 text-sense-blue"}`}
+                  className={`flex items-center rounded-full border-2 text-[13px] font-semibold shadow-[0_2px_0_rgba(0,31,62,0.12)] transition ${
+                    isSelected
+                      ? "border-sense-blue bg-sense-blue text-paper"
+                      : "border-sense-blue/30 bg-white text-sense-blue hover:border-sense-blue hover:bg-sense-blue/5"
+                  }`}
                 >
                   <button
                     type="button"
                     aria-pressed={isSelected}
                     onClick={() => toggleAudience(name)}
-                    className="py-1.5 pl-3 pr-1"
+                    title={isSelected ? "Selected. Tap to deselect" : "Tap to select"}
+                    className="flex cursor-pointer items-center gap-2 rounded-l-full py-1.5 pl-2 pr-3 outline-none focus-visible:ring-2 focus-visible:ring-sense-lime"
                   >
+                    <span
+                      aria-hidden="true"
+                      className={`grid size-[18px] place-items-center rounded-full border-2 text-[11px] leading-none ${
+                        isSelected ? "border-paper bg-paper text-sense-blue" : "border-sense-blue/40"
+                      }`}
+                    >
+                      {isSelected ? "✓" : ""}
+                    </span>
                     {name}
                   </button>
                   <button
                     type="button"
-                    aria-label={`Remove ${name}`}
+                    aria-label={`Delete ${name}`}
+                    title={`Delete ${name}`}
                     onClick={() => removeAudience(name)}
-                    className="py-1.5 pl-1 pr-3 opacity-60 hover:opacity-100"
+                    className={`cursor-pointer self-stretch rounded-r-full border-l px-2.5 text-base leading-none transition ${
+                      isSelected
+                        ? "border-paper/30 text-paper/70 hover:bg-coral-400 hover:text-paper"
+                        : "border-sense-blue/20 text-sense-blue/50 hover:bg-coral-400/15 hover:text-coral-400"
+                    }`}
                   >
                     ×
                   </button>
