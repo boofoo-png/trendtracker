@@ -5,9 +5,11 @@
 // are written by Gemini via the generateContent server action.
 
 import Link from "next/link";
-import { useEffect, useState, useTransition } from "react";
+import { useEffect, useRef, useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { ADAPT_PATH, setAdaptSource, takeAdaptSource } from "@/lib/adaptSource";
+import { clearDraft, loadDraft, saveDraft } from "@/lib/creatorDraft";
+import { useAccount } from "@/lib/account";
 import { generateContent } from "@/app/(dashboard)/content-creation/actions";
 import { CONTENT_KINDS, FIELD_OPTIONS as O } from "@/lib/contentKinds";
 import { clearContentTrend, loadContentTrend, saveContentTrend } from "@/lib/contentTrend";
@@ -419,15 +421,62 @@ export default function CreatorPage({ kind }) {
   const [result, setResult] = useState(null);
   const [error, setError] = useState(null);
   const [savedId, setSavedId] = useState(null);
+  const [generatedAt, setGeneratedAt] = useState(null);
+  const [restored, setRestored] = useState(false); // result came back from an earlier visit
   const [pending, startTransition] = useTransition();
+  const { workspaceId } = useAccount();
+  const restoreChecked = useRef(false);
 
-  // Opened from "Adapt for other platforms": start with that content filled in.
+  // Opened from "Adapt for other platforms": start with that content filled in
+  // (a new task, so an earlier draft isn't brought back).
   useEffect(() => {
     if (kind !== "repurpose") return;
     const text = takeAdaptSource();
+    if (!text) return;
+    restoreChecked.current = true;
     // eslint-disable-next-line react-hooks/set-state-in-effect
-    if (text) setFields((f) => ({ ...f, source: text }));
+    setFields((f) => ({ ...f, source: text }));
   }, [kind]);
+
+  // Bring back the last result on this screen, so leaving the page doesn't lose it.
+  useEffect(() => {
+    if (!workspaceId || restoreChecked.current) return;
+    restoreChecked.current = true;
+    const draft = loadDraft(workspaceId, kind);
+    if (!draft) return;
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    setFields({ ...DEFAULTS[kind], ...draft.fields });
+    setResult(draft.result);
+    setSavedId(draft.savedId ?? null);
+    setGeneratedAt(draft.at);
+    setRestored(true);
+  }, [workspaceId, kind]);
+
+  // Keep the draft up to date: the latest result, what was typed, and whether it's saved.
+  useEffect(() => {
+    if (result && generatedAt) saveDraft(workspaceId, kind, { fields, result, savedId, at: generatedAt });
+  }, [workspaceId, kind, fields, result, savedId, generatedAt]);
+
+  // Reloading or closing the tab with an unsaved result: ask first.
+  useEffect(() => {
+    if (!result || savedId) return;
+    const warn = (e) => {
+      e.preventDefault();
+      e.returnValue = "";
+    };
+    window.addEventListener("beforeunload", warn);
+    return () => window.removeEventListener("beforeunload", warn);
+  }, [result, savedId]);
+
+  const startOver = () => {
+    clearDraft(workspaceId, kind);
+    setResult(null);
+    setSavedId(null);
+    setGeneratedAt(null);
+    setRestored(false);
+    setError(null);
+    setFields(DEFAULTS[kind]);
+  };
 
   useEffect(() => {
     const t = loadContentTrend(`/content-creation/${kind}`);
@@ -471,6 +520,8 @@ export default function CreatorPage({ kind }) {
       if (res.error) return setError(res.error);
       setResult(res.result);
       setSavedId(null);
+      setGeneratedAt(Date.now());
+      setRestored(false);
     });
   };
 
@@ -517,6 +568,18 @@ export default function CreatorPage({ kind }) {
             <LoadingState />
           ) : result ? (
             <div className={`flex flex-1 flex-col ${pending ? "opacity-50" : ""}`} aria-busy={pending}>
+              {restored && generatedAt && (
+                <p className="mb-4 flex flex-wrap items-center justify-between gap-2 rounded-lg bg-sense-blue/[0.06] px-3 py-2 text-xs text-[#3d5053]">
+                  <span>
+                    Your last result from{" "}
+                    {new Date(generatedAt).toLocaleString(undefined, { month: "short", day: "numeric", hour: "numeric", minute: "2-digit" })}
+                    {savedId ? " · saved to My Content" : " · not saved yet"}
+                  </span>
+                  <button type="button" onClick={startOver} className="cursor-pointer font-bold text-sense-blue underline">
+                    Start over
+                  </button>
+                </p>
+              )}
               <Result kind={kind} r={result} f={fields} />
               <ResultActions
                 onRegenerate={run}
