@@ -63,6 +63,12 @@ const COLUMNS = [
   ],
 ];
 
+// The table's name column sticks to the left while the numbers scroll sideways; once
+// scrolled, a soft shadow on its right edge shows there's more underneath.
+const STICKY = "sticky left-0 z-10";
+const STICKY_EDGE =
+  "after:pointer-events-none after:absolute after:inset-y-0 after:-right-3 after:w-3 after:bg-gradient-to-r after:from-sense-navy/15 after:to-transparent";
+
 // Columns that need like counts; shown as "Hidden" when an account hides its likes.
 const LIKE_BASED = new Set(["avgLikes", "engagementRate"]);
 
@@ -758,6 +764,7 @@ export default function RealCompetitors() {
   const [loading, startLoading] = useTransition();
   const [adding, startAdding] = useTransition();
 
+  const [scrolled, setScrolled] = useState(false); // table scrolled sideways (phones)
   const [updating, setUpdating] = useState(false); // background update after opening
 
   // Every fetch gets a number; only the newest one may replace what's shown, so a slow
@@ -999,11 +1006,17 @@ export default function RealCompetitors() {
               </p>
             ) : (
               <>
-                <div className="-mx-2 mt-4 overflow-x-auto px-2">
+                <div
+                  className="mt-4 overflow-x-auto bg-paper"
+                  onScroll={(e) => setScrolled(e.currentTarget.scrollLeft > 0)}
+                >
                   <table className="w-full min-w-[660px] border-collapse text-sm">
                     <thead>
                       <tr className="text-left text-xs uppercase tracking-wider text-[#4b5d60]">
-                        <th scope="col" className="pb-2 font-semibold">
+                        <th
+                          scope="col"
+                          className={`${STICKY} ${scrolled ? STICKY_EDGE : ""} bg-paper pb-2 font-semibold`}
+                        >
                           Account
                         </th>
                         {COLUMNS.map(([key, label, , text]) => (
@@ -1029,11 +1042,20 @@ export default function RealCompetitors() {
                             onClick={() =>
                               !r.mine && open(active ? null : r.id)
                             }
-                            className={`border-t border-sense-blue/10 transition ${r.mine ? "bg-sense-blue/5" : "cursor-pointer hover:bg-sense-blue/5"} ${active ? "bg-sense-blue/10 shadow-[inset_4px_0_0_var(--color-sense-navy)]" : ""}`}
+                            className={`group border-t border-sense-blue/10 transition ${r.mine ? "bg-sense-blue/5" : "cursor-pointer hover:bg-sense-blue/5"} ${active ? "bg-sense-blue/10" : ""}`}
                           >
+                            {/* The name column stays put when the table scrolls
+                                sideways (phones). It needs a solid background so the
+                                numbers slide under it, with the row's tint on top. */}
                             <th
                               scope="row"
-                              className="py-2.5 text-left font-normal"
+                              className={`${STICKY} ${scrolled ? STICKY_EDGE : ""} bg-paper py-2.5 text-left font-normal ${
+                                active
+                                  ? "bg-[linear-gradient(rgba(3,82,94,0.1),rgba(3,82,94,0.1))] shadow-[inset_4px_0_0_var(--color-sense-navy)]"
+                                  : r.mine
+                                    ? "bg-[linear-gradient(rgba(3,82,94,0.05),rgba(3,82,94,0.05))]"
+                                    : "group-hover:bg-[linear-gradient(rgba(3,82,94,0.05),rgba(3,82,94,0.05))]"
+                              }`}
                             >
                               {/* Competitors' names are real buttons so Tab + Enter
                                   can open them too; the whole row still takes clicks. */}
@@ -1047,7 +1069,7 @@ export default function RealCompetitors() {
                                   label={r.handle}
                                   mine={r.mine}
                                 />
-                                <span className="grid min-w-0">
+                                <span className="grid min-w-0 max-w-[7.5rem] sm:max-w-[16rem]">
                                   <strong className="truncate">
                                     @{r.handle}
                                   </strong>
