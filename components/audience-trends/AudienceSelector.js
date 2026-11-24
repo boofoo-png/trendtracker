@@ -96,8 +96,9 @@ export default function AudienceSelector({
       aside={<p className="text-[11px] text-ink-500">Pick audiences, then press Find trends to search for them</p>}
     >
       {/* Search / add */}
-      <div className="flex flex-col gap-2 sm:flex-row">
-        <div className="relative flex-1">
+      {/* Phones: [field][+ Add] on one line (so the suggestion list never covers Add), AI below. */}
+      <div className="flex flex-wrap gap-2 sm:flex-nowrap">
+        <div className="relative min-w-0 flex-1">
           <span aria-hidden="true" className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-ink-500">
             ⌕
           </span>
@@ -155,6 +156,15 @@ export default function AudienceSelector({
           )}
         </div>
 
+        {/* "Add" saves what's typed (same as pressing Enter); AI suggestions need a few letters. */}
+        <button
+          type="button"
+          onClick={() => query.trim() && add(query)}
+          disabled={!query.trim()}
+          className="shrink-0 cursor-pointer rounded-[18px] bg-sense-blue px-5 py-2.5 text-xs font-bold text-paper transition-colors hover:bg-sense-blue/85 disabled:cursor-not-allowed disabled:bg-sense-blue/30"
+        >
+          + Add
+        </button>
         <button
           type="button"
           onClick={() => {
@@ -162,20 +172,19 @@ export default function AudienceSelector({
             setOpen(true);
           }}
           disabled={query.trim().length < 3 || ai.loading}
-          title="Ask Sense AI for related audiences (uses Gemini)"
-          className="cursor-pointer rounded-[18px] border border-sense-blue/20 bg-white/70 text-xs font-bold text-sense-blue transition-colors hover:bg-sense-blue/10 disabled:cursor-not-allowed disabled:opacity-50 px-4 py-2.5"
+          title={query.trim().length < 3 ? "Type at least 3 letters first" : "Ask Sense AI for related audiences"}
+          className="w-full shrink-0 cursor-pointer rounded-[18px] border border-sense-blue/20 bg-white/70 text-xs font-bold text-sense-blue transition-colors hover:bg-sense-blue/10 disabled:cursor-not-allowed disabled:opacity-50 px-4 py-2.5 sm:w-auto"
         >
           {ai.loading ? "✦ Thinking…" : "✦ Suggest with AI"}
         </button>
-        <button
-          type="button"
-          onClick={() => query.trim() && add(query)}
-          disabled={!query.trim()}
-          className="cursor-pointer rounded-[18px] border border-sense-blue/20 bg-white/70 text-xs font-bold text-sense-blue transition-colors hover:bg-sense-blue/10 disabled:cursor-not-allowed disabled:opacity-50 px-4 py-2.5"
-        >
-          + Add custom audience
-        </button>
       </div>
+      <p className="mt-1.5 text-xs text-ink-500">
+        {query.trim().length === 0
+          ? "Type a group of people, like “coffee lovers”, then press Enter or Add."
+          : query.trim().length < 3
+            ? "Keep typing: Suggest with AI works after 3 letters."
+            : "Press Enter or Add to save it, or Suggest with AI for related audiences."}
+      </p>
       {ai.error && <p className="mt-1 text-[11px] text-ink-500">{ai.error}</p>}
 
       {/* Saved audiences */}
