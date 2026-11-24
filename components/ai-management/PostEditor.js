@@ -115,7 +115,7 @@ export default function PostEditor({ post, today, onSave, onClose, onDelete, onW
 
         <fieldset className="grid gap-1.5">
           <legend className={`${labelText} mb-1.5`}>
-            Channels <span className="font-normal text-[#8a9799]">(pick one or both)</span>
+            Channels <span className="font-normal text-[#8a9799]">(pick one or more)</span>
           </legend>
           <div className="flex flex-wrap gap-2">
             {CHANNELS.map((c) => (
