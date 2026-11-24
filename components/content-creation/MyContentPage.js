@@ -174,10 +174,10 @@ export default function MyContentPage() {
     <div className="w-full">
       <PageHeading
         title="My Content"
-        description="Everything you've saved from Content Creation and planned in your calendar. Saved in this browser only."
+        description="Everything you've saved from Content Creation and planned in your calendar. Saved to your workspace."
         action={
           <Link
-            href="/content-creation/upload"
+            href="/content-creation/improve"
             className="inline-flex min-h-[42px] shrink-0 cursor-pointer items-center justify-center gap-2 rounded-[22px] bg-sense-lime px-[18px] text-[10px] font-extrabold uppercase text-sense-navy shadow-[0_5px_0_rgba(0,31,62,0.17)] transition duration-150 hover:translate-y-0.5 hover:shadow-[0_3px_0_rgba(0,31,62,0.2)]"
           >
             <Icon name="upload" size={16} />

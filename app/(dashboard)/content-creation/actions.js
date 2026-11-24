@@ -11,7 +11,7 @@ import { generateCampaignPlan } from "@/lib/gemini/campaignPlan";
 import { currentWorkspace, getLatestTrends } from "@/lib/trendStore";
 
 const NO_KEY = "AI features are off: add GEMINI_API_KEY to .env.local.";
-const LONG = new Set(["post", "text", "source", "fileText"]);
+const LONG = new Set(["text", "source"]);
 
 const str = (v, n) => String(v ?? "").replace(/\r/g, "").trim().slice(0, n);
 
@@ -26,7 +26,7 @@ function cleanFields(kind, fields) {
     } else if (options) {
       out[key] = options.includes(value) ? value : options[0];
     } else {
-      out[key] = str(value, LONG.has(key) ? (key === "fileText" ? 12000 : 4000) : 600);
+      out[key] = str(value, key === "text" ? 12000 : LONG.has(key) ? 4000 : 600);
     }
   }
   return out;
@@ -45,10 +45,8 @@ function cleanTrend(trend) {
 }
 
 const REQUIRED = {
-  edit: ["post", "Paste or upload the post to edit."],
-  improve: ["text", "Add the text to improve."],
+  improve: ["text", "Add your writing first: upload a file or paste the text."],
   repurpose: ["source", "Paste or pick the content to repurpose."],
-  upload: ["fileText", "Upload a text file or paste its content."],
   ad: ["product", "Say what product or service the ad is for."],
 };
 

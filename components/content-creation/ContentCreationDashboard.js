@@ -38,28 +38,16 @@ const CREATE_OPTIONS = [
 
 const EDIT_OPTIONS = [
   {
-    icon: "edit",
-    id: "edit",
-    title: "Improve a social post",
-    description: "Paste a post you’ve written. Get a stronger caption, alternatives, and hashtags.",
-  },
-  {
     icon: "sparkles",
     id: "improve",
-    title: "Polish any text",
-    description: "Emails, website copy, ads. Sharpen the tone and wording of anything you’ve written.",
+    title: "Improve your writing",
+    description: "Upload or paste a post, ad, email or document. Improve it, rewrite it, summarize it or get feedback.",
   },
   {
     icon: "repeat",
     id: "repurpose",
     title: "Repurpose content",
     description: "Transform your content into different formats and platforms.",
-  },
-  {
-    icon: "upload",
-    id: "upload",
-    title: "Upload your file",
-    description: "Upload a Word, PDF or text draft to edit or enhance with AI tools.",
   },
 ];
 
@@ -190,7 +178,7 @@ export default function ContentCreationDashboard() {
       {SECTIONS.map(([title, options], i) => (
         <section key={title} className={i === 0 ? "mt-[26px]" : "mt-9 sm:mt-11 xl:mt-[clamp(54px,8vh,88px)]"}>
           <h2 className="mb-4 text-[15px] font-bold text-paper">{title}</h2>
-          <div className="grid grid-cols-1 gap-[18px] sm:grid-cols-2 xl:grid-cols-4">
+          <div className={`grid grid-cols-1 gap-[18px] sm:grid-cols-2 ${options.length > 2 ? "xl:grid-cols-4" : ""}`}>
             {options.map((option) => (
               <ActionCard key={option.title} {...option} />
             ))}

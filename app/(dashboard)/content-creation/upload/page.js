@@ -1,7 +1,6 @@
-import CreatorPage from "@/components/content-creation/CreatorPage";
+import { redirect } from "next/navigation";
 
-export const metadata = { title: "Upload Your File · SixthSense" };
-
+// Merged into "Improve your writing"; old links and bookmarks land there.
 export default function Page() {
-  return <CreatorPage kind="upload" />;
+  redirect("/content-creation/improve");
 }

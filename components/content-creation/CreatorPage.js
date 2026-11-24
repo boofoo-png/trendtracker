@@ -1,7 +1,7 @@
 "use client";
 
-// One Content Creation screen (Write a new post, Video, Blog, Ad Copy, Improve a
-// social post, Polish any text, Repurpose, Upload). Layout follows the Figma Make app; results
+// One Content Creation screen (Write a new post, Video, Blog, Ad Copy, Improve your
+// writing, Repurpose). Layout follows the Figma Make app; results
 // are written by Gemini via the generateContent server action.
 
 import Link from "next/link";
@@ -41,10 +41,8 @@ const DEFAULTS = {
   video: { platform: "Instagram", goal: "Awareness", format: "Short-form", duration: "15 seconds", idea: "" },
   blog: { tone: "Professional", idea: "" },
   ad: { product: "", adGoal: "Awareness", adFormat: "Image Ad", idea: "" },
-  edit: { post: "", change: "", instructions: "" },
-  improve: { contentType: "Caption", text: "", improve: "", instructions: "" },
+  improve: { text: "", writingType: "Social post", intent: "Improve it", instructions: "" },
   repurpose: { source: "", platforms: ["Instagram", "Blog"], instructions: "" },
-  upload: { fileText: "", focus: "Edit", instructions: "" },
 };
 
 const ideaFromTrend = (t) =>
@@ -54,6 +52,18 @@ const ideaFromTrend = (t) =>
 
 // ---------- Forms ----------
 
+const INTENT_ICON = { "Improve it": "sparkles", "Rewrite it": "repeat", "Summarize it": "content", "Get feedback": "message" };
+const INSTRUCTIONS_PLACEHOLDER = {
+  "Improve it": "e.g. Make it more engaging and end with a clear next step.",
+  "Rewrite it": "e.g. Make it playful and shorter, for a younger audience.",
+  "Summarize it": "e.g. Focus on anything about pricing or dates.",
+  "Get feedback": "e.g. Will this convince small business owners to sign up?",
+};
+/** The button label follows the chosen intent. */
+export const improveButtonLabel = (intent) =>
+  ({ "Rewrite it": "Rewrite with AI", "Summarize it": "Summarize with AI", "Get feedback": "Get feedback" })[intent] ??
+  "Improve with AI";
+
 function Form({ kind, f, set }) {
   const ideaPlaceholder = "e.g. A practical story showing how our product saves time for busy teams.";
   const idea = (label = "Describe your idea") => (
@@ -62,12 +72,12 @@ function Form({ kind, f, set }) {
 
   switch (kind) {
     case "social":
-      // Starts from scratch; an existing post belongs in "Improve a social post".
+      // Starts from scratch; existing writing belongs in "Improve your writing".
       return (
         <>
           <p className="mb-[18px] rounded-[10px] bg-sense-blue/5 px-3 py-2.5 text-xs text-[#3d5053]">
             Already have a post written?{" "}
-            <Link href="/content-creation/edit" className="font-bold text-sense-blue underline">
+            <Link href="/content-creation/improve" className="font-bold text-sense-blue underline">
               Improve it instead →
             </Link>
           </p>
@@ -107,82 +117,36 @@ function Form({ kind, f, set }) {
           {idea("Key message (optional)")}
         </>
       );
-    case "edit":
-      return (
-        <>
-          <UploadZone label="Upload your post" hint={UPLOAD_HINT} onText={(text) => set("post")(text)} />
-          <TextArea label="Your post" value={f.post} onChange={set("post")} placeholder="Paste the post you want to edit." />
-          <TextArea
-            label="What would you like to change?"
-            value={f.change}
-            onChange={set("change")}
-            placeholder="Make this post more engaging and clearer while keeping the professional tone."
-            rows={3}
-          />
-          <TextArea
-            label="Specific instructions (optional)"
-            value={f.instructions}
-            onChange={set("instructions")}
-            placeholder="Add one detail about the customer experience and end with a direct next step."
-            rows={3}
-          />
-        </>
-      );
     case "improve":
       return (
         <>
-          <Select label="Content type" value={f.contentType} options={O.contentType} onChange={set("contentType")} />
-          <TextArea label="Your text" value={f.text} onChange={set("text")} placeholder="Paste the text to improve." />
+          <UploadZone label="Upload a file" hint={UPLOAD_HINT} onText={(text) => set("text")(text)} />
           <TextArea
-            label="What would you like to improve?"
-            value={f.improve}
-            onChange={set("improve")}
-            placeholder="Make it more engaging, persuasive, and specific."
-            rows={3}
+            label="Or paste your text"
+            value={f.text}
+            onChange={set("text")}
+            placeholder="Paste a post, ad, email, web page or any document."
+            rows={6}
+          />
+          <Select label="What is it?" value={f.writingType} options={O.writingType} onChange={set("writingType")} />
+          <ChoiceGrid
+            label="What do you want?"
+            options={O.intent}
+            value={f.intent}
+            onChange={set("intent")}
+            icon={(o) => INTENT_ICON[o]}
           />
           <TextArea
-            label="Additional instructions (optional)"
+            label="Anything specific? (optional)"
             value={f.instructions}
             onChange={set("instructions")}
-            placeholder="Keep the copy concise and professional."
+            placeholder={INSTRUCTIONS_PLACEHOLDER[f.intent]}
             rows={3}
           />
         </>
       );
     case "repurpose":
       return <RepurposeForm f={f} set={set} />;
-    case "upload":
-      return (
-        <>
-          <UploadZone
-            large
-            label="Upload your file"
-            hint={UPLOAD_HINT}
-            onText={(text) => set("fileText")(text)}
-          />
-          <TextArea
-            label="Or paste the content"
-            value={f.fileText}
-            onChange={set("fileText")}
-            placeholder="The document text appears here after upload."
-            rows={4}
-          />
-          <ChoiceGrid
-            label="What would you like us to focus on?"
-            options={O.focus}
-            value={f.focus}
-            onChange={set("focus")}
-            icon={(o) => (o === "Insights" ? "sparkles" : o === "Rewrite" ? "repeat" : "edit")}
-          />
-          <TextArea
-            label="Specific instructions (optional)"
-            value={f.instructions}
-            onChange={set("instructions")}
-            placeholder="Identify the strongest message and recommend practical improvements."
-            rows={3}
-          />
-        </>
-      );
     default:
       return null;
   }
@@ -305,37 +269,8 @@ function Result({ kind, r, f }) {
           </div>
         </>
       );
-    case "edit":
-      return (
-        <>
-          <Section label="Enhanced Caption">
-            <CopyBlock lead={r.hook} paragraphs={[r.caption]} />
-          </Section>
-          <Section label="Alternative Options">
-            <Alternatives items={r.alternatives ?? []} />
-          </Section>
-          <Section label="Visual Suggestions (optional)">
-            <NumberedList items={r.visualSuggestions ?? []} />
-          </Section>
-          <Section label="Suggested Hashtags (optional)">
-            <Tags items={r.hashtags ?? []} hash />
-          </Section>
-        </>
-      );
     case "improve":
-      return (
-        <>
-          <Section label="Improved Version">
-            <CopyBlock paragraphs={[r.improved]} />
-          </Section>
-          <Section label="Alternative Options">
-            <Alternatives items={r.alternatives ?? []} />
-          </Section>
-          <Section label="Key Improvements">
-            <NumberedList items={r.keyImprovements ?? []} />
-          </Section>
-        </>
-      );
+      return <ImproveResult r={r} />;
     case "repurpose": {
       const versions = r.versions ?? [];
       const current = versions.find((v) => v.platform === tab) ?? versions[0];
@@ -357,40 +292,73 @@ function Result({ kind, r, f }) {
         </>
       );
     }
-    case "upload": {
-      const active = tab ?? "Result";
+    default:
+      return null;
+  }
+}
+
+/** "Improve your writing" results, laid out by mode (see lib/gemini/content.js). */
+function ImproveResult({ r }) {
+  switch (r.mode) {
+    case "improvePost":
       return (
         <>
-          <Tabs tabs={["Result", "Summary", "File preview"]} active={active} onChange={setTab} />
-          <p className="-mt-2 mb-3.5 text-[11px] text-[#768285]">Analysis focus: {f.focus}</p>
-          {active === "Result" && (
-            <Section label={f.focus === "Insights" ? "Insights" : `${f.focus} result`}>
-              <CopyBlock paragraphs={[r.result]} />
-            </Section>
-          )}
-          {active === "Summary" && (
-            <Section label="Summary">
-              <CopyBlock paragraphs={[r.summary]} />
-            </Section>
-          )}
-          {active === "File preview" && (
-            <Section label="File preview">
-              <div className="max-h-[260px] overflow-y-auto rounded-[10px] border border-sense-blue/10 bg-white/70 p-[15px] text-[11px] leading-[1.55] whitespace-pre-line text-[#41585c]">
-                {f.fileText}
-              </div>
-            </Section>
-          )}
-          <Section label="Suggested Actions">
-            <Alternatives items={r.suggestedActions ?? []} />
+          <Section label="Improved post">
+            <CopyBlock lead={r.hook} paragraphs={[r.caption]} />
           </Section>
-          <Section label="Key Takeaways">
-            <NumberedList items={r.takeaways ?? []} />
+          <Section label="Other versions">
+            <Alternatives items={r.alternatives ?? []} />
+          </Section>
+          <Section label="Visual suggestions (optional)">
+            <NumberedList items={r.visualSuggestions ?? []} />
+          </Section>
+          <Section label="Suggested hashtags (optional)">
+            <Tags items={r.hashtags ?? []} hash />
           </Section>
         </>
       );
-    }
+    case "summarize":
+      return (
+        <>
+          <Section label="Summary">
+            <CopyBlock paragraphs={[r.summary]} />
+          </Section>
+          <Section label="Key takeaways">
+            <NumberedList items={r.takeaways ?? []} />
+          </Section>
+          <Section label="Suggested next steps">
+            <Alternatives items={r.suggestedActions ?? []} />
+          </Section>
+        </>
+      );
+    case "feedback":
+      return (
+        <>
+          <Section label="Feedback">
+            <CopyBlock lead={r.summary} paragraphs={(r.feedback ?? "").split(/\n{2,}/).filter(Boolean)} />
+          </Section>
+          <Section label="What works">
+            <NumberedList items={r.strengths ?? []} />
+          </Section>
+          <Section label="What to fix">
+            <Alternatives items={r.suggestedActions ?? []} />
+          </Section>
+        </>
+      );
     default:
-      return null;
+      return (
+        <>
+          <Section label="New version">
+            <CopyBlock paragraphs={[r.improved]} />
+          </Section>
+          <Section label="Other versions">
+            <Alternatives items={r.alternatives ?? []} />
+          </Section>
+          <Section label="What changed">
+            <NumberedList items={r.keyImprovements ?? []} />
+          </Section>
+        </>
+      );
   }
 }
 
@@ -403,7 +371,6 @@ const tagLine = (tags) => (tags?.length ? [tags.map((t) => `#${t.replace(/^#/, "
 function toSaved(kind, r) {
   switch (kind) {
     case "social":
-    case "edit":
       return { title: r.hook, text: [r.hook, r.caption, ...tagLine(r.hashtags)].join("\n\n") };
     case "video":
       return {
@@ -421,14 +388,15 @@ function toSaved(kind, r) {
         text: [...lines("Headlines", r.headlines), ...lines("Copy", r.copy), `CTAs: ${(r.ctas ?? []).join(", ")}`].join("\n"),
       };
     case "improve":
+      if (r.mode === "improvePost") return { title: r.hook, text: [r.hook, r.caption, ...tagLine(r.hashtags)].join("\n\n") };
+      if (r.mode === "summarize") return { title: r.summary, text: [r.summary, "", ...lines("Key takeaways", r.takeaways)].join("\n") };
+      if (r.mode === "feedback") return { title: `Feedback: ${r.summary}`, text: [r.feedback, "", ...lines("What works", r.strengths), ...lines("What to fix", (r.suggestedActions ?? []).map((a) => `${a.label}: ${a.text}`))].join("\n") };
       return { title: r.improved, text: r.improved };
     case "repurpose":
       return {
         title: r.versions?.[0]?.text,
         text: (r.versions ?? []).map((v) => [`[${v.platform}]`, v.text, ...tagLine(v.hashtags)].join("\n")).join("\n\n"),
       };
-    case "upload":
-      return { title: r.summary, text: [r.result, "", `Summary: ${r.summary}`].join("\n") };
     default:
       return { title: "", text: "" };
   }
@@ -517,7 +485,11 @@ export default function CreatorPage({ kind }) {
             }
           >{meta.inputLabel}</PanelLabel>
           <Form kind={kind} f={fields} set={set} />
-          <GenerateButton label={meta.generateLabel} pending={pending} onClick={run} />
+          <GenerateButton
+            label={kind === "improve" ? improveButtonLabel(fields.intent) : meta.generateLabel}
+            pending={pending}
+            onClick={run}
+          />
         </Panel>
 
         <Panel className="lg:min-h-[560px]">
@@ -537,7 +509,7 @@ export default function CreatorPage({ kind }) {
                 onSave={save}
                 saved={Boolean(savedId)}
                 pending={pending}
-                saveLabel={kind === "repurpose" ? "Save Version" : kind === "ad" || kind === "upload" ? "Save Content" : kind === "edit" || kind === "improve" ? "Save Changes" : "Save"}
+                saveLabel="Save"
               />
             </div>
           ) : (
