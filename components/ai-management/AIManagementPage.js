@@ -60,7 +60,7 @@ function BackButton({ onClick, children }) {
     <button
       type="button"
       onClick={onClick}
-      className="mb-4 inline-flex cursor-pointer items-center gap-1.5 text-[13px] font-bold text-paper/90 transition-colors hover:text-sense-lime"
+      className="mb-4 flex w-fit cursor-pointer items-center gap-1.5 text-[13px] font-bold text-paper/90 transition-colors hover:text-sense-lime"
     >
       <Icon name="chevron" size={16} className="rotate-180" /> {children}
     </button>
