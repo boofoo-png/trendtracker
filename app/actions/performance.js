@@ -71,6 +71,7 @@ export async function getPerformance({ days = 7 } = {}) {
     insightsError: insights.error ?? null,
     facebook: facebook.value ?? null,
     competitors,
+    trackedCount: competitorRows.data?.length ?? 0, // includes competitors not looked up yet
     trends,
     trendsFor: latest.audiences ?? [],
     trendsUpdatedAt: latest.updatedAt ?? null,

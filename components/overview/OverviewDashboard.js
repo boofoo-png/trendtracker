@@ -11,6 +11,7 @@ import { Eyebrow, PageTitle } from "@/components/ui/Dashboard";
 import Skeleton from "@/components/ui/Skeleton";
 import InfoTip from "@/components/ui/InfoTip";
 import AdviceBadge from "@/components/ui/AdviceBadge";
+import GetStarted from "./GetStarted";
 import { getPerformance } from "@/app/actions/performance";
 import { addDays, useToday } from "@/lib/calendar";
 import { useSettings } from "@/lib/settings";
@@ -117,7 +118,7 @@ function CompetitorWatch({ data }) {
             <div key={c.handle} className="grid grid-rows-[58px_58px_34px] text-center">
               <b className={`${cell} font-normal`}>{c.postsPerWeek == null ? "—" : c.postsPerWeek.toFixed(1)}</b>
               <b className={`${cell} font-normal`}>{c.engagementRate == null ? "—" : `${c.engagementRate.toFixed(1)}%`}</b>
-              <span className={`self-end truncate px-1 text-xs ${c.you ? "font-bold text-sense-navy" : "text-[#1d4990]"}`}>
+              <span className={`self-end truncate px-1 text-xs ${c.you ? "font-bold text-sense-navy" : "text-[#3d5053]"}`}>
                 {c.you ? "You" : `@${c.handle}`}
               </span>
             </div>
@@ -381,14 +382,17 @@ export default function OverviewDashboard() {
       {!data || !today ? (
         <OverviewSkeleton />
       ) : (
-        <div className="grid grid-cols-12 gap-3.5 lg:gap-[18px]">
-          <CompetitorWatch data={data} />
-          <Followers data={data} />
-          <LatestTrends data={data} />
-          <Engagement data={data} />
-          <BestDay data={data} today={today} timeZone={timeZone} />
-          <LastWeek data={data} />
-        </div>
+        <>
+          <GetStarted data={data} />
+          <div className="grid grid-cols-12 gap-3.5 lg:gap-[18px]">
+            <CompetitorWatch data={data} />
+            <Followers data={data} />
+            <LatestTrends data={data} />
+            <Engagement data={data} />
+            <BestDay data={data} today={today} timeZone={timeZone} />
+            <LastWeek data={data} />
+          </div>
+        </>
       )}
     </div>
   );
