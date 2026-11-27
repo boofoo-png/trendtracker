@@ -1,0 +1,16 @@
+/* Page-level layout only. Each component styles itself in its own
+   .module.css file. Don't style a component's insides from here. */
+
+.page {
+  box-sizing: border-box; /* placeholder so the class exists. Replace me */
+  /* TODO: max-width, margin: 0 auto, padding, background */
+}
+
+.title {
+  box-sizing: border-box; /* placeholder so the class exists. Replace me */
+}
+
+.section {
+  box-sizing: border-box; /* placeholder so the class exists. Replace me */
+  /* TODO: spacing between sections, maybe a card look */
+}

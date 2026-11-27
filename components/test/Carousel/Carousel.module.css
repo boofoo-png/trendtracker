@@ -1,0 +1,15 @@
+.carousel {
+  box-sizing: border-box; /* placeholder so the class exists. Replace me */
+}
+
+.viewport {
+  box-sizing: border-box; /* placeholder so the class exists. Replace me */
+  /* TODO: overflow: hidden if you go with the sliding (Option B) approach */
+}
+
+.controls {
+  box-sizing: border-box; /* placeholder so the class exists. Replace me */
+  /* TODO: row with prev / counter / next.
+     Hint: the "chevron" icon points right. Flip the first one with
+     transform: rotate(180deg) or scaleX(-1). */
+}

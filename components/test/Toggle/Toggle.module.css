@@ -1,0 +1,24 @@
+.toggle {
+  box-sizing: border-box; /* placeholder so the class exists. Replace me */
+  /* TODO: lay out track + label in a row, reset button styles */
+}
+
+.track {
+  box-sizing: border-box; /* placeholder so the class exists. Replace me */
+  /* TODO: pill shape (width ~44px, height ~24px, border-radius 999px) */
+}
+
+.knob {
+  box-sizing: border-box; /* placeholder so the class exists. Replace me */
+  /* TODO: circle inside the track. Add a transition so it slides. */
+}
+
+/* TODO: the "on" state. Move the knob and change the track colour.
+   Hint: you can target a child of a state class:  .on .knob { ... } */
+.on {
+  box-sizing: border-box; /* placeholder so the class exists. Replace me */
+}
+
+.label {
+  box-sizing: border-box; /* placeholder so the class exists. Replace me */
+}

@@ -1,0 +1,23 @@
+.tabs {
+  box-sizing: border-box; /* placeholder so the class exists. Replace me */
+}
+
+.list {
+  box-sizing: border-box; /* placeholder so the class exists. Replace me */
+  /* TODO: row of tabs, gap, maybe a bottom border */
+}
+
+.tab {
+  box-sizing: border-box; /* placeholder so the class exists. Replace me */
+  /* TODO: reset button styles, padding, cursor */
+}
+
+.active {
+  box-sizing: border-box; /* placeholder so the class exists. Replace me */
+  /* TODO: how does the selected tab look? underline? filled background? */
+}
+
+.panel {
+  box-sizing: border-box; /* placeholder so the class exists. Replace me */
+  /* TODO: spacing under the tab row */
+}

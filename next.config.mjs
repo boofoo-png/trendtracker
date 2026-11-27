@@ -5,10 +5,20 @@ const nextConfig = {
   partialPrefetching: true,
   turbopack: {
     rules: {
-      "*.css": {
-        loaders: ["@tailwindcss/turbopack"],
-        as: "*.css",
-      },
+      // Run Tailwind on every stylesheet, but keep *.module.css files as
+      // CSS Modules (renaming them to *.css would make them global).
+      "*.css": [
+        {
+          condition: { path: /\.module\.css$/ },
+          loaders: ["@tailwindcss/turbopack"],
+          as: "*.module.css",
+        },
+        {
+          condition: { not: { path: /\.module\.css$/ } },
+          loaders: ["@tailwindcss/turbopack"],
+          as: "*.css",
+        },
+      ],
     },
   },
 };

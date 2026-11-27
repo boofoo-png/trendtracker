@@ -1,0 +1,20 @@
+/* Badge styles. Class names here are local to this file.
+   In Badge.js you use them as styles.badge, styles.success, ... */
+
+.badge {
+  box-sizing: border-box; /* placeholder so the class exists. Replace me */
+  /* TODO: inline-flex, padding, border-radius, font-size, font-weight */
+}
+
+/* TODO: one class per variant you pass in, e.g. */
+.default {
+  box-sizing: border-box; /* placeholder so the class exists. Replace me */
+}
+
+.success {
+  box-sizing: border-box; /* placeholder so the class exists. Replace me */
+}
+
+.warning {
+  box-sizing: border-box; /* placeholder so the class exists. Replace me */
+}

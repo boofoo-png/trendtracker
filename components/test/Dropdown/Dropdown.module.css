@@ -1,0 +1,18 @@
+.dropdown {
+  box-sizing: border-box; /* placeholder so the class exists. Replace me */
+  /* TODO: position: relative so the menu can sit under the trigger */
+}
+
+.trigger {
+  box-sizing: border-box; /* placeholder so the class exists. Replace me */
+}
+
+.menu {
+  box-sizing: border-box; /* placeholder so the class exists. Replace me */
+  /* TODO: position: absolute; top: 100%; remove list bullets; shadow; z-index */
+}
+
+.option {
+  box-sizing: border-box; /* placeholder so the class exists. Replace me */
+  /* TODO: full-width button, left-aligned text, hover state */
+}

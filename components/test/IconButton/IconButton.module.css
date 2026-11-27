@@ -1,0 +1,27 @@
+.button {
+  box-sizing: border-box; /* placeholder so the class exists. Replace me */
+  /* TODO: square size, centre the icon, remove the default border, round corners */
+}
+
+.button:hover {
+  box-sizing: border-box; /* placeholder so the class exists. Replace me */
+  /* TODO */
+}
+
+.button:focus-visible {
+  box-sizing: border-box; /* placeholder so the class exists. Replace me */
+  /* TODO: a visible outline for keyboard users. Don't remove it! */
+}
+
+/* TODO: size variants */
+.sm {
+  box-sizing: border-box; /* placeholder so the class exists. Replace me */
+}
+
+.md {
+  box-sizing: border-box; /* placeholder so the class exists. Replace me */
+}
+
+.lg {
+  box-sizing: border-box; /* placeholder so the class exists. Replace me */
+}
