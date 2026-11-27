@@ -36,20 +36,6 @@ const CREATE_OPTIONS = [
   },
 ];
 
-const EDIT_OPTIONS = [
-  {
-    icon: "sparkles",
-    id: "improve",
-    title: "Improve your writing",
-    description: "Upload or paste a post, ad, email or document. Improve it, rewrite it, summarize it or get feedback.",
-  },
-];
-
-const SECTIONS = [
-  ["Create new AI-guided content", CREATE_OPTIONS],
-  ["Edit and enhance existing content", EDIT_OPTIONS],
-];
-
 const HERE = "/content-creation";
 
 function SelectedTrend({ trend, onClear }) {
@@ -115,6 +101,31 @@ function ActionCard({ id, icon, title, description }) {
   );
 }
 
+function ImproveBanner() {
+  const href = "/content-creation/improve";
+  return (
+    <Link
+      href={href}
+      onClick={() => forwardContentTrend(HERE, href)}
+      className="group grid w-full cursor-pointer grid-cols-[auto_minmax(0,1fr)] items-center gap-3.5 rounded-[23px] border border-paper/70 bg-paper/95 p-[18px] text-left text-sense-navy shadow-[0_8px_0_rgba(0,31,62,0.18),0_18px_30px_rgba(0,31,62,0.1)] transition duration-200 hover:-translate-y-[3px] hover:bg-paper hover:shadow-[0_5px_0_rgba(0,31,62,0.2),0_20px_34px_rgba(0,31,62,0.15)] sm:grid-cols-[auto_minmax(0,1fr)_auto] sm:gap-[18px] sm:px-6 sm:py-5"
+    >
+      <span className="grid size-[46px] place-items-center rounded-xl border border-sense-blue/15 bg-[linear-gradient(145deg,rgba(221,254,86,0.2),rgba(3,82,94,0.08)),rgba(255,255,255,0.62)] text-sense-blue transition duration-200 group-hover:-rotate-3 group-hover:scale-105 group-hover:bg-sense-blue group-hover:text-paper">
+        <Icon name="sparkles" size={22} />
+      </span>
+      <span className="grid min-w-0 gap-1">
+        <strong className="text-[15px] font-bold text-sense-blue">Improve a post, ad or document</strong>
+        <small className="max-w-[640px] text-xs leading-[1.55] text-[#344c53]">
+          Upload or paste a post, ad, email or document. Improve it, rewrite it, summarize it or get feedback.
+        </small>
+      </span>
+      <span className="col-span-full inline-flex min-h-[40px] items-center justify-center gap-1.5 justify-self-end whitespace-nowrap rounded-[20px] bg-sense-blue px-[18px] text-xs font-bold text-paper transition group-hover:bg-sense-blue/85 sm:col-span-1">
+        Start improving
+        <Icon name="chevron" size={16} className="transition-transform group-hover:translate-x-0.5" />
+      </span>
+    </Link>
+  );
+}
+
 export default function ContentCreationDashboard() {
   const [trend, setTrend] = useState(null);
 
@@ -131,7 +142,7 @@ export default function ContentCreationDashboard() {
           {trend?.returnTo?.href && <BackLink href={trend.returnTo.href}>{trend.returnTo.label}</BackLink>}
           <h1 className="text-[clamp(27px,3vw,38px)] font-medium tracking-[-0.035em]">Content Creation</h1>
           <p className="mt-2 max-w-[700px] text-[13px] leading-[1.6] text-paper/85">
-            Create, re-purpose and edit content with the help of AI.
+            Write posts, ads and blogs, improve ones you already have, and adapt them for other platforms.
           </p>
         </div>
         <MyContentLink />
@@ -170,16 +181,19 @@ export default function ContentCreationDashboard() {
         </Link>
       </section>
 
-      {SECTIONS.map(([title, options], i) => (
-        <section key={title} className={i === 0 ? "mt-[26px]" : "mt-9 sm:mt-11 xl:mt-[clamp(54px,8vh,88px)]"}>
-          <h2 className="mb-4 text-[15px] font-bold text-paper">{title}</h2>
-          <div className={`grid grid-cols-1 gap-[18px] sm:grid-cols-2 ${options.length > 2 ? "xl:grid-cols-4" : ""}`}>
-            {options.map((option) => (
-              <ActionCard key={option.title} {...option} />
-            ))}
-          </div>
-        </section>
-      ))}
+      <section className="mt-[26px]">
+        <h2 className="mb-4 text-[15px] font-bold text-paper">Create new AI-guided content</h2>
+        <div className="grid grid-cols-1 gap-[18px] sm:grid-cols-2 xl:grid-cols-4">
+          {CREATE_OPTIONS.map((option) => (
+            <ActionCard key={option.title} {...option} />
+          ))}
+        </div>
+      </section>
+
+      <section className="mt-9">
+        <h2 className="mb-4 text-[15px] font-bold text-paper">Already have something written?</h2>
+        <ImproveBanner />
+      </section>
     </div>
   );
 }

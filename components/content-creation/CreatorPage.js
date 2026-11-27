@@ -74,7 +74,7 @@ function Form({ kind, f, set }) {
 
   switch (kind) {
     case "social":
-      // Starts from scratch; existing writing belongs in "Improve your writing".
+      // Starts from scratch; existing writing belongs in "Improve a post, ad or document".
       return (
         <>
           <p className="mb-[18px] rounded-[10px] bg-sense-blue/5 px-3 py-2.5 text-xs text-[#3d5053]">
@@ -243,7 +243,7 @@ function Result({ kind, r, f }) {
   }
 }
 
-/** "Improve your writing" results, laid out by mode (see lib/gemini/content.js). */
+/** "Improve a post, ad or document" results, laid out by mode (see lib/gemini/content.js). */
 function ImproveResult({ r }) {
   switch (r.mode) {
     case "improvePost":

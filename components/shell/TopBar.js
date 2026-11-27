@@ -34,7 +34,7 @@ const DESTINATIONS = [
   ["Video", "/content-creation/video", "video", "video script storyboard reel tiktok"],
   ["Blog post", "/content-creation/blog", "content", "blog article seo outline"],
   ["Ad copy", "/content-creation/ad", "target", "ad copy advert headline campaign"],
-  ["Improve your writing", "/content-creation/improve", "sparkles", "improve edit rewrite polish summarize feedback upload file document post email website copy"],
+  ["Improve a post, ad or document", "/content-creation/improve", "sparkles", "improve edit rewrite polish summarize feedback upload file document post email website copy"],
   ["My Content", "/content-creation/my-content", "content", "my content saved library"],
   ["Content calendar", "/ai-management", "calendar", "content calendar planner schedule plan posting ai management"],
   ["Reports", "/reports", "trend", "reports insights revenue roas pdf"],

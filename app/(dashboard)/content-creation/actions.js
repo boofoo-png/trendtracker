@@ -45,8 +45,8 @@ function cleanTrend(trend) {
 }
 
 const REQUIRED = {
-  improve: ["text", "Add your writing first: upload a file or paste the text."],
-  repurpose: ["source", "Paste or pick the content to repurpose."],
+  improve: ["text", "Add your text first: upload a file or paste it in."],
+  repurpose: ["source", "Pick the content to adapt first."],
   ad: ["product", "Say what product or service the ad is for."],
 };
 
